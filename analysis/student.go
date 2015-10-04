@@ -14,8 +14,8 @@ type Student struct {
 	PP        bool
 	EAL       bool
 	Gender    string
-	SEN       SenInfo
 	Ethnicity string
+	SEN       SenInfo
 	KS2       KS2Info
 }
 
@@ -34,7 +34,7 @@ type KS2Info struct {
 	Exists bool
 	APS    float64
 	Band   string
-	Ma     string
 	En     string
+	Ma     string
 	Av     string
 }
