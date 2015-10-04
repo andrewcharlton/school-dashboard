@@ -1,2 +1,5 @@
-# school-dashboard
-:bar_chart: Analysis dashboard for UK Secondary schools.
+# School Dashboard
+
+A web dashboard for UK secondary schools to interrogate their assessment
+and exam result data.
+
