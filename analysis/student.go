@@ -15,7 +15,7 @@ type Student struct {
 	EAL       bool
 	Gender    string
 	Ethnicity string
-	SEN       SenInfo
+	SEN       SENInfo
 	KS2       KS2Info
 }
 

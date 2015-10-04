@@ -17,7 +17,7 @@ type StudentFilter struct {
 func (db SchoolDB) LoadStudent(f StudentFilter) (analysis.Student, error) {
 
 	query := `SELECT upn, surname, forename, year, form,
-			  pp, eal, gender, ethnicity sen_status, sen_info,
+			  pp, eal, gender, ethnicity, sen_status, sen_info,
 			  sen_strat, ks2_aps, ks2_band, ks2_en, ks2_ma, ks2_av
 			  FROM students
 			  WHERE upn=? AND date=?`
@@ -28,7 +28,7 @@ func (db SchoolDB) LoadStudent(f StudentFilter) (analysis.Student, error) {
 	ks2 := analysis.KS2Info{}
 	s := analysis.Student{}
 	err := row.Scan(&s.UPN, &s.Surname, &s.Forename, &s.Year, &s.Form,
-		&s.PP, &s.EAL, &s.Ethnicity, &sen.Status, &sen.Info,
+		&s.PP, &s.EAL, &s.Gender, &s.Ethnicity, &sen.Status, &sen.Info,
 		&sen.Strategies, &ks2.APS, &ks2.Band, &ks2.En,
 		&ks2.Ma, &ks2.Av)
 	if err != nil {
