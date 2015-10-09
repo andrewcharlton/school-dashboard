@@ -14,6 +14,8 @@ type StudentFilter struct {
 	Exams     string
 }
 
+// LoadStudent retrieves a student's information from the database
+// and returns a Student object holding that info.
 func (db SchoolDB) LoadStudent(f StudentFilter) (analysis.Student, error) {
 
 	query := `SELECT upn, surname, forename, year, form,
