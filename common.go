@@ -39,7 +39,7 @@ func (e Env) Header(w http.ResponseWriter, r *http.Request) error {
 		if l == "" {
 			data.Menu = append(data.Menu, menuItem{Sep: true})
 		} else {
-			data.Menu = append(data.Menu, menuItem{false, l, template.URL("../" + l + "/?" + q)})
+			data.Menu = append(data.Menu, menuItem{false, l, template.URL("#")})
 		}
 	}
 
