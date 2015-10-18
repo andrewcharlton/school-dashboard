@@ -77,12 +77,12 @@ func (db SchoolDB) DefaultFilter() (Filter, error) {
 
 	f := Filter{}
 
-	err := db.QueryRow("SELECT id FROM dates ORDER BY date DESC LIMIT 1").Scan(&f.Date)
+	err := db.DB.QueryRow("SELECT id FROM dates ORDER BY date DESC LIMIT 1").Scan(&f.Date)
 	if err != nil {
 		return f, err
 	}
 
-	err = db.QueryRow("SELECT id FROM resultsets WHERE is_exam=0 ORDER BY date DESC LIMIT 1").Scan(&f.Resultset)
+	err = db.DB.QueryRow("SELECT id FROM resultsets WHERE is_exam=0 ORDER BY date DESC LIMIT 1").Scan(&f.Resultset)
 	switch {
 	case err == sql.ErrNoRows:
 		f.Resultset = "0"
@@ -91,7 +91,7 @@ func (db SchoolDB) DefaultFilter() (Filter, error) {
 	}
 
 	// Select all Ethnicities
-	rows, err := db.Query("SELECT DISTINCT ethnicity FROM students")
+	rows, err := db.DB.Query("SELECT DISTINCT ethnicity FROM students")
 	if err != nil {
 		return f, err
 	}

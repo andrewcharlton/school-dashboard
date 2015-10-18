@@ -2,9 +2,9 @@
 <div class="row">
     <div class="col-sm-1"></div>
     <div class="col-sm-8">
-        <div id="filter_bar" class="bs-component col-sm-8" style="display: block;">
+        <div id="filter_bar" class="bs-component" style="display: block;">
             {{range .Labels}}
-            <span class="label label-primary">{{.}}</span>
+            <span class="label {{if .Default}}label-default{{else}}label-primary{{end}}">{{.Name}}</span>
             {{end}}
         </div>
     </div>

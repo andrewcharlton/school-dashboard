@@ -73,7 +73,7 @@ func (e Env) FilterPage(w http.ResponseWriter, f database.Filter, short bool) er
 		E           map[string]bool //Ethnicities checked
 		O           map[string]bool //Ethnicities in the "Other" category
 		S           map[string]bool //SEN ticked
-		Labels      []string
+		Labels      []label
 	}{
 		f,
 		e.Dates,
@@ -119,10 +119,16 @@ func (e Env) FilterPage(w http.ResponseWriter, f database.Filter, short bool) er
 	return nil
 }
 
-// FilterLabels generates the labels for the filter page
-func (e Env) FilterLabels(f database.Filter, short bool) []string {
+// A label holds the name of the label, as well as it's colouring.
+type label struct {
+	Name    string
+	Default bool
+}
 
-	labels := []string{}
+// FilterLabels generates the labels for the filter page
+func (e Env) FilterLabels(f database.Filter, short bool) []label {
+
+	labels := []label{}
 
 	// Lookup date and resultset names
 	date, rs := "", ""
@@ -138,45 +144,45 @@ func (e Env) FilterLabels(f database.Filter, short bool) []string {
 		}
 	}
 
-	labels = append(labels, "Date: "+date)
-	labels = append(labels, "Resultset: "+rs)
-	labels = append(labels, "Exams: "+f.Exams)
+	labels = append(labels, label{"Date: " + date, true})
+	labels = append(labels, label{"Resultset: " + rs, true})
+	labels = append(labels, label{"Exams: " + f.Exams, true})
 
 	if short {
 		return labels
 	}
 
 	if len(f.Years) >= 1 {
-		labels = append(labels, "Years: "+strings.Join(f.Years, ", "))
+		labels = append(labels, label{"Years: " + strings.Join(f.Years, ", "), true})
 	}
 
 	switch {
 	case f.Gender == "1":
-		labels = append(labels, "Boys")
+		labels = append(labels, label{"Boys", false})
 	case f.Gender == "0":
-		labels = append(labels, "Girls")
+		labels = append(labels, label{"Girls", false})
 	}
 
 	switch {
 	case f.PP == "1":
-		labels = append(labels, "Disadvanted")
+		labels = append(labels, label{"Disadvantaged", false})
 	case f.PP == "0":
-		labels = append(labels, "Non-Disadvantaged")
+		labels = append(labels, label{"Non-Disadvantaged", false})
 	}
 
 	switch {
 	case f.EAL == "1":
-		labels = append(labels, "EAL")
+		labels = append(labels, label{"EAL", false})
 	case f.EAL == "0":
-		labels = append(labels, "Non-EAL")
+		labels = append(labels, label{"Non-EAL", false})
 	}
 
 	if len(f.SEN) >= 1 && len(f.SEN) < 4 {
-		labels = append(labels, "SEN: "+strings.Join(f.SEN, ", "))
+		labels = append(labels, label{"SEN: " + strings.Join(f.SEN, ", "), false})
 	}
 
 	if len(f.KS2Bands) >= 1 && len(f.SEN) < 4 {
-		labels = append(labels, "KS2: "+strings.Join(f.KS2Bands, ", "))
+		labels = append(labels, label{"KS2: " + strings.Join(f.KS2Bands, ", "), false})
 	}
 
 	if len(f.Ethnicities) >= 1 && len(f.Ethnicities) <= len(e.Ethnicities) {
@@ -186,7 +192,7 @@ func (e Env) FilterLabels(f database.Filter, short bool) []string {
 				eths = append(eths, eth)
 			}
 		}
-		labels = append(labels, "Ethnicity: "+strings.Join(eths, ", "))
+		labels = append(labels, label{"Ethnicity: " + strings.Join(eths, ", "), false})
 	}
 
 	return labels

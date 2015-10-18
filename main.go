@@ -64,8 +64,9 @@ func (e *Env) LoadTemplates() error {
 	return nil
 }
 
+// LoadDates loads all effective dates that are marked to
+// be listed.
 func (e *Env) LoadDates() error {
-	// Load Dates
 	rows, err := e.DB.Query(`SELECT id, date FROM dates
 							WHERE list=1
 							ORDER BY date DESC`)
@@ -110,6 +111,9 @@ func (e *Env) LoadResultsets() error {
 }
 
 // LoadEthnicities loads up the most common ethnicities
+// for the filter drop down.  For ethnicities that appear
+// rarely, these are folded into 'Other' and tagged in
+// the OtherEths folder.
 func (e *Env) LoadEthnicities() error {
 
 	e.OtherEths = map[string]bool{}
