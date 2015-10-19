@@ -9,7 +9,7 @@ import (
 // A SchoolDB wraps an SQL object and provides additional
 // functions to query the database.
 type SchoolDB struct {
-	DB      *sql.DB
+	db      *sql.DB
 	queries map[string]*sql.Stmt
 }
 
@@ -29,7 +29,6 @@ func Connect(filename string) (SchoolDB, error) {
 	}
 
 	return s, nil
-
 }
 
 // Close terminates the connection to the database.
