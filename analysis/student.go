@@ -39,3 +39,8 @@ type KS2Info struct {
 	Ma     string
 	Av     string
 }
+
+// A Group contains a list of students
+type Group struct {
+	Students []Student
+}

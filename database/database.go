@@ -1,11 +1,11 @@
-// Package db implements a database access layer
+// Package database implements a database access layer
 // for the school-dashboard application.
 //
 // It wraps an SQL database connection, prepares
 // statements to query the database and then
 // provides methods to return the results of any
 // queries.
-package db
+package database
 
 import "github.com/andrewcharlton/school-dashboard/analysis"
 
@@ -32,7 +32,7 @@ type Database interface {
 
 	// Group returns a list of students who satisfy the
 	// criteria specified in the filter
-	Group(f Filter) ([]analysis.Student, error)
+	Group(f Filter) (analysis.Group, error)
 
 	// Student returns a student object with details relevant
 	// to the given filter.

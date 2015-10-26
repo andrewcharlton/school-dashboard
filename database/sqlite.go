@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"database/sql"
@@ -23,9 +23,11 @@ type sqliteDB struct {
 // and returns a Database object
 func ConnectSQLite(filename string) (Database, error) {
 
+	var DB Database
+
 	conn, err := sql.Open("sqlite3", filename)
 	if err != nil {
-		return sqliteDB{}, err
+		return DB, err
 	}
 
 	var db sqliteDB
@@ -33,20 +35,21 @@ func ConnectSQLite(filename string) (Database, error) {
 
 	// Prepare SQL statements
 	if err := db.prepareStatements(); err != nil {
-		return sqliteDB{}, err
+		return DB, err
 	}
 
 	// Load details of levels cache
 	if err := db.loadLevels(); err != nil {
-		return sqliteDB{}, err
+		return DB, err
 	}
 
 	// Load subjects to cache
 	if err := db.loadSubjects(); err != nil {
-		return sqliteDB{}, err
+		return DB, err
 	}
 
-	return db, nil
+	DB = db
+	return DB, nil
 }
 
 // Close terminates the connection to the
@@ -118,7 +121,7 @@ func (db *sqliteDB) loadLevels() error {
 		}
 		l.Gradeset = grades
 
-		db.levels[id] = *l
+		db.levels[id] = &l
 	}
 
 	return nil
@@ -138,11 +141,11 @@ func (db *sqliteDB) loadGrades(level int) (map[string]*analysis.Grade, error) {
 	grades := map[string]*analysis.Grade{}
 	for rows.Next() {
 		var g analysis.Grade
-		err := rows.Scan(&g.Grd, &g.Pts, &g.Att8, &g.L1Pass, &L2.Pass)
+		err := rows.Scan(&g.Grd, &g.Pts, &g.Att8, &g.L1Pass, &g.L2Pass)
 		if err != nil {
 			return map[string]*analysis.Grade{}, err
 		}
-		grades[g.Grd] = *g
+		grades[g.Grd] = &g
 	}
 
 	return grades, nil
@@ -158,7 +161,7 @@ func (db *sqliteDB) loadSubjects() error {
 	}
 	defer rows.Close()
 
-	db.subjects = map[id]*analysis.Subject{}
+	db.subjects = map[int]*analysis.Subject{}
 	for rows.Next() {
 		var id, level int
 		var s analysis.Subject
@@ -167,7 +170,7 @@ func (db *sqliteDB) loadSubjects() error {
 			return err
 		}
 		s.Level = db.levels[level]
-		db.subjects[id] = *s
+		db.subjects[id] = &s
 	}
 
 	return nil
@@ -251,54 +254,57 @@ func (db sqliteDB) Ethnicities() ([]Ethnicity, error) {
 
 // Group returns a list of UPNs for students who satisfy the criteria
 // specified in the filter.
-func (db sqliteDB) Group(f Filter) ([]string, error) {
+func (db sqliteDB) Group(f Filter) (analysis.Group, error) {
 
 	query := fmt.Sprintf(`SELECT upn FROM students WHERE date = %v`, f.Date)
 
 	if len(f.Years) > 0 {
 		query += " AND (year IN (" + strings.Join(f.Years, ", ") + ")"
 	}
-
 	if f.PP != "" {
 		query += fmt.Sprintf(" AND pp = %v", f.PP)
 	}
-
 	if f.EAL != "" {
 		query += fmt.Sprintf(" AND eal = %v", f.EAL)
 	}
-
 	if f.Gender != "" {
 		query += fmt.Sprintf(" AND gender = %v", f.Gender)
 	}
-
 	if len(f.SEN) > 0 {
 		query += fmt.Sprintf(" AND sen IN (" + strings.Join(f.SEN, ", ") + ")")
 	}
-
 	if len(f.Ethnicities) > 0 {
 		query += fmt.Sprintf(" AND ethnicity IN (" + strings.Join(f.Ethnicities, ", ") + ")")
 	}
-
 	if len(f.KS2Bands) > 0 {
 		query += fmt.Sprintf(" AND ks2_band IN (" + strings.Join(f.KS2Bands, ", ") + ")")
 	}
-
 	rows, err := db.conn.Query(query)
 	if err != nil {
-		return []string{}, err
+		return analysis.Group{}, err
 	}
 	defer rows.Close()
 
-	upns = []string{}
+	upns := []string{}
 	for rows.Next() {
 		var upn string
 		if err := rows.Scan(&upn); err != nil {
-			return []string{}, err
+			return analysis.Group{}, err
 		}
 		upns = append(upns, upn)
 	}
 
-	return upns, nil
+	students := []analysis.Student{}
+	for _, upn := range upns {
+		sf := StudentFilter{upn, f.Date, f.Resultset}
+		student, err := db.Student(sf)
+		if err != nil {
+			return analysis.Group{}, err
+		}
+		students = append(students, student)
+	}
+
+	return analysis.Group{students}, nil
 }
 
 // Student creates a student object based on the
@@ -334,7 +340,7 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 			return analysis.Student{}, err
 		}
 
-		subject := analysis.subjects[subj_id]
+		subject := db.subjects[subj_id]
 		c := analysis.Course{subject, subject.Gradeset[grade]}
 		s.Courses[subj] = c
 	}

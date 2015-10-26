@@ -13,7 +13,7 @@ import (
 
 // Env contains all of the
 type Env struct {
-	DB        database.SchoolDB
+	DB        database.Database
 	Templates *template.Template
 
 	// Data required for filter drop-down
@@ -27,7 +27,7 @@ type Env struct {
 // containing the connection.
 func Connect(filename string) (Env, error) {
 
-	db, err := database.Connect(filename)
+	db := database.SQLite
 	if err != nil {
 		return Env{}, err
 	}
