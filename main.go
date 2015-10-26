@@ -27,7 +27,7 @@ type Env struct {
 // containing the connection.
 func Connect(filename string) (Env, error) {
 
-	db := database.SQLite
+	db, err := database.ConnectSQLite("school.db")
 	if err != nil {
 		return Env{}, err
 	}

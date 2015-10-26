@@ -333,14 +333,14 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var subj_id int
+		var subjID int
 		var subj, grade string
-		err := rows.Scan(&subj_id, &subj, &grade)
+		err := rows.Scan(&subjID, &subj, &grade)
 		if err != nil {
 			return analysis.Student{}, err
 		}
 
-		subject := db.subjects[subj_id]
+		subject := db.subjects[subjID]
 		c := analysis.Course{subject, subject.Gradeset[grade]}
 		s.Courses[subj] = c
 	}
