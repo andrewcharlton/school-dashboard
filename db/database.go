@@ -7,14 +7,36 @@
 // queries.
 package db
 
+import "github.com/andrewcharlton/school-dashboard/analysis"
+
 // A Database provides a wrapper to the database
 // connection and provides methods to query it.
 type Database interface {
+
+	// Close the database connection
 	Close() error
+
+	// Dates returns a sorted list of all effective dates
+	// in the database that are marked to be listed.
 	Dates() ([]Lookup, error)
+
+	// Resultsets returns a sorted list of all resultsets
+	// in the database.
 	Resultsets() ([]Lookup, error)
+
+	// Ethnicities returns a list of all the distinct
+	// ethnicities present in the database, and the frequency
+	// that each appears with.  Only students who are present
+	// in listed dates are counted.
 	Ethnicities() ([]Ethnicity, error)
-	Group(f Filter) ([]string, error)
+
+	// Group returns a list of students who satisfy the
+	// criteria specified in the filter
+	Group(f Filter) ([]analysis.Student, error)
+
+	// Student returns a student object with details relevant
+	// to the given filter.
+	Student(f StudentFilter) (analysis.Student, error)
 }
 
 // A Lookup holds an ID/Name pair for an item in the database.

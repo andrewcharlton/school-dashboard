@@ -9,8 +9,8 @@ import (
 	_ "github.com/mattn/go-sqlite3" // SQL Driver
 )
 
-// A SQLiteDB is a container for the
-type SQLiteDB struct {
+// A sqliteDB is a container for the
+type sqliteDB struct {
 	conn  *sql.DB              // Database connection
 	stmts map[string]*sql.Stmt // Prepared statements for quicker queries
 
@@ -25,25 +25,25 @@ func ConnectSQLite(filename string) (Database, error) {
 
 	conn, err := sql.Open("sqlite3", filename)
 	if err != nil {
-		return SQLiteDB{}, err
+		return sqliteDB{}, err
 	}
 
-	var db SQLiteDB
+	var db sqliteDB
 	db.conn = conn
 
 	// Prepare SQL statements
 	if err := db.prepareStatements(); err != nil {
-		return SQLiteDB{}, err
+		return sqliteDB{}, err
 	}
 
 	// Load details of levels cache
 	if err := db.loadLevels(); err != nil {
-		return SQLiteDB{}, err
+		return sqliteDB{}, err
 	}
 
 	// Load subjects to cache
 	if err := db.loadSubjects(); err != nil {
-		return SQLiteDB{}, err
+		return sqliteDB{}, err
 	}
 
 	return db, nil
@@ -51,7 +51,7 @@ func ConnectSQLite(filename string) (Database, error) {
 
 // Close terminates the connection to the
 // database.
-func (db SQLiteDB) Close() error {
+func (db sqliteDB) Close() error {
 
 	err := db.conn.Close()
 	return err
@@ -73,7 +73,7 @@ var sqliteStmts = map[string]string{
 
 // prepareStatements prepares a query statement for each sql string
 // storedin sqliteStmnts
-func (db *SQLiteDB) prepareStatements() error {
+func (db *sqliteDB) prepareStatements() error {
 
 	// Close any existing statements
 	for _, stmt := range db.stmts {
@@ -95,7 +95,7 @@ func (db *SQLiteDB) prepareStatements() error {
 }
 
 // loadLevels pulls in all of the levels for caching
-func (db *SQLiteDB) loadLevels() error {
+func (db *sqliteDB) loadLevels() error {
 
 	rows, err := db.conn.Query("SELECT id, level, is_gcse FROM levels")
 	if err != nil {
@@ -125,7 +125,7 @@ func (db *SQLiteDB) loadLevels() error {
 }
 
 // loadGrades pulls in the list of grades at a particular level
-func (db *SQLiteDB) loadGrades(level int) (map[string]*analysis.Grade, error) {
+func (db *sqliteDB) loadGrades(level int) (map[string]*analysis.Grade, error) {
 
 	rows, err := db.conn.Query(`SELECT grade, points, att8, l1pass, l2pass
 								FROM grades
@@ -149,7 +149,7 @@ func (db *SQLiteDB) loadGrades(level int) (map[string]*analysis.Grade, error) {
 }
 
 // loadSubjects pulls in the subject list for caching
-func (db *SQLiteDB) loadSubjects() error {
+func (db *sqliteDB) loadSubjects() error {
 
 	rows, err := db.conn.Query(`SELECT id, subject, level_id, ebacc, ks2_prior
 								FROM subjects`)
@@ -175,7 +175,7 @@ func (db *SQLiteDB) loadSubjects() error {
 
 // Dates returns a sorted list of all Dates in the database that
 // are marked to be listed.
-func (db SQLiteDB) Dates() ([]Lookup, error) {
+func (db sqliteDB) Dates() ([]Lookup, error) {
 
 	rows, err := db.conn.Query(`SELECT id, date FROM dates WHERE list=1
 								ORDER BY id`)
@@ -200,7 +200,7 @@ func (db SQLiteDB) Dates() ([]Lookup, error) {
 // Resultsets returns a sorted list of all Resultsets in the database.
 // An 'Exams Only' option encapsulates all individual exam resultsets,
 // all other resultsets marked to be listed are included.
-func (db SQLiteDB) Resultsets() ([]Lookup, error) {
+func (db sqliteDB) Resultsets() ([]Lookup, error) {
 
 	rows, err := db.conn.Query(`SELECT id, resultset FROM resultsets
 								WHERE is_exam=0 AND list=1
@@ -226,7 +226,7 @@ func (db SQLiteDB) Resultsets() ([]Lookup, error) {
 // Ethnicities returns all the distinct ethnicities present in
 // the database, and the frequency that each appears with.
 // Only students who are present in listed dates are counted.
-func (db SQLiteDB) Ethnicities() ([]Ethnicity, error) {
+func (db sqliteDB) Ethnicities() ([]Ethnicity, error) {
 
 	rows, err := db.conn.Query(`SELECT ethnicity, COUNT(1) as n
 								FROM students
@@ -251,7 +251,7 @@ func (db SQLiteDB) Ethnicities() ([]Ethnicity, error) {
 
 // Group returns a list of UPNs for students who satisfy the criteria
 // specified in the filter.
-func (db SQLiteDB) Group(f Filter) ([]string, error) {
+func (db sqliteDB) Group(f Filter) ([]string, error) {
 
 	query := fmt.Sprintf(`SELECT upn FROM students WHERE date = %v`, f.Date)
 
@@ -302,7 +302,7 @@ func (db SQLiteDB) Group(f Filter) ([]string, error) {
 }
 
 // Student creates a student object based on the
-func (db SQLiteDB) Student(f StudentFilter) (analysis.Student, error) {
+func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 
 	row := db.stmts["student"].QueryRow(f.UPN, f.Date)
 
