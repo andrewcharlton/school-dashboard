@@ -17,6 +17,7 @@ type Student struct {
 	Ethnicity string
 	SEN       SENInfo
 	KS2       KS2Info
+	Courses   map[string]Course
 }
 
 // SENInfo collects all of a student's SEN details
