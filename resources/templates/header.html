@@ -13,7 +13,8 @@
     <script src="/static/js/custom.js"></script>
 
     <!-- Bootstrap -->
-    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-spacelab.min.css" rel="stylesheet">
+
 
 </head>
 <body>
@@ -21,7 +22,7 @@
     <nav class="navbar navbar-default">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand" href="/index.html">{{.School}}</a>
+                <a class="navbar-brand" href="/index/?{{.Query}}">{{.School}}</a>
             </div>
 
             <form class="navbar-form navbar-right form-horizontal" action="/studentsearch/" role="search">
@@ -47,7 +48,6 @@
                             </ul>
                         </li>
                         <li><a href="/subjects/English/{{.Query}}">English</a></li>
-                        <li class="divider"></li>
                     </ul>
                 </li>
             </ul>
@@ -56,15 +56,17 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Headlines <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="/summary/{{.Query}}">Summary</a></li>
+                        <li><a href="/summary/?{{.Query}}">Summary</a></li>
                         <li class="divider"></li>
-                        <li><a href="/basics/{{.Query}}">English and Maths</a></li>
-                        <li><a href="/progress8/{{.Query}}">Progress 8</a></li>
-                        <li><a href="/ebacc/{{.Query}}">English Baccalaureate</a></li>
+                        <li><a href="/basics/?{{.Query}}">English and Maths</a></li>
+                        <li><a href="/progress8/?{{.Query}}">Progress 8</a></li>
+                        <li><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
                         <li class="divider"></li>
-                        <li><a href="/attendance/{{.Query}}">Attendance</a></li>
+                        <li><a href="/attendance/?{{.Query}}">Attendance</a></li>
                     </ul>
                 </li>
             </ul>
         </div>
     </nav>
+
+    <div class="container">

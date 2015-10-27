@@ -37,10 +37,7 @@ func Student(e env.Env) http.HandlerFunc {
 			return
 		}
 
-		fmt.Fprintf(w, "Student: %v, %v", s.Surname, s.Forename)
-		for _, c := range s.Courses {
-			fmt.Fprintf(w, "<br>Results: %v, %v", c.Subj, c.Grd)
-		}
+		e.Templates.ExecuteTemplate(w, "student.html", s)
 
 		Footer(e, w, r)
 	}

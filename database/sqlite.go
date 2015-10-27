@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -368,6 +369,9 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 		&s.PP, &s.EAL, &s.Gender, &s.Ethnicity, &sen.Status, &sen.Info,
 		&sen.Strategies, &ks2.APS, &ks2.Band, &ks2.En,
 		&ks2.Ma, &ks2.Av)
+	if err == sql.ErrNoRows {
+		return analysis.Student{}, errors.New("Student not on roll at this date.  Try changing the date, or search for another student.")
+	}
 	if err != nil {
 		return analysis.Student{}, err
 	}

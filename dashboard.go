@@ -28,7 +28,12 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
+	// Serve images
+	is := http.FileServer(http.Dir("./images"))
+	http.Handle("/images/", http.StripPrefix("/images/", is))
+
 	// Handlers
+	http.HandleFunc("/index/", handlers.Index(env))
 	http.HandleFunc("/students/", handlers.Student(env))
 	http.HandleFunc("/studentsearch/", handlers.SearchRedirect())
 	http.HandleFunc("/search/", handlers.Search(env))
