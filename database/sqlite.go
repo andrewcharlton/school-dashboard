@@ -68,10 +68,24 @@ var sqliteStmts = map[string]string{
 				sen_info, sen_strat, ks2_aps, ks2_band,
 				ks2_en, ks2_ma, ks2_av
 				FROM students
-				WHERE upn=? AND date=?`,
+				WHERE upn=? AND date_id=?`,
 
-	"courses": `SELECT subject_id, subject, grade FROM results
+	"results": `SELECT subject_id, subject, grade FROM results
 				WHERE upn=? AND resultset=?`,
+
+	"bestExams": `SELECT subject_id, subject, grade FROM results
+				  WHERE upn=? AND is_exam=1
+				  ORDER BY points DESC`,
+
+	"firstExams": `SELECT subject_id, subject, grade FROM results
+				  WHERE upn=? AND is_exam=1
+				  ORDER BY date`,
+
+	"search": `SELECT upn, surname, forename, year, form
+			   FROM students
+			   WHERE date_id=? AND
+			   (((forename || " " || surname) LIKE ?)
+				OR ((surname || ", " || forename) LIKE ?))`,
 }
 
 // prepareStatements prepares a query statement for each sql string
@@ -130,7 +144,7 @@ func (db *sqliteDB) loadLevels() error {
 // loadGrades pulls in the list of grades at a particular level
 func (db *sqliteDB) loadGrades(level int) (map[string]*analysis.Grade, error) {
 
-	rows, err := db.conn.Query(`SELECT grade, points, att8, l1pass, l2pass
+	rows, err := db.conn.Query(`SELECT grade, points, att8, l1_pass, l2_pass
 								FROM grades
 								WHERE level_id=?`, level)
 	if err != nil {
@@ -200,6 +214,40 @@ func (db sqliteDB) Dates() ([]Lookup, error) {
 	return dates, nil
 }
 
+// Config retrieves the config values from the database
+func (db sqliteDB) Config() (Config, error) {
+
+	rows, err := db.conn.Query("SELECT key, value FROM config")
+	if err != nil {
+		return Config{}, err
+	}
+	defer rows.Close()
+
+	cfg := Config{}
+	for rows.Next() {
+		var key, value string
+		err := rows.Scan(&key, &value)
+		if err != nil {
+			return Config{}, err
+		}
+		switch key {
+		case "School":
+			cfg.School = value
+		case "URN":
+			cfg.URN = value
+		case "LEA":
+			cfg.LEA = value
+		case "Date":
+			cfg.Date = value
+		case "Resultset":
+			cfg.Resultset = value
+		case "Years":
+			cfg.Years = strings.Split(value, ",")
+		}
+	}
+	return cfg, nil
+}
+
 // Resultsets returns a sorted list of all Resultsets in the database.
 // An 'Exams Only' option encapsulates all individual exam resultsets,
 // all other resultsets marked to be listed are included.
@@ -213,7 +261,7 @@ func (db sqliteDB) Resultsets() ([]Lookup, error) {
 	}
 	defer rows.Close()
 
-	rs := []Lookup{{"0", "Exams Only"}}
+	rs := []Lookup{}
 	for rows.Next() {
 		var l Lookup
 		err := rows.Scan(&l.ID, &l.Name)
@@ -233,7 +281,8 @@ func (db sqliteDB) Ethnicities() ([]Ethnicity, error) {
 
 	rows, err := db.conn.Query(`SELECT ethnicity, COUNT(1) as n
 								FROM students
-								GROUP BY ethnicity`)
+								GROUP BY ethnicity
+								ORDER BY n DESC`)
 	if err != nil {
 		return []Ethnicity{}, err
 	}
@@ -326,12 +375,22 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 	s.KS2 = ks2
 
 	// Load courses
-	rows, err := db.stmts["courses"].Query(f.UPN, f.Resultset)
+	var rows *sql.Rows
+	switch f.Resultset {
+	case "1":
+		rows, err = db.stmts["firstExams"].Query(f.UPN)
+	case "2":
+		rows, err = db.stmts["bestExams"].Query(f.UPN)
+	default:
+		rows, err = db.stmts["results"].Query(f.UPN, f.Resultset)
+	}
+
 	if err != nil {
 		return analysis.Student{}, err
 	}
 	defer rows.Close()
 
+	s.Courses = map[string]analysis.Course{}
 	for rows.Next() {
 		var subjID int
 		var subj, grade string
@@ -340,10 +399,42 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 			return analysis.Student{}, err
 		}
 
+		// Don't overwrite existing course
+		_, exists := s.Courses[subj]
+		if exists {
+			continue
+		}
+
 		subject := db.subjects[subjID]
 		c := analysis.Course{subject, subject.Gradeset[grade]}
 		s.Courses[subj] = c
 	}
 
 	return s, nil
+}
+
+// Search returns a list of students that satisfy the search criteria.
+func (db sqliteDB) Search(name, date string) ([]StudentLookup, error) {
+
+	str := "%" + strings.Replace(name, "*", "%", -1) + "%"
+	rows, err := db.stmts["search"].Query(date, str, str)
+	if err != nil {
+		return []StudentLookup{}, err
+	}
+	defer rows.Close()
+
+	list := []StudentLookup{}
+	for rows.Next() {
+		var upn, surname, forename, year, form string
+		err := rows.Scan(&upn, &surname, &forename, &year, &form)
+		if err != nil {
+			return []StudentLookup{}, err
+		}
+		s := StudentLookup{UPN: upn,
+			Name: surname + ", " + forename,
+			Form: form}
+		list = append(list, s)
+	}
+
+	return list, nil
 }

@@ -29,7 +29,9 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Handlers
-	https.HandleFunc("/students/", handlers.Student(env))
+	http.HandleFunc("/students/", handlers.Student(env))
+	http.HandleFunc("/studentsearch/", handlers.SearchRedirect())
+	http.HandleFunc("/search/", handlers.Search(env))
 
 	// Start server
 	http.ListenAndServe(":8080", nil)

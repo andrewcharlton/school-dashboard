@@ -1,32 +1,32 @@
-<div class="container-fluid">
-<div class="row">
-    <div class="col-sm-1"></div>
-    <div class="col-sm-8">
-        <div id="filter_bar" class="bs-component" style="display: block;">
+<div class="container">
+    <div class="row" id="filter_bar" style="display: block;">
+        <div class="col-sm-11">
+            <!--
+            <div class="bs-component">
+                {{range .Labels}}
+                <span class="label label-default">{{.}}</span>
+                {{end}}
+            </div>
+            -->
             {{range .Labels}}
-            <span class="label {{if .Default}}label-default{{else}}label-primary{{end}}">{{.Name}}</span>
+            <a href="#" class="btn btn-default btn-sm disabled">{{.}}</a>
             {{end}}
         </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-default btn-sm" onclick="toggle_visibility('filter_bar'); toggle_visibility('filter_form');">
+                <span class="glyphicon glyphicon-cog"> Options</span>
+            </button>
+        </div>
     </div>
-    <div class="col-sm-2">
-        <button type="button" class="btn btn-primary btn-xs" onclick="toggle_visibility('filter_bar'); toggle_visibility('filter_form');">
-            <span class="glyphicon glyphicon-filter"> Filters</span>
-        </button>
-    </div>
-    <div class="col-sm-1"></div>
-</div>
 
-<div class="row">
-    <div class="col-sm-2"></div>
-    <div class="col-sm-7">
-        <div id="filter_form" style="display: none;">
-
+    <div class="row" id="filter_form" style="display: none;">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
             <form role="form" class="form-horizontal" style="margin-bottom: 0px">
-
                 <div class="row">
                     <div class="form-group form-group-sm">
-                        <label for="f_date" class="control-label col-sm-3">Effective Date</label>
-                        <div class="col-sm-9">
+                        <label for="f_date" class="control-label col-sm-2">Effective Date</label>
+                        <div class="col-sm-10">
                             <select name="date" id="f_date" class="form-control input-sm">
                                 {{$d := .Date}}
                                 {{range .Dates}}
@@ -37,37 +37,25 @@
                     </div>
                 </div>
 
-                <div class="row" style="margin-top: -6px;">
+                <div class="row">
                     <div class="form-group form-group-sm">
-                        <label for="f_resultset" class="control-label col-sm-3">Resultset</label>
-                        <div class="col-sm-9">
+                        <label for="f_resultset" class="control-label col-sm-2">Resultset</label>
+                        <div class="col-sm-10">
                             <select name="resultset" id="f_resultset" class="form-control input-sm">
                                 {{$rs := .Resultset}}
                                 {{range .Resultsets}}
-                                <option value="{{.ID}}"{{if eq .ID $rs}} selected="yes"{{end}}>{{.Name}}</option>
+                                    <option value="{{.ID}}"{{if eq .ID $rs}} selected="yes"{{end}}>{{.Name}}</option>
                                 {{end}}
                             </select>
                         </div>
                     </div>
                 </div>
                 
+                {{if not .Short}}
                 <div class="row" style="margin-top: -6px;">
                     <div class="form-group form-group-sm">
-                        <label for="f_exams" class="control-label col-sm-3">Exams</label>
-                        <div class="col-sm-9">
-                            <select name="exams" id="f_exams" class="form-control input-sm">
-                                <option value="First"{{if eq .Exams "First"}} selected="yes"{{end}}>First Entry Only</option>
-                                <option value="Best"{{if eq .Exams "Best"}} selected="yes"{{end}}>Best Entry</option>
-                                <option value="Ignore"{{if eq .Exams "Ignore"}} selected="yes"{{end}}>Ignore Exams</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row" style="margin-top: -6px;">
-                    <div class="form-group form-group-sm">
-                        <label class="control-label col-sm-3">Yeargroups</label>
-                        <div class="col-sm-9">
+                        <label class="control-label col-sm-2">Yeargroups</label>
+                        <div class="col-sm-10">
                             <label class="checkbox-inline"><input type="checkbox" name="year" value="11"{{if index .Y "11"}} checked="yes"{{end}}>11</input></label>
                             <label class="checkbox-inline"><input type="checkbox" name="year" value="10"{{if index .Y "10"}} checked="yes"{{end}}>10</input></label>
                             <label class="checkbox-inline"><input type="checkbox" name="year" value="9"{{if index .Y "9"}} checked="yes"{{end}}>9</input></label>
@@ -79,8 +67,8 @@
 
                 <div class="row" style="margin-top: -6px;">
                     <div class="form-group form-group-sm">
-                        <label for="f_gender" class="control-label col-sm-3">Gender</label>
-                        <div class="col-sm-9">
+                        <label for="f_gender" class="control-label col-sm-2">Gender</label>
+                        <div class="col-sm-10">
                             <select name="gender" id="f_gender" class="form-control input-sm">
                                 <option value=""{{if eq .Gender ""}} selected="yes"{{end}}>All Students</option>
                                 <option value="1"{{if eq .Gender "1"}} selected="yes"{{end}}>Male</option>
@@ -92,8 +80,8 @@
 
                 <div class="row" style="margin-top: -6px;">
                     <div class="form-group form-group-sm">
-                        <label for="f_pp" class="control-label col-sm-3">Disadvantaged Students</label>
-                        <div class="col-sm-9">
+                        <label for="f_pp" class="control-label col-sm-2">Pupil Premium</label>
+                        <div class="col-sm-10">
                             <select name="pp" id="f_pp" class="form-control input-sm">
                                 <option value=""{{if eq .PP ""}} selected="yes"{{end}}>All Students</option>
                                 <option value="1"{{if eq .PP "1"}} selected="yes"{{end}}>Disadvantaged Students</option>
@@ -105,8 +93,8 @@
 
                 <div class="row" style="margin-top: -6px;">
                     <div class="form-group form-group-sm">
-                        <label for="f_eal" class="control-label col-sm-3">English as a First Language</label>
-                        <div class="col-sm-9">
+                        <label for="f_eal" class="control-label col-sm-2">EAL</label>
+                        <div class="col-sm-10">
                         <select name="eal" id="f_eal" class="form-control input-sm">
                             <option value=""{{if eq .EAL ""}} selected="yes"{{end}}>All Students</option>
                             <option value="1"{{if eq .EAL "1"}} selected="yes"{{end}}>English as an Additional Language</option>
@@ -118,8 +106,8 @@
 
                 <div class="row" style="margin-top: -6px;">
                     <div class="form-group form-group-sm">
-                        <label class="control-label col-sm-3">KS2 Band</label>
-                        <div class="col-sm-9">
+                        <label class="control-label col-sm-2">KS2 Band</label>
+                        <div class="col-sm-10">
                             <label class="checkbox-inline"><input type="checkbox" name="ks2band" value="High"{{if index .B "High"}} checked="yes"{{end}}>High</input></label>
                             <label class="checkbox-inline"><input type="checkbox" name="ks2band" value="Middle"{{if index .B "Middle"}} checked="yes"{{end}}>Middle</input></label>
                             <label class="checkbox-inline"><input type="checkbox" name="ks2band" value="Low"{{if index .B "Low"}} checked="yes"{{end}}>Low</input></label>
@@ -130,8 +118,8 @@
 
                 <div class="row" style="margin-top: -6px;">
                     <div class="form-group form-group-sm">
-                        <label class="control-label col-sm-3">SEN</label>
-                        <div class="col-sm-9">
+                        <label class="control-label col-sm-2">SEN</label>
+                        <div class="col-sm-10">
                             <label class="checkbox-inline"><input type="checkbox" name="sen" value=""{{if index .S ""}} checked="yes"{{end}}>No SEN</input></label>
                             <label class="checkbox-inline"><input type="checkbox" name="sen" value="A"{{if index .S "A"}} checked="yes"{{end}}>School Action</input></label>
                             <label class="checkbox-inline"><input type="checkbox" name="sen" value="P"{{if index .S "P"}} checked="yes"{{end}}>School Action Plus</input></label>
@@ -142,8 +130,8 @@
 
                 <div class="row" style="margin-top: -6px;">
                     <div class="form-group form-group-sm">
-                        <label class="control-label col-sm-3">Ethnicities</label>
-                        <div class="col-sm-9">
+                        <label class="control-label col-sm-2">Ethnicities</label>
+                        <div class="col-sm-10">
                             {{ $E := .E }}
                             {{ $O := .O }}
                             {{range .Ethnicities}}
@@ -156,15 +144,15 @@
                     </div>
                 </div>
                 
+            {{end}}
                 <div class="row" style="margin-top: -6px;">
                     <div class="form-group form-group-sm">
                         <div class="col-sm-10"></div>
                         <div class="col-sm-2">
-                            <input type="Submit" class="btn btn-primary btn-sm" value="Apply Filter">
+                            <input type="Submit" class="btn btn-primary btn-sm btn-block" value="Apply Filter">
                         </div>
                     </div>
                 </div>
-
             </form>
 
             <form role="form" class="form-horizontal" style="margin-top: -12px;">
@@ -172,14 +160,18 @@
                     <div class="form-group form-group-sm">
                         <div class="col-sm-10"></div>
                         <div class="col-sm-2">
-                            <input type="Submit" class="btn btn-sm" value="Reset Filter">
+                            <input type="Submit" class="btn btn-sm btn-block" value="Reset Filter">
                         </div>
                     </div>
                 </div>
             </form>
 
         </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-default btn-sm" onclick="toggle_visibility('filter_bar'); toggle_visibility('filter_form');">
+                <span class="glyphicon glyphicon-cog"> Options</span>
+            </button>
+        </div>
     </div>
-    <div class="col-sm-3"></div>
-</div>
 </div>
