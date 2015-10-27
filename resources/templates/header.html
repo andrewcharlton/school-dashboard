@@ -7,11 +7,14 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Venerable Bede - Data Dashboard</title>
 
+    <!-- Scripts -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/custom.js"></script>
+
     <!-- Bootstrap -->
     <link href="/static/css/bootstrap.css" rel="stylesheet">
 
-    <!-- Scripts -->
-    <script src="/static/js/custom.js"></script>
 </head>
 <body>
 
@@ -31,5 +34,37 @@
                 </div>
                 <input type="Submit" style="position: absolute; top: -1000px">
             </form>
+            
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Subjects <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+						<li class="dropdown-submenu">
+                            <a tabindex="-1" href="#">Mathematics</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/subjects/ks3/Mathematics/{{.Query}}">KS3</a></li>
+                                <li><a href="/subjects/ks4/Mathematics/{{.Query}}">KS4</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/subjects/English/{{.Query}}">English</a></li>
+                        <li class="divider"></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Headlines <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/summary/{{.Query}}">Summary</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/basics/{{.Query}}">English and Maths</a></li>
+                        <li><a href="/progress8/{{.Query}}">Progress 8</a></li>
+                        <li><a href="/ebacc/{{.Query}}">English Baccalaureate</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/attendance/{{.Query}}">Attendance</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </nav>

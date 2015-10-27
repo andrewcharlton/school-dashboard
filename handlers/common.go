@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"strings"
@@ -17,9 +18,11 @@ func Header(e env.Env, w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		School string
 		F      database.Filter
+		Query  template.URL
 	}{
 		e.Config.School,
 		f,
+		template.URL(r.URL.RawQuery),
 	}
 
 	err := e.Templates.ExecuteTemplate(w, "header.html", data)
