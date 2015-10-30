@@ -66,8 +66,9 @@ var sqliteStmts = map[string]string{
 
 	"student": `SELECT upn, surname, forename, year, form,
 				pp, eal, gender, ethnicity, sen_status,
-				sen_info, sen_strat, ks2_aps, ks2_band,
-				ks2_en, ks2_ma, ks2_av
+				sen_need, sen_info, sen_strat, sen_access, sen_iep, 
+				ks2_aps, ks2_band, ks2_en, ks2_ma, ks2_av, ks2_re, 
+				ks2_wr, ks2_gps
 				FROM students
 				WHERE upn=? AND date_id=?`,
 
@@ -86,7 +87,8 @@ var sqliteStmts = map[string]string{
 			   FROM students
 			   WHERE date_id=? AND
 			   (((forename || " " || surname) LIKE ?)
-				OR ((surname || ", " || forename) LIKE ?))`,
+				OR ((surname || ", " || forename) LIKE ?))
+				ORDER BY (surname || " " || forename);`,
 }
 
 // prepareStatements prepares a query statement for each sql string
@@ -366,9 +368,9 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 	ks2 := analysis.KS2Info{}
 	s := analysis.Student{}
 	err := row.Scan(&s.UPN, &s.Surname, &s.Forename, &s.Year, &s.Form,
-		&s.PP, &s.EAL, &s.Gender, &s.Ethnicity, &sen.Status, &sen.Info,
-		&sen.Strategies, &ks2.APS, &ks2.Band, &ks2.En,
-		&ks2.Ma, &ks2.Av)
+		&s.PP, &s.EAL, &s.Gender, &s.Ethnicity, &sen.Status, &sen.Need,
+		&sen.Info, &sen.Strategies, &sen.Access, &sen.IEP, &ks2.APS,
+		&ks2.Band, &ks2.En, &ks2.Ma, &ks2.Av, &ks2.Re, &ks2.Wr, &ks2.GPS)
 	if err == sql.ErrNoRows {
 		return analysis.Student{}, errors.New("Student not on roll at this date.  Try changing the date, or search for another student.")
 	}
@@ -436,6 +438,7 @@ func (db sqliteDB) Search(name, date string) ([]StudentLookup, error) {
 		}
 		s := StudentLookup{UPN: upn,
 			Name: surname + ", " + forename,
+			Year: year,
 			Form: form}
 		list = append(list, s)
 	}

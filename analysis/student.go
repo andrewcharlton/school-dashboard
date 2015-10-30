@@ -23,10 +23,12 @@ type Student struct {
 // SENInfo collects all of a student's SEN details
 // together.
 type SENInfo struct {
-	Exists     bool
 	Status     string
+	Need       string
 	Info       string
 	Strategies string
+	Access     string
+	IEP        bool
 }
 
 // KS2Info collects all of a student's KS2 scores
@@ -38,6 +40,9 @@ type KS2Info struct {
 	En     string
 	Ma     string
 	Av     string
+	Re     string
+	Wr     string
+	GPS    string
 }
 
 // A Group contains a list of students

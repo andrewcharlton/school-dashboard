@@ -28,7 +28,7 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	// Serve images
+	// Serve image files
 	is := http.FileServer(http.Dir("./images"))
 	http.Handle("/images/", http.StripPrefix("/images/", is))
 

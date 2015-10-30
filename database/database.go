@@ -65,6 +65,7 @@ type Ethnicity struct {
 type StudentLookup struct {
 	UPN  string
 	Name string
+	Year string
 	Form string
 }
 
