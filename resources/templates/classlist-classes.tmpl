@@ -1,0 +1,20 @@
+<h2>Class Lists</h2>
+
+<ul class="breadcrumb">
+		<li><a href="/classlist/?{{.Query}}">Subjects</a></li>
+		<li class="active">{{.Subject}}</li>
+</ul>
+
+<div class="row">
+		<div class="col-sm-3"></div>
+		<div class="col-sm-6">
+				{{ $q := .Query }}
+				{{ $s := .Subject }}
+				<ul class="list-group">
+						{{ range .Classes }}
+						<a class="list-group-item" href="/classlist/{{ $s }}/{{.}}/?{{ $q }}">{{.}}</a>
+						{{ end }}
+				</ul>
+		</div>
+		<div class="col-sm-3"></div>
+</div>

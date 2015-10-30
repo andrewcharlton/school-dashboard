@@ -1,0 +1,44 @@
+<h2>Class Lists</h2>
+
+<ul class="breadcrumb">
+		<li><a href="/classlist/?{{.Query}}">Subjects</a></li>
+		<li><a href="/classlist/{{.Subject}}/?{{.Query}}">{{.Subject}}</a></li>
+		<li class="active">{{.Class}}</li>
+</ul>
+
+
+<div class="row" style="min-height:700px;">
+	<div class="col-sm-1"></div>
+	<div class="col-sm-10">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#info" data-toggle="tab" aria-expanded="true">Pupil Info</a></li>
+			<li class=""><a href="#photos" data-toggle="tab" aria-expanded="false">Photos</a></li>
+			<li class=""><a href="#assessments" data-toggle="tab" aria-expanded="false">Assessment History</a></li>
+		</ul>
+
+		<div id="myTabContent" class="tab-content">
+				<div class="tab-pane fade active in" id="info">
+						<table class="table table-hover">
+								<thead>
+										<th>Name</th>
+								</thead>
+								<tbody>
+										{{ $q := .Query }}
+										{{ range .Students }}
+										<tr>
+												<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Surname}} {{.Forename}}</a></td>
+										</tr>
+										{{ end}}
+								</tbody>
+						</table>
+				</div>
+				<div class="tab-pane" id="photos">
+						Photos to go here!
+				</div>
+				<div class="tab-pane" id="assessments">
+						Assessment History to go here
+				</div>
+		</div>
+</div>
+<div class="col-sm-1"></div>
+</div>

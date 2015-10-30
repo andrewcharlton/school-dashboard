@@ -78,6 +78,21 @@ var sqliteStmts = map[string]string{
 	"classes": `SELECT subject, class, teacher FROM classes
 				WHERE upn=? AND date_id=?`,
 
+	"inClass": `SELECT upn FROM classes
+				WHERE date_id=? AND subject=? AND class=?
+				ORDER BY name`,
+
+	"subjects": `SELECT DISTINCT subject FROM subjects
+				 ORDER BY subject`,
+
+	"classlist": `SELECT DISTINCT class FROM classes
+					WHERE date_id=? AND subject=?
+					ORDER BY (
+						CASE WHEN substr(class, 1, 1) == "1"
+						THEN class
+						ELSE  "0" || class
+					END)`,
+
 	"bestExams": `SELECT subject_id, subject, grade FROM results
 				  WHERE upn=? AND is_exam=1
 				  ORDER BY points DESC`,
@@ -280,6 +295,52 @@ func (db sqliteDB) Resultsets() ([]Lookup, error) {
 	return rs, nil
 }
 
+// Subjects returns a sorted list of subjects.
+func (db sqliteDB) Subjects() ([]string, error) {
+
+	rows, err := db.stmts["subjects"].Query()
+	if err != nil {
+		return []string{}, err
+	}
+	defer rows.Close()
+
+	subjects := []string{}
+	for rows.Next() {
+		var subj string
+		if err := rows.Scan(&subj); err != nil {
+			return []string{}, err
+		}
+		subjects = append(subjects, subj)
+	}
+
+	return subjects, nil
+}
+
+// Classes returns a sorted list of classes present
+// for a subject.
+func (db sqliteDB) Classes(subject, date string) ([]string, error) {
+
+	rows, err := db.stmts["classlist"].Query(date, subject)
+	if err == sql.ErrNoRows {
+		return []string{}, errors.New("No classes present for this subject, on this date.")
+	}
+	if err != nil {
+		return []string{}, err
+	}
+	defer rows.Close()
+
+	classes := []string{}
+	for rows.Next() {
+		var class string
+		if err := rows.Scan(&class); err != nil {
+			return []string{}, err
+		}
+		classes = append(classes, class)
+	}
+
+	return classes, nil
+}
+
 // Ethnicities returns all the distinct ethnicities present in
 // the database, and the frequency that each appears with.
 // Only students who are present in listed dates are counted.
@@ -307,9 +368,26 @@ func (db sqliteDB) Ethnicities() ([]Ethnicity, error) {
 	return eth, nil
 }
 
-// Group returns a list of UPNs for students who satisfy the criteria
+// group returns a list of students loaded based upon the supplied
+// filters.
+func (db sqliteDB) group(upns []string, f StudentFilter) (analysis.Group, error) {
+
+	students := []analysis.Student{}
+	for _, upn := range upns {
+		sf := StudentFilter{upn, f.Date, f.Resultset}
+		student, err := db.Student(sf)
+		if err != nil {
+			return analysis.Group{}, err
+		}
+		students = append(students, student)
+	}
+
+	return analysis.Group{students}, nil
+}
+
+// Group returns a group of students who satisfy the criteria
 // specified in the filter.
-func (db sqliteDB) Group(f Filter) (analysis.Group, error) {
+func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 
 	query := fmt.Sprintf(`SELECT upn FROM students WHERE date = %v`, f.Date)
 
@@ -349,17 +427,29 @@ func (db sqliteDB) Group(f Filter) (analysis.Group, error) {
 		upns = append(upns, upn)
 	}
 
-	students := []analysis.Student{}
-	for _, upn := range upns {
-		sf := StudentFilter{upn, f.Date, f.Resultset}
-		student, err := db.Student(sf)
-		if err != nil {
+	return db.group(upns, StudentFilter{"", f.Date, f.Resultset})
+}
+
+// GroupByClass returns a group of students who are present in the
+// subject/class specified at the particular date.
+func (db sqliteDB) GroupByClass(subject, class string, f Filter) (analysis.Group, error) {
+
+	rows, err := db.stmts["inClass"].Query(f.Date, subject, class)
+	if err != nil {
+		return analysis.Group{}, err
+	}
+	defer rows.Close()
+
+	upns := []string{}
+	for rows.Next() {
+		var upn string
+		if err := rows.Scan(&upn); err != nil {
 			return analysis.Group{}, err
 		}
-		students = append(students, student)
+		upns = append(upns, upn)
 	}
 
-	return analysis.Group{students}, nil
+	return db.group(upns, StudentFilter{"", f.Date, f.Resultset})
 }
 
 // Student creates a student object based on the
