@@ -25,7 +25,7 @@ func (s slots) Swap(i, j int) {
 func (s slots) Less(i, j int) bool {
 
 	if s[i].Points == s[j].Points {
-		return s[i].Subj < s[j].Subj
+		return s[i].Subj > s[j].Subj
 	}
 
 	return s[i].Points < s[j].Points

@@ -58,7 +58,7 @@
         <ul class="nav nav-tabs">
             <li class="active"><a href="#ks2" data-toggle="tab" aria-expanded="true">KS2</a></li>
             <li class=""><a href="#sen" data-toggle="tab" aria-expanded="false">SEN</a></li>
-            {{ if eq .Year 11 }}
+            {{ if eq .Year 10 11 }}
             <li class=""><a href="#headlines" data-toggle="tab" aria-expaanded="false">Headlines</a></li>
             <li class=""><a href="#progress8" data-toggle="tab" aria-expaanded="false">Progress 8</a></li>
             {{ end }}
@@ -144,7 +144,7 @@
                     <tbody>
                 </table>
             </div>
-            {{ if eq .Year 11 }}
+            {{ if eq .Year 10 11 }}
             <div class="tab-pane fade" id="headlines">
                 Headlines!
             </div>
