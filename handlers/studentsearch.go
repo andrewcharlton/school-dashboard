@@ -58,7 +58,7 @@ func Search(e env.Env) http.HandlerFunc {
 			list,
 		}
 
-		err = e.Templates.ExecuteTemplate(w, "studentsearch.html", data)
+		err = e.Templates.ExecuteTemplate(w, "studentsearch.tmpl", data)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 		}

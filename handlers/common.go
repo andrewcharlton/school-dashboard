@@ -25,7 +25,7 @@ func Header(e env.Env, w http.ResponseWriter, r *http.Request) {
 		template.URL(r.URL.RawQuery),
 	}
 
-	err := e.Templates.ExecuteTemplate(w, "header.html", data)
+	err := e.Templates.ExecuteTemplate(w, "header.tmpl", data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func Header(e env.Env, w http.ResponseWriter, r *http.Request) {
 // Footer writes the common html page header and menu bars
 func Footer(e env.Env, w http.ResponseWriter, r *http.Request) {
 
-	err := e.Templates.ExecuteTemplate(w, "footer.html", e)
+	err := e.Templates.ExecuteTemplate(w, "footer.tmpl", e)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -127,7 +127,7 @@ func FilterPage(e env.Env, w http.ResponseWriter, r *http.Request, short bool) {
 		data.S[s] = true
 	}
 
-	err := e.Templates.ExecuteTemplate(w, "filter.html", data)
+	err := e.Templates.ExecuteTemplate(w, "filter.tmpl", data)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 	}

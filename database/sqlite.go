@@ -72,8 +72,11 @@ var sqliteStmts = map[string]string{
 				FROM students
 				WHERE upn=? AND date_id=?`,
 
-	"results": `SELECT subject_id, subject, grade FROM results
+	"results": `SELECT subject_id, subject, grade, effort FROM results
 				WHERE upn=? AND resultset=?`,
+
+	"classes": `SELECT subject, class, teacher FROM classes
+				WHERE upn=? AND date_id=?`,
 
 	"bestExams": `SELECT subject_id, subject, grade FROM results
 				  WHERE upn=? AND is_exam=1
@@ -362,8 +365,8 @@ func (db sqliteDB) Group(f Filter) (analysis.Group, error) {
 // Student creates a student object based on the
 func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 
+	// Load student details
 	row := db.stmts["student"].QueryRow(f.UPN, f.Date)
-
 	sen := analysis.SENInfo{}
 	ks2 := analysis.KS2Info{}
 	s := analysis.Student{}
@@ -398,9 +401,9 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 
 	s.Courses = map[string]analysis.Course{}
 	for rows.Next() {
-		var subjID int
+		var subjID, effort int
 		var subj, grade string
-		err := rows.Scan(&subjID, &subj, &grade)
+		err := rows.Scan(&subjID, &subj, &grade, &effort)
 		if err != nil {
 			return analysis.Student{}, err
 		}
@@ -412,8 +415,28 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 		}
 
 		subject := db.subjects[subjID]
-		c := analysis.Course{subject, subject.Gradeset[grade]}
+		c := analysis.Course{subject, subject.Gradeset[grade], effort, "", ""}
 		s.Courses[subj] = c
+	}
+
+	// Load class data
+	rows, err = db.stmts["classes"].Query(f.UPN, f.Date)
+	if err != nil {
+		return analysis.Student{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var subj, class, teacher string
+		err := rows.Scan(&subj, &class, &teacher)
+		if err != nil {
+			return analysis.Student{}, nil
+		}
+		if c, exists := s.Courses[subj]; exists {
+			c.Class = class
+			c.Teacher = teacher
+			s.Courses[subj] = c
+		}
 	}
 
 	return s, nil

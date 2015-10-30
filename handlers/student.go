@@ -37,7 +37,7 @@ func Student(e env.Env) http.HandlerFunc {
 			return
 		}
 
-		e.Templates.ExecuteTemplate(w, "student.html", s)
+		e.Templates.ExecuteTemplate(w, "student.tmpl", s)
 
 		Footer(e, w, r)
 	}

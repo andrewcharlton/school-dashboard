@@ -84,7 +84,7 @@ func (e *Env) LoadTemplates() error {
 
 	// Check they are .html and give full path back
 	for _, f := range files {
-		if strings.Contains(f.Name(), ".html") {
+		if strings.Contains(f.Name(), ".tmpl") {
 			filenames = append(filenames, "templates/"+f.Name())
 		}
 	}

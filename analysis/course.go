@@ -58,10 +58,9 @@ type Grade struct {
 // A Course brings together a subject and the grade
 // achieved in that subject.
 type Course struct {
-
-	// The subject being studied
 	*Subject
-
-	// The grade achieved
 	*Grade
+	Effort  int
+	Class   string
+	Teacher string
 }
