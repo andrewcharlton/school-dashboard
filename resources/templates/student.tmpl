@@ -175,7 +175,7 @@
 				Headlines!
 			</div>
 			<div class="tab-pane fade" id="progress8">
-				{{ $b := .Basket }}
+				{{ with .Basket }}
 				<table class="table table-striped table-hover">
 					<thead>
 						<tr>
@@ -188,7 +188,7 @@
 					<tbody>
 						<tr>
 							<td>Mathematics</td>
-							{{with (index $b 0)}}
+							{{with (index .Slots 0)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -196,7 +196,7 @@
 						</tr>
 						<tr>
 							<td>Mathematics</td>
-							{{with (index $b 1)}}
+							{{with (index .Slots 1)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -204,7 +204,7 @@
 						</tr>
 						<tr>
 							<td>English</td>
-							{{with (index $b 2)}}
+							{{with (index .Slots 2)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -212,7 +212,7 @@
 						</tr>
 						<tr>
 							<td>English</td>
-							{{with (index $b 3)}}
+							{{with (index .Slots 3)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -220,7 +220,7 @@
 						</tr>
 						<tr>
 							<td>EBacc 1</td>
-							{{with (index $b 4)}}
+							{{with (index .Slots 4)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -228,7 +228,7 @@
 						</tr>
 						<tr>
 							<td>EBacc 2</td>
-							{{with (index $b 5)}}
+							{{with (index .Slots 5)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -236,7 +236,7 @@
 						</tr>
 						<tr>
 							<td>EBacc 3</td>
-							{{with (index $b 6)}}
+							{{with (index .Slots 6)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -244,7 +244,7 @@
 						</tr>
 						<tr>
 							<td>Other 1</td>
-							{{with (index $b 7)}}
+							{{with (index .Slots 7)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -252,7 +252,7 @@
 						</tr>
 						<tr>
 							<td>Other 2</td>
-							{{with (index $b 8)}}
+							{{with (index .Slots 8)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -260,7 +260,7 @@
 						</tr>
 						<tr>
 							<td>Other 3</td>
-							{{with (index $b 9)}}
+							{{with (index .Slots 9)}}
 							<td>{{.Subj}}</td>
 							<td>{{.Grade}}</td>
 							<td>{{.Points}}</td>
@@ -268,12 +268,13 @@
 						</tr>
 						<tr class="success">
 							<td>Total</td>
-							<td>{{$b.Entries}} Entries</td>
+							<td>{{.Entries}} Entries</td>
 							<td></td>
-							<td>{{$b.TotalPoints}}</td>
+							<td>{{.TotalPoints}}</td>
 						</tr>
 					</tbody>
 				</table>
+				{{ end }}
 			</div>
 			{{end}}
 			<div class="tab-pane fade" id="attendance">

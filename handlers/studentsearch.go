@@ -16,9 +16,7 @@ func SearchRedirect() http.HandlerFunc {
 
 		query := r.URL.Query()
 		name := query.Get("name")
-
-		query.Del("name")
-		url := "/search/" + name + "/?" + query.Encode()
+		url := "/search/" + name + "/?" + ShortenQuery(query)
 
 		http.Redirect(w, r, url, 301)
 	}

@@ -1,18 +1,11 @@
 <div class="row" id="filter_bar" style="display: block;">
-	<div class="col-sm-11">
-		<!--
-		<div class="bs-component">
-			{{range .Labels}}
-			<span class="label label-default">{{.}}</span>
-			{{end}}
-		</div>
-		-->
+	<div class="col-sm-10">
 		{{range .Labels}}
-		<a href="#" class="btn btn-primary btn-sm disabled">{{.}}</a>
+		<a href="#" class="btn btn-primary btn-sm disabled" style="margin-bottom: 2px;">{{.}}</a>
 		{{end}}
 	</div>
-	<div class="col-sm-1">
-		<button type="button" class="btn btn-primary btn-sm" onclick="toggle_visibility('filter_bar'); toggle_visibility('filter_form');">
+	<div class="col-sm-2">
+		<button type="button" class="btn btn-primary btn-sm pull-right" onclick="toggle_visibility('filter_bar'); toggle_visibility('filter_form');">
 			<span class="glyphicon glyphicon-cog"> Options</span>
 		</button>
 	</div>
@@ -49,17 +42,33 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="row">
+				<div class="form-group form-group-sm">
+					<label for="f_natyear" class="control-label col-sm-2">National Data</label>
+					<div class="col-sm-10">
+						<select name="natyear" id="f_resultset" class="form-control input-sm">
+							{{$rs := .NatYear}}
+							{{range .NatYears}}
+								<option value="{{.ID}}"{{if eq .ID $rs}} selected="yes"{{end}}>{{.Name}}</option>
+							{{end}}
+						</select>
+					</div>
+				</div>
+			</div>
 			
 			{{if not .Short}}
 			<div class="row" style="margin-top: -6px;">
 				<div class="form-group form-group-sm">
-					<label class="control-label col-sm-2">Yeargroups</label>
+					<label for="f_yeargroup" class="control-label col-sm-2">Yeargroup</label>
 					<div class="col-sm-10">
-						<label class="checkbox-inline"><input type="checkbox" name="year" value="11"{{if index .Y "11"}} checked="yes"{{end}}>11</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="year" value="10"{{if index .Y "10"}} checked="yes"{{end}}>10</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="year" value="9"{{if index .Y "9"}} checked="yes"{{end}}>9</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="year" value="8"{{if index .Y "8"}} checked="yes"{{end}}>8</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="year" value="7"{{if index .Y "7"}} checked="yes"{{end}}>7</input></label>
+						<select name="year" id="f_resultset" class="form-control input-sm">
+								<option value="7"{{if eq .Year "7"}} selected="yes"{{end}}>7</option>
+								<option value="8"{{if eq .Year "8"}} selected="yes"{{end}}>8</option>
+								<option value="9"{{if eq .Year "9"}} selected="yes"{{end}}>9</option>
+								<option value="10"{{if eq .Year "10"}} selected="yes"{{end}}>10</option>
+								<option value="11"{{if eq .Year "11"}} selected="yes"{{end}}>11</option>
+						</select>
 					</div>
 				</div>
 			</div>

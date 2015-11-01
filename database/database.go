@@ -7,7 +7,10 @@
 // queries.
 package database
 
-import "github.com/andrewcharlton/school-dashboard/analysis"
+import (
+	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/national"
+)
 
 // A Database provides a wrapper to the database
 // connection and provides methods to query it.
@@ -56,6 +59,13 @@ type Database interface {
 	// Classes returns a list of classes that exist for a subject,
 	// at a particular date (date_id should be provided).
 	Classes(subject, date string) ([]string, error)
+
+	// NationalYears returns a sorted list of all years
+	// for which national data is available
+	NationalYears() ([]Lookup, error)
+
+	// National returns a set of national data for the given year.
+	National(yearID string) (national.National, error)
 }
 
 // A Lookup holds an ID/Name pair for an item in the database.
@@ -90,8 +100,10 @@ type Filter struct {
 	// Which set of assessment results to use.
 	// Holds id number as above.
 	Resultset string
-	// Which yeargroups to include in the group
-	Years []string
+	// Which year to use for national data comparisons.
+	NatYear string
+	// Which yeargroup to include in the group
+	Year string
 	// Pupil premium: "", "1", or "0" for Any/True/False
 	PP string
 	// EAL students: "", "1", or "0" for Any/True/False
@@ -127,13 +139,15 @@ type Config struct {
 	// Default filter options
 	Date      string
 	Resultset string
-	Years     []string
+	NatYear   string
+	Year      string
 }
 
 func (cfg Config) DefaultFilter() Filter {
 
 	return Filter{Date: cfg.Date,
 		Resultset: cfg.Resultset,
-		Years:     cfg.Years,
+		NatYear:   cfg.NatYear,
+		Year:      cfg.Year,
 	}
 }

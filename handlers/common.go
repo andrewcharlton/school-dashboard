@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/database"
@@ -53,7 +54,8 @@ func GetFilter(e env.Env, r *http.Request) database.Filter {
 	f := database.Filter{}
 	f.Date = query.Get("date")
 	f.Resultset = query.Get("resultset")
-	f.Years = query["year"]
+	f.NatYear = query.Get("natyear")
+	f.Year = query.Get("year")
 	f.PP = query.Get("pp")
 	f.EAL = query.Get("eal")
 	f.Gender = query.Get("gender")
@@ -89,8 +91,8 @@ func FilterPage(e env.Env, w http.ResponseWriter, r *http.Request, short bool) {
 		database.Filter
 		Dates       []database.Lookup
 		Resultsets  []database.Lookup
+		NatYears    []database.Lookup
 		Ethnicities []string
-		Y           map[string]bool //Years ticked
 		B           map[string]bool //KS2Bands ticked
 		E           map[string]bool //Ethnicities checked
 		O           map[string]bool //Ethnicities in the "Other" category
@@ -101,18 +103,14 @@ func FilterPage(e env.Env, w http.ResponseWriter, r *http.Request, short bool) {
 		f,
 		e.Dates,
 		e.Resultsets,
+		e.NatYears,
 		e.Ethnicities,
-		map[string]bool{},
 		map[string]bool{},
 		map[string]bool{},
 		e.OtherEths,
 		map[string]bool{},
 		FilterLabels(e, f, short),
 		short,
-	}
-
-	for _, y := range f.Years {
-		data.Y[y] = true
 	}
 
 	for _, b := range f.KS2Bands {
@@ -140,7 +138,7 @@ func FilterLabels(e env.Env, f database.Filter, short bool) []string {
 
 	// Lookup date and resultset names
 	// Lookup date and resultset names
-	date, rs := "", ""
+	var date, rs, nat string
 	for _, d := range e.Dates {
 		if d.ID == f.Date {
 			date = d.Name
@@ -152,17 +150,21 @@ func FilterLabels(e env.Env, f database.Filter, short bool) []string {
 			rs = r.Name
 		}
 	}
+	for _, r := range e.NatYears {
+		if r.ID == f.NatYear {
+			nat = r.Name
+		}
+	}
 
 	labels = append(labels, "Date: "+date)
 	labels = append(labels, "Resultset: "+rs)
+	labels = append(labels, "National: "+nat)
 
 	if short {
 		return labels
 	}
 
-	if len(f.Years) >= 1 {
-		labels = append(labels, "Years: "+strings.Join(f.Years, ", "))
-	}
+	labels = append(labels, "Yeargroup: "+f.Year)
 
 	switch f.Gender {
 	case "1":
@@ -206,9 +208,47 @@ func FilterLabels(e env.Env, f database.Filter, short bool) []string {
 	return labels
 }
 
-// PageNotFound writes a 'Page not found error'
-func PageNotFound(w http.ResponseWriter) {
+// ShortenQuery removes all group filtering options, leaving
+// just date, resultset and national yeargroup options.
+func ShortenQuery(query url.Values) string {
 
-	fmt.Fprintf(w, "<h4>Error: 404</h4><br>Page not found.")
+	del := []string{}
+	for key, _ := range query {
+		switch key {
+		case "date", "resultset", "natyear":
+			continue
+		default:
+			del = append(del, key)
+		}
+	}
 
+	for _, key := range del {
+		query.Del(key)
+	}
+
+	return query.Encode()
+
+}
+
+// LengthenQuery adds any default filtering options if they are
+// not already present.
+func LengthenQuery(e env.Env, query url.Values) string {
+
+	if _, exists := query["date"]; !exists {
+		query.Add("date", e.Config.Date)
+	}
+
+	if _, exists := query["resultset"]; !exists {
+		query.Add("resultset", e.Config.Resultset)
+	}
+
+	if _, exists := query["natyear"]; !exists {
+		query.Add("natyear", e.Config.NatYear)
+	}
+
+	if _, exists := query["year"]; !exists {
+		query.Add("year", e.Config.Year)
+	}
+
+	return query.Encode()
 }

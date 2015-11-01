@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/national"
 )
 
 // An Env contains all of the environment variables
@@ -29,6 +30,10 @@ type Env struct {
 	// OtherEths tells us whether an ethnicity should
 	// be collapsed into the 'Other' category.
 	OtherEths map[string]bool
+
+	// National Data for each year
+	NatYears  []database.Lookup
+	Nationals map[string]national.National
 }
 
 // Connect to the database and initialise all
@@ -41,18 +46,19 @@ func Connect(filename string) (Env, error) {
 	}
 
 	e := Env{DB: db}
-	err = e.LoadConfig()
-	if err != nil {
+	if err = e.LoadConfig(); err != nil {
 		return Env{}, err
 	}
 
-	err = e.LoadTemplates()
-	if err != nil {
+	if err = e.LoadTemplates(); err != nil {
 		return Env{}, err
 	}
 
-	err = e.LoadFilterItems()
-	if err != nil {
+	if err = e.LoadFilterItems(); err != nil {
+		return Env{}, err
+	}
+
+	if err = e.LoadNationals(); err != nil {
 		return Env{}, err
 	}
 
@@ -129,6 +135,27 @@ func (e *Env) LoadFilterItems() error {
 			e.OtherEths[eth.Name] = true
 		}
 		e.Ethnicities = append(e.Ethnicities, "Other")
+	}
+
+	return nil
+}
+
+// LoadNational result data
+func (e *Env) LoadNationals() error {
+
+	years, err := e.DB.NationalYears()
+	if err != nil {
+		return err
+	}
+	e.NatYears = years
+
+	e.Nationals = map[string]national.National{}
+	for _, y := range years {
+		nat, err := e.DB.National(y.ID)
+		if err != nil {
+			return err
+		}
+		e.Nationals[y.ID] = nat
 	}
 
 	return nil

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/national"
 	_ "github.com/mattn/go-sqlite3" // SQL Driver
 )
 
@@ -262,8 +263,8 @@ func (db sqliteDB) Config() (Config, error) {
 			cfg.Date = value
 		case "Resultset":
 			cfg.Resultset = value
-		case "Years":
-			cfg.Years = strings.Split(value, ",")
+		case "Year":
+			cfg.Year = value
 		}
 	}
 	return cfg, nil
@@ -389,11 +390,10 @@ func (db sqliteDB) group(upns []string, f StudentFilter) (analysis.Group, error)
 // specified in the filter.
 func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 
-	query := fmt.Sprintf(`SELECT upn FROM students WHERE date = %v`, f.Date)
+	query := fmt.Sprintf(`SELECT upn FROM students
+						  WHERE date = %v and year=?`,
+		f.Date, f.Year)
 
-	if len(f.Years) > 0 {
-		query += " AND (year IN (" + strings.Join(f.Years, ", ") + ")"
-	}
 	if f.PP != "" {
 		query += fmt.Sprintf(" AND pp = %v", f.PP)
 	}
@@ -557,4 +557,54 @@ func (db sqliteDB) Search(name, date string) ([]StudentLookup, error) {
 	}
 
 	return list, nil
+}
+
+// NationalYears returns a list of years where national data is
+// available in the database.
+func (db sqliteDB) NationalYears() ([]Lookup, error) {
+
+	rows, err := db.conn.Query(`SELECT id, year FROM nat_years`)
+	if err != nil {
+		return []Lookup{}, err
+	}
+	defer rows.Close()
+
+	years := []Lookup{}
+	for rows.Next() {
+		var id, year string
+		err := rows.Scan(&id, &year)
+		if err != nil {
+			return []Lookup{}, err
+		}
+		years = append(years, Lookup{id, year})
+	}
+
+	return years, nil
+}
+
+// National returns a set of national data for the given year.
+func (db sqliteDB) National(yearID string) (national.National, error) {
+
+	// Load attainment 8 data
+	rows, err := db.conn.Query(`SELECT ks2, att8 FROM nat_progress8
+								WHERE year_ID=?`, yearID)
+	if err != nil {
+		return national.National{}, err
+	}
+	defer rows.Close()
+
+	att8 := map[string]float64{}
+	for rows.Next() {
+		var ks2 string
+		var a8 float64
+		err := rows.Scan(&ks2, &a8)
+		if err != nil {
+			return national.National{}, err
+		}
+		att8[ks2] = a8
+	}
+
+	nat := national.National{att8}
+
+	return nat, nil
 }

@@ -1,6 +1,10 @@
 package analysis
 
-import "sort"
+import (
+	"sort"
+
+	"github.com/andrewcharlton/school-dashboard/national"
+)
 
 // A Slot holds the details of the subjects and grades
 // in the basket.
@@ -33,7 +37,10 @@ func (s slots) Less(i, j int) bool {
 
 // A Basket holds the details of all of the subjects
 // that are present in a student's attainment 8 score.
-type Basket [10]Slot
+type Basket struct {
+	Slots [10]Slot
+	ks2   float64
+}
 
 // Basket calculates the contents of the students Progress 8
 // 'basket', containing Maths, English, 3xEBacc subjects,
@@ -41,7 +48,7 @@ type Basket [10]Slot
 func (s Student) Basket() Basket {
 
 	used := map[string]bool{}
-	b := Basket{}
+	b := Basket{ks2: s.KS2.APS}
 
 	// Maths baskets
 	maths := slots{}
@@ -52,8 +59,8 @@ func (s Student) Basket() Basket {
 	}
 	sort.Sort(sort.Reverse(maths))
 	if len(maths) > 0 {
-		b[0] = maths[0]
-		b[1] = maths[0]
+		b.Slots[0] = maths[0]
+		b.Slots[1] = maths[0]
 		used[maths[0].Subj] = true
 	}
 
@@ -74,9 +81,9 @@ func (s Student) Basket() Basket {
 	sort.Sort(sort.Reverse(eng))
 	if len(eng) > 0 {
 		used[eng[0].Subj] = true
-		b[2] = eng[0]
+		b.Slots[2] = eng[0]
 		if lang && lit {
-			b[3] = eng[0]
+			b.Slots[3] = eng[0]
 		}
 	}
 
@@ -93,7 +100,7 @@ func (s Student) Basket() Basket {
 			break
 		}
 		used[e.Subj] = true
-		b[n+4] = e
+		b.Slots[n+4] = e
 	}
 
 	// Others
@@ -108,7 +115,7 @@ func (s Student) Basket() Basket {
 		if n >= 3 {
 			break
 		}
-		b[n+7] = o
+		b.Slots[n+7] = o
 	}
 
 	return b
@@ -118,7 +125,7 @@ func (s Student) Basket() Basket {
 func (b Basket) TotalPoints() float64 {
 
 	points := float64(0)
-	for _, slot := range b {
+	for _, slot := range b.Slots {
 		points += slot.Points
 	}
 	return points
@@ -128,10 +135,23 @@ func (b Basket) TotalPoints() float64 {
 func (b Basket) Entries() int {
 
 	entries := 0
-	for _, slot := range b {
+	for _, slot := range b.Slots {
 		if slot.Points > 0 {
 			entries++
 		}
 	}
 	return entries
+}
+
+// Progress 8 calculates a progress 8 score for the student,
+// compared to the national data provided.
+func (b Basket) Progress8(nat national.National) Result {
+
+	actual := b.TotalPoints()
+	exp, err := nat.Attainment8(b.ks2)
+	if err != nil {
+		return Result{Error: err}
+	}
+
+	return Result{Points: (actual - exp) / 10, Error: nil}
 }

@@ -98,7 +98,7 @@ func studentlist(e env.Env, w http.ResponseWriter, r *http.Request, subj, class 
 	}{
 		subj,
 		class,
-		template.URL(r.URL.RawQuery),
+		template.URL(ShortenQuery(r.URL.Query())),
 		g.Students,
 	}
 
