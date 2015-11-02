@@ -21,12 +21,24 @@
 						<table class="table table-hover">
 								<thead>
 										<th>Name</th>
+										<th>Gender</th>
+										<th>KS2 Average</th>
+										<th>Pupil Premium</th>
+										<th>SEN</th>
+										<th>Attendance</th>
 								</thead>
 								<tbody>
 										{{ $q := .Query }}
 										{{ range .Students }}
 										<tr>
-												<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Surname}} {{.Forename}}</a></td>
+												<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Surname}}, {{.Forename}}</a></td>
+												<td>{{.Gender}}</td>
+												<td>{{.KS2.Av}}</td>
+												<td>{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
+														{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
+														{{end}}</td>
+												<td>{{.SEN.Status}}</td>
+												<td></td>
 										</tr>
 										{{ end}}
 								</tbody>

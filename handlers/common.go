@@ -1,3 +1,5 @@
+// Package handlers provides handlers for each of the different
+// web pages needed by the dashboard applicaton.
 package handlers
 
 import (
@@ -11,6 +13,18 @@ import (
 	"github.com/andrewcharlton/school-dashboard/database"
 	"github.com/andrewcharlton/school-dashboard/env"
 )
+
+// Redirect routes back to the homepage.
+func Redirect(e env.Env) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Println("Redirect being called!")
+		query := ShortenQuery(e, r.URL.Query())
+		url := "/index/?" + query
+		http.Redirect(w, r, url, 301)
+
+	}
+}
 
 // Header writes the common html page header and menu bars
 func Header(e env.Env, w http.ResponseWriter, r *http.Request) {
@@ -209,13 +223,14 @@ func FilterLabels(e env.Env, f database.Filter, short bool) []string {
 }
 
 // ShortenQuery removes all group filtering options, leaving
-// just date, resultset and national yeargroup options.
-func ShortenQuery(query url.Values) string {
+// just date, resultset and national/yeargroup options.
+// If these are not present, adds in default options.
+func ShortenQuery(e env.Env, query url.Values) string {
 
 	del := []string{}
 	for key, _ := range query {
 		switch key {
-		case "date", "resultset", "natyear":
+		case "date", "resultset", "natyear", "year":
 			continue
 		default:
 			del = append(del, key)
@@ -226,8 +241,7 @@ func ShortenQuery(query url.Values) string {
 		query.Del(key)
 	}
 
-	return query.Encode()
-
+	return LengthenQuery(e, query)
 }
 
 // LengthenQuery adds any default filtering options if they are

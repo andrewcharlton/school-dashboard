@@ -10,13 +10,13 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func SearchRedirect() http.HandlerFunc {
+func SearchRedirect(e env.Env) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		query := r.URL.Query()
 		name := query.Get("name")
-		url := "/search/" + name + "/?" + ShortenQuery(query)
+		url := "/search/" + name + "/?" + ShortenQuery(e, query)
 
 		http.Redirect(w, r, url, 301)
 	}

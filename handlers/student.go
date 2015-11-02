@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/andrewcharlton/school-dashboard/analysis"
 	"github.com/andrewcharlton/school-dashboard/database"
 	"github.com/andrewcharlton/school-dashboard/env"
+	"github.com/andrewcharlton/school-dashboard/national"
 )
 
 func Student(e env.Env) http.HandlerFunc {
@@ -37,7 +39,15 @@ func Student(e env.Env) http.HandlerFunc {
 			return
 		}
 
-		e.Templates.ExecuteTemplate(w, "student.tmpl", s)
+		data := struct {
+			Student analysis.Student
+			Nat     national.National
+		}{
+			s,
+			e.Nationals[query.Get("natyear")],
+		}
+
+		e.Templates.ExecuteTemplate(w, "student.tmpl", data)
 
 		Footer(e, w, r)
 	}

@@ -34,9 +34,10 @@ func main() {
 
 	// Handlers
 	http.HandleFunc("/index/", handlers.Index(env))
+	http.HandleFunc("/effort/", handlers.Effort(env))
 	http.HandleFunc("/classlist/", handlers.ClassList(env))
 	http.HandleFunc("/students/", handlers.Student(env))
-	http.HandleFunc("/studentsearch/", handlers.SearchRedirect())
+	http.HandleFunc("/studentsearch/", handlers.SearchRedirect(env))
 	http.HandleFunc("/search/", handlers.Search(env))
 
 	// Start server

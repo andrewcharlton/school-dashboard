@@ -5,6 +5,7 @@ package analysis
 type Result struct {
 	Entered  bool
 	Achieved bool
+	Expected float64
 	Points   float64
 	Error    error
 }

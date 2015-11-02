@@ -263,6 +263,8 @@ func (db sqliteDB) Config() (Config, error) {
 			cfg.Date = value
 		case "Resultset":
 			cfg.Resultset = value
+		case "NatYear":
+			cfg.NatYear = value
 		case "Year":
 			cfg.Year = value
 		}
@@ -391,7 +393,7 @@ func (db sqliteDB) group(upns []string, f StudentFilter) (analysis.Group, error)
 func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 
 	query := fmt.Sprintf(`SELECT upn FROM students
-						  WHERE date = %v and year=?`,
+						  WHERE date_id = %v and year= %v`,
 		f.Date, f.Year)
 
 	if f.PP != "" {

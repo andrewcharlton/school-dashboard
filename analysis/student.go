@@ -20,6 +20,13 @@ type Student struct {
 	Courses   map[string]Course
 }
 
+// Names returns the student's name, formatted as
+// Surname, Forename
+func (s Student) Name() string {
+
+	return s.Surname + ", " + s.Forename
+}
+
 // SENInfo collects all of a student's SEN details
 // together.
 type SENInfo struct {
