@@ -60,17 +60,19 @@
 		<ul class="nav nav-tabs">
 			<li class="active"><a href="#ks2" data-toggle="tab" aria-expanded="true">KS2</a></li>
 			<li class=""><a href="#sen" data-toggle="tab" aria-expanded="false">SEN</a></li>
-			<li class=""><a href="#attendance" data-toggle="tab" aria-expanded="false">Attendance</a></li>
+			<li class="disabled"><a href="#attendance" data-toggle="tab" aria-expanded="false">Attendance</a></li>
 			<li class=""><a href="#results" data-toggle="tab" aria-expanded="false">Latest Assessments</a></li>
 			{{ if eq .Year 10 11 }}
-			<li class=""><a href="#headlines" data-toggle="tab" aria-expaanded="false">Headlines</a></li>
+			<li class="disabled"><a href="#headlines" data-toggle="tab" aria-expaanded="false">Headlines</a></li>
 			<li class=""><a href="#progress8" data-toggle="tab" aria-expaanded="false">Progress 8</a></li>
 			{{ end }}
 			<li class="dropdown">
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">Subjects <span class="caret"></span></a>
 				<ul class="dropdown-menu">
+				  <!--
 					<li class=""><a href="#Mathematics" data-toggle="tab" aria-expanded="false">Mathematics</a></li>
 					<li class=""><a href="#English" data-toggle="tab" aria-expanded="false">English</a></li>
+					-->
 				</ul>
 			</li>
 		</ul>
