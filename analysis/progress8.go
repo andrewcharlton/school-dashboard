@@ -153,5 +153,5 @@ func (b Basket) Progress8(nat national.National) Result {
 		return Result{Error: err}
 	}
 
-	return Result{Expected: exp, Points: (actual - exp) / 10, Error: nil}
+	return Result{Exp: exp, Pts: (actual - exp) / 10, Error: nil}
 }

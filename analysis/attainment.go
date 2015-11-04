@@ -20,23 +20,23 @@ func (s Student) Basics() Result {
 		}
 	}
 
-	return Results{Achieved: eng && maths}
+	return Result{AchB: eng && maths}
 }
 
 // Basics calculates the percentages of students in the group
 // achieving a Level 2 Pass in both English and Maths,
-func (g Group) Basics() Results {
+func (g Group) Basics() Result {
 
 	passes, entered := 0, 0
 	for _, s := range g.Students {
-		if s.Basics().Achieved {
+		if s.Basics().AchB {
 			passes += 1
 		}
 		entered += 1
 	}
 
 	if entered == 0 {
-		return Result{Points: float64(0), Error: errors.New("No students in group")}
+		return Result{AchP: float64(0), Error: errors.New("No students in group")}
 	}
-	return Result{Points: float64(passes) / float64(entered), Error: nil}
+	return Result{AchP: float64(passes) / float64(entered), Error: nil}
 }

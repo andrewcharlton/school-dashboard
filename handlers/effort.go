@@ -47,7 +47,7 @@ func Effort(e env.Env) http.HandlerFunc {
 			}
 
 			b := s.Basket()
-			eff.Prog8 = b.Progress8(nat).Points
+			eff.Prog8 = b.Progress8(nat).Pts
 			prog8 += eff.Prog8
 
 			efforts = append(efforts, eff)
