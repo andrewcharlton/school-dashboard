@@ -1,2 +1,6 @@
 # Ignore generated tags file
 tags
+
+resources/school.db
+resources/images/*
+

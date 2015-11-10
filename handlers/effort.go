@@ -8,14 +8,6 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-type effort struct {
-	UPN     string
-	Name    string
-	Scores  map[int]int
-	Average float64
-	Prog8   float64
-}
-
 func Effort(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -29,6 +21,14 @@ func Effort(e env.Env) http.HandlerFunc {
 		}
 
 		nat := e.Nationals[f.NatYear]
+
+		type effort struct {
+			UPN     string
+			Name    string
+			Scores  map[int]int
+			Average float64
+			Prog8   float64
+		}
 
 		efforts := []effort{}
 		prog8 := float64(0)

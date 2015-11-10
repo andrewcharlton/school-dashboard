@@ -414,6 +414,8 @@ func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 	if len(f.KS2Bands) > 0 {
 		query += fmt.Sprintf(" AND ks2_band IN (" + strings.Join(f.KS2Bands, ", ") + ")")
 	}
+	query += ` ORDER BY (surname || " " || forename)`
+
 	rows, err := db.conn.Query(query)
 	if err != nil {
 		return analysis.Group{}, err

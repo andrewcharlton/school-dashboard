@@ -38,5 +38,6 @@ func (g Group) Basics() Result {
 	if entered == 0 {
 		return Result{AchP: float64(0), Error: errors.New("No students in group")}
 	}
-	return Result{AchP: float64(passes) / float64(entered), Error: nil}
+	return Result{EntN: entered, AchN: passes,
+		AchP: float64(passes) / float64(entered), Error: nil}
 }
