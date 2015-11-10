@@ -406,15 +406,17 @@ func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 		query += fmt.Sprintf(" AND gender = %v", f.Gender)
 	}
 	if len(f.SEN) > 0 {
-		query += fmt.Sprintf(" AND sen IN (" + strings.Join(f.SEN, ", ") + ")")
+		query += fmt.Sprintf(` AND sen IN ("` + strings.Join(f.SEN, `", "`) + `")`)
 	}
 	if len(f.Ethnicities) > 0 {
-		query += fmt.Sprintf(" AND ethnicity IN (" + strings.Join(f.Ethnicities, ", ") + ")")
+		query += fmt.Sprintf(` AND ethnicity IN ("` + strings.Join(f.Ethnicities, `", "`) + `")`)
 	}
 	if len(f.KS2Bands) > 0 {
-		query += fmt.Sprintf(" AND ks2_band IN (" + strings.Join(f.KS2Bands, ", ") + ")")
+		query += fmt.Sprintf(` AND ks2_band IN ("` + strings.Join(f.KS2Bands, `", "`) + `")`)
 	}
 	query += ` ORDER BY (surname || " " || forename)`
+
+	fmt.Println(query)
 
 	rows, err := db.conn.Query(query)
 	if err != nil {
