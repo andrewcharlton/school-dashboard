@@ -19,6 +19,7 @@ type sqliteDB struct {
 	// Cached objects
 	subjects map[int]*analysis.Subject
 	levels   map[int]*analysis.Level
+	years    map[string]int // Map of dates to school_years
 }
 
 // ConnectSQLite opens a connection to the database
@@ -47,6 +48,11 @@ func ConnectSQLite(filename string) (Database, error) {
 
 	// Load subjects to cache
 	if err := db.loadSubjects(); err != nil {
+		return DB, err
+	}
+
+	// Load year data for attendance
+	if err := db.loadYears(); err != nil {
 		return DB, err
 	}
 
@@ -108,6 +114,14 @@ var sqliteStmts = map[string]string{
 			   (((forename || " " || surname) LIKE ?)
 				OR ((surname || ", " || forename) LIKE ?))
 				ORDER BY (surname || " " || forename);`,
+
+	"attendance": `SELECT poss_year, absence_year, unauth_year, mon_am,
+					mon_pm, tue_am, tue_pm, wed_am, wed_pm, thu_am,
+					thu_pm, fri_am, fri_pm
+					FROM attendance
+					WHERE upn=? AND year_id=?
+					ORDER BY week_start DESC
+					LIMIT 1`,
 }
 
 // prepareStatements prepares a query statement for each sql string
@@ -207,6 +221,29 @@ func (db *sqliteDB) loadSubjects() error {
 		}
 		s.Level = db.levels[level]
 		db.subjects[id] = &s
+	}
+
+	return nil
+}
+
+// loadYears pulls in the effective dates and the corresponding year
+func (db *sqliteDB) loadYears() error {
+
+	rows, err := db.conn.Query(`SELECT id, year_id FROM dates`)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	db.years = map[string]int{}
+	for rows.Next() {
+		var date string
+		var year int
+		err := rows.Scan(&date, &year)
+		if err != nil {
+			return err
+		}
+		db.years[date] = year
 	}
 
 	return nil
@@ -534,6 +571,19 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 			s.Courses[subj] = c
 		}
 	}
+
+	// Load attendance data
+	row = db.stmts["attendance"].QueryRow(f.UPN, f.Date)
+	att := analysis.AttendanceInfo{}
+	err = row.Scan(&att.Possible, &att.Absences, &att.Unauthorised,
+		&att.Sessions[0], &att.Sessions[1], &att.Sessions[2],
+		&att.Sessions[3], &att.Sessions[4], &att.Sessions[5],
+		&att.Sessions[6], &att.Sessions[7], &att.Sessions[8],
+		&att.Sessions[9])
+	if err != nil && err != sql.ErrNoRows {
+		return analysis.Student{}, nil
+	}
+	s.Attendance = att
 
 	return s, nil
 }

@@ -51,6 +51,7 @@
                     <th style='text-align:center;vertical-align:middle'>Both</th>
                     <th style='text-align:center;vertical-align:middle'>Av Effort</th>
                     <th style='text-align:center;vertical-align:middle'>Progress 8</th>
+                    <th style='text-align:center;vertical-align:middle'>Attendance</th>
             </thead>
             <tbody>
                 {{ $q := .Query }}
@@ -66,6 +67,7 @@
                         {{end}}</td>
                     <td style='text-align:center;vertical-align:middle'>{{printf "%1.1f" .AvEff}}</td>
                     <td style='text-align:center;vertical-align:middle'>{{printf "%1.2f" .P8}}</td>
+                    <td style='text-align:center;vertical-align:middle'>{{printf "%1.1f" .Att}}%</td>
                 </tr>
                 {{ end }}
             </tbody>

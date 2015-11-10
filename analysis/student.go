@@ -6,21 +6,22 @@ package analysis
 // of all the courses they are studying and the
 // grades they are achieving.
 type Student struct {
-	UPN       string
-	Surname   string
-	Forename  string
-	Year      int
-	Form      string
-	PP        bool
-	EAL       bool
-	Gender    string
-	Ethnicity string
-	SEN       SENInfo
-	KS2       KS2Info
-	Courses   map[string]Course
+	UPN        string
+	Surname    string
+	Forename   string
+	Year       int
+	Form       string
+	PP         bool
+	EAL        bool
+	Gender     string
+	Ethnicity  string
+	SEN        SENInfo
+	KS2        KS2Info
+	Courses    map[string]Course
+	Attendance AttendanceInfo
 }
 
-// Names returns the student's name, formatted as
+// Name returns the student's name, formatted as
 // Surname, Forename
 func (s Student) Name() string {
 

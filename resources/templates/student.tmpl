@@ -59,12 +59,12 @@
 	<div class="col-sm-10">
 		<ul class="nav nav-tabs">
 			<li class="active"><a href="#ks2" data-toggle="tab" aria-expanded="true">KS2</a></li>
-			<li class=""><a href="#sen" data-toggle="tab" aria-expanded="false">SEN</a></li>
-			<li class="disabled"><a href="#attendance" data-toggle="tab" aria-expanded="false">Attendance</a></li>
-			<li class=""><a href="#results" data-toggle="tab" aria-expanded="false">Latest Assessments</a></li>
+			<li><a href="#sen" data-toggle="tab" aria-expanded="false">SEN</a></li>
+			<li><a href="#attendance" data-toggle="tab" aria-expanded="false">Attendance</a></li>
+			<li><a href="#results" data-toggle="tab" aria-expanded="false">Latest Assessments</a></li>
 			{{ if eq .Year 10 11 }}
 			<li class="disabled"><a href="#headlines" data-toggle="tab" aria-expaanded="false">Headlines</a></li>
-			<li class=""><a href="#progress8" data-toggle="tab" aria-expaanded="false">Progress 8</a></li>
+			<li><a href="#progress8" data-toggle="tab" aria-expaanded="false">Progress 8</a></li>
 			{{ end }}
 			<li class="dropdown">
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">Subjects <span class="caret"></span></a>
@@ -296,7 +296,57 @@
 			</div>
 			{{end}}
 			<div class="tab-pane fade" id="attendance">
-				Attendance data - coming soon!
+				{{with .Attendance}}
+				<br>
+				<h4>Attendance data from 1st September.</h4>
+				<table class="table">
+						<thead>
+								<th style='text-align:center;vertical-align:middle'>Possible</th>
+								<th style='text-align:center;vertical-align:middle'>Absences</th>
+								<th style='text-align:center;vertical-align:middle'>Unauthorised</th>
+								<th style='text-align:center;vertical-align:middle'>% Attendance</th>
+						</thead>
+						<tbody>
+								<tr>
+										<td style='text-align:center;vertical-align:middle'>{{.Possible}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{.Absences}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{.Unauthorised}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{printf "%.1f" .Latest}}</td>
+								</tr>
+						</tbody>
+				</table>
+
+				<br>
+				<h4>Absences per Session</h4>
+				<table class="table">
+						<thead>
+								<th>Session</th>
+								<th style='text-align:center;vertical-align:middle'>Monday</th>
+								<th style='text-align:center;vertical-align:middle'>Tuesday</th>
+								<th style='text-align:center;vertical-align:middle'>Wednesday</th>
+								<th style='text-align:center;vertical-align:middle'>Thursday</th>
+								<th style='text-align:center;vertical-align:middle'>Friday</th>
+						</thead>
+						<tbody>
+								<tr>
+										<td>Morning</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 0}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 2}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 4}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 6}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 8}}</td>
+								</tr>
+								<tr>
+										<td>Afternoon</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 1}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 3}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 5}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 7}}</td>
+										<td style='text-align:center;vertical-align:middle'>{{index .Sessions 9}}</td>
+								</tr>
+						</tbody>
+				</table>
+				{{ end }}
 			</div>
 			<div class="tab-pane fade" id="Mathematics">
 				Mathematics

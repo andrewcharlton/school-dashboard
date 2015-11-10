@@ -33,6 +33,7 @@ func EnglishAndMaths(e env.Env) http.HandlerFunc {
 			Basics bool
 			AvEff  float64
 			P8     float64
+			Att    float64
 		}
 
 		data := struct {
@@ -87,6 +88,7 @@ func EnglishAndMaths(e env.Env) http.HandlerFunc {
 				s.Basics().AchB,
 				s.Effort().Pts,
 				s.Basket().Progress8(nat).Pts,
+				float64(100) * s.Attendance.Latest(),
 			})
 		}
 
