@@ -34,7 +34,11 @@ func main() {
 
 	// Handlers
 	http.HandleFunc("/index/", handlers.Index(env))
+<<<<<<< HEAD
 	http.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
+=======
+	http.HandleFunc("/headlines/", handlers.Headlines(env))
+>>>>>>> befe32a338d926d73344879d41d2d204a44b5013
 	http.HandleFunc("/effort/", handlers.Effort(env))
 	http.HandleFunc("/classlist/", handlers.ClassList(env))
 	http.HandleFunc("/students/", handlers.Student(env))
