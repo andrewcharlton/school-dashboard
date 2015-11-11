@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/level"
 	"github.com/andrewcharlton/school-dashboard/national"
 	_ "github.com/mattn/go-sqlite3" // SQL Driver
 )
@@ -18,7 +19,7 @@ type sqliteDB struct {
 
 	// Cached objects
 	subjects map[int]*analysis.Subject
-	levels   map[int]*analysis.Level
+	levels   map[int]*level.Level
 	years    map[string]int // Map of dates to school_years
 }
 
@@ -156,10 +157,10 @@ func (db *sqliteDB) loadLevels() error {
 	}
 	defer rows.Close()
 
-	db.levels = map[int]*analysis.Level{}
+	db.levels = map[int]*level.Level{}
 	for rows.Next() {
 		var id int
-		var l analysis.Level
+		var l level.Level
 		err := rows.Scan(&id, &l.Lvl, &l.IsGCSE)
 		if err != nil {
 			return err
@@ -178,22 +179,22 @@ func (db *sqliteDB) loadLevels() error {
 }
 
 // loadGrades pulls in the list of grades at a particular level
-func (db *sqliteDB) loadGrades(level int) (map[string]*analysis.Grade, error) {
+func (db *sqliteDB) loadGrades(lvl int) (map[string]*level.Grade, error) {
 
 	rows, err := db.conn.Query(`SELECT grade, points, att8, l1_pass, l2_pass
 								FROM grades
-								WHERE level_id=?`, level)
+								WHERE level_id=?`, lvl)
 	if err != nil {
-		return map[string]*analysis.Grade{}, err
+		return map[string]*level.Grade{}, err
 	}
 	defer rows.Close()
 
-	grades := map[string]*analysis.Grade{}
+	grades := map[string]*level.Grade{}
 	for rows.Next() {
-		var g analysis.Grade
+		var g level.Grade
 		err := rows.Scan(&g.Grd, &g.Pts, &g.Att8, &g.L1Pass, &g.L2Pass)
 		if err != nil {
-			return map[string]*analysis.Grade{}, err
+			return map[string]*level.Grade{}, err
 		}
 		grades[g.Grd] = &g
 	}
@@ -213,13 +214,13 @@ func (db *sqliteDB) loadSubjects() error {
 
 	db.subjects = map[int]*analysis.Subject{}
 	for rows.Next() {
-		var id, level int
+		var id, lvl int
 		var s analysis.Subject
-		err := rows.Scan(&id, &s.Subj, &level, &s.EBacc, &s.KS2Prior)
+		err := rows.Scan(&id, &s.Subj, &lvl, &s.EBacc, &s.KS2Prior)
 		if err != nil {
 			return err
 		}
-		s.Level = db.levels[level]
+		s.Level = db.levels[lvl]
 		db.subjects[id] = &s
 	}
 
@@ -639,7 +640,7 @@ func (db sqliteDB) NationalYears() ([]Lookup, error) {
 // National returns a set of national data for the given year.
 func (db sqliteDB) National(yearID string) (national.National, error) {
 
-	att8, err := dd.loadAtt8(yearID)
+	att8, err := db.loadAtt8(yearID)
 	if err != nil {
 		return national.National{}, err
 	}
@@ -678,36 +679,38 @@ func (db sqliteDB) loadAtt8(yearID string) (map[string]float64, error) {
 }
 
 // loadTMs loads up the transition matrices from a particular year
-func (db sqliteDB) loadTMs(yearID string) (map[string]float64, error) {
+func (db sqliteDB) loadTMs(yearID string) (map[string]national.TransitionMatrix, error) {
 
 	// Load Transition Matrices
 	rows, err := db.conn.Query(`SELECT subject, level_id, ks2, grade, probability
 								FROM tms
 								WHERE year_ID=?`, yearID)
 	if err != nil {
-		return map[string]float64{}, err
+		return map[string]national.TransitionMatrix{}, err
 	}
 	defer rows.Close()
 
 	tms := map[string]national.TransitionMatrix{}
 	for rows.Next() {
 		var subj, ks2, grade string
-		var level int
+		var lvl int
 		var prob float64
-		err := rows.Scan(&subj, &level, &ks2, &grade, &prob)
+		err := rows.Scan(&subj, &lvl, &ks2, &grade, &prob)
 		if err != nil {
-			return national.National{}, err
+			fmt.Println("loadTMs Error: ", err)
+			return map[string]national.TransitionMatrix{}, err
 		}
 		tm, exists := tms[subj]
 		if !exists {
-			tm = national.TransitionMatrix{Level: db.levels[level]}
+			tmRows := map[string]national.TMRow{}
+			tm = national.TransitionMatrix{Rows: tmRows, Level: db.levels[lvl]}
 		}
-		row, exists := tm[ks2]
+		row, exists := tm.Rows[ks2]
 		if !exists {
 			row = national.TMRow{}
 		}
 		row[grade] = prob
-		tm[ks2] = row
+		tm.Rows[ks2] = row
 		tms[subj] = tm
 	}
 

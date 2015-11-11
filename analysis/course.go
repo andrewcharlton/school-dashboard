@@ -32,7 +32,7 @@ type Subject struct {
 // achieved in that subject.
 type Course struct {
 	*Subject
-	*Grade
+	*level.Grade
 	Effort  int
 	Class   string
 	Teacher string
