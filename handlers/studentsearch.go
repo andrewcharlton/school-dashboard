@@ -7,10 +7,9 @@ import (
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/database"
-	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func SearchRedirect(e env.Env) http.HandlerFunc {
+func SearchRedirect(e database.Env) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -22,7 +21,7 @@ func SearchRedirect(e env.Env) http.HandlerFunc {
 	}
 }
 
-func Search(e env.Env) http.HandlerFunc {
+func Search(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		Header(e, w, r)

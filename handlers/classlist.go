@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/analysis"
-	"github.com/andrewcharlton/school-dashboard/env"
+	"github.com/andrewcharlton/school-dashboard/database"
 )
 
-func ClassList(e env.Env) http.HandlerFunc {
+func ClassList(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		Header(e, w, r)
@@ -32,7 +32,7 @@ func ClassList(e env.Env) http.HandlerFunc {
 }
 
 // Return page to pick a subject from.
-func subjectList(e env.Env, w http.ResponseWriter, r *http.Request) {
+func subjectList(e database.Env, w http.ResponseWriter, r *http.Request) {
 
 	subjects, err := e.DB.Subjects()
 	if err != nil {
@@ -55,7 +55,7 @@ func subjectList(e env.Env, w http.ResponseWriter, r *http.Request) {
 }
 
 // Return page to pick a class from.
-func classlist(e env.Env, w http.ResponseWriter, r *http.Request, subj string) {
+func classlist(e database.Env, w http.ResponseWriter, r *http.Request, subj string) {
 
 	f := GetFilter(e, r)
 	classes, err := e.DB.Classes(subj, f.Date)
@@ -81,7 +81,7 @@ func classlist(e env.Env, w http.ResponseWriter, r *http.Request, subj string) {
 }
 
 // Return a list of students
-func studentlist(e env.Env, w http.ResponseWriter, r *http.Request, subj, class string) {
+func studentlist(e database.Env, w http.ResponseWriter, r *http.Request, subj, class string) {
 
 	f := GetFilter(e, r)
 	g, err := e.DB.GroupByClass(subj, class, f)

@@ -3,10 +3,10 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/env"
+	"github.com/andrewcharlton/school-dashboard/database"
 )
 
-func Index(e env.Env) http.HandlerFunc {
+func Index(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		Header(e, w, r)

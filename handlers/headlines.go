@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/env"
+	"github.com/andrewcharlton/school-dashboard/database"
 )
 
-func Headlines(e env.Env) http.HandlerFunc {
+func Headlines(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		Header(e, w, r)

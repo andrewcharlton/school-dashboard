@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/env"
+	"github.com/andrewcharlton/school-dashboard/database"
 	"github.com/andrewcharlton/school-dashboard/handlers"
 )
 
@@ -19,7 +19,7 @@ func main() {
 	}
 
 	// Connect to database
-	env, err := env.Connect(filename)
+	env, err := database.Connect(filename)
 	if err != nil {
 		log.Fatal(err)
 	}

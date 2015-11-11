@@ -11,11 +11,10 @@ import (
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/database"
-	"github.com/andrewcharlton/school-dashboard/env"
 )
 
 // Redirect routes back to the homepage.
-func Redirect(e env.Env) http.HandlerFunc {
+func Redirect(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("Redirect being called!")
@@ -27,7 +26,7 @@ func Redirect(e env.Env) http.HandlerFunc {
 }
 
 // Header writes the common html page header and menu bars
-func Header(e env.Env, w http.ResponseWriter, r *http.Request) {
+func Header(e database.Env, w http.ResponseWriter, r *http.Request) {
 
 	f := GetFilter(e, r)
 	data := struct {
@@ -48,7 +47,7 @@ func Header(e env.Env, w http.ResponseWriter, r *http.Request) {
 }
 
 // Footer writes the common html page header and menu bars
-func Footer(e env.Env, w http.ResponseWriter, r *http.Request) {
+func Footer(e database.Env, w http.ResponseWriter, r *http.Request) {
 
 	err := e.Templates.ExecuteTemplate(w, "footer.tmpl", e)
 	if err != nil {
@@ -58,7 +57,7 @@ func Footer(e env.Env, w http.ResponseWriter, r *http.Request) {
 
 // GetFilter produces a Filter object from the query string
 // provided in the http Request
-func GetFilter(e env.Env, r *http.Request) database.Filter {
+func GetFilter(e database.Env, r *http.Request) database.Filter {
 
 	query := r.URL.Query()
 	if len(query) == 0 {
@@ -97,7 +96,7 @@ func GetFilter(e env.Env, r *http.Request) database.Filter {
 }
 
 // FilterPage writes the contents of the filter template to w.
-func FilterPage(e env.Env, w http.ResponseWriter, r *http.Request, short bool) {
+func FilterPage(e database.Env, w http.ResponseWriter, r *http.Request, short bool) {
 
 	f := GetFilter(e, r)
 
@@ -146,7 +145,7 @@ func FilterPage(e env.Env, w http.ResponseWriter, r *http.Request, short bool) {
 }
 
 // FilterLabels generates the labels for the filter page
-func FilterLabels(e env.Env, f database.Filter, short bool) []string {
+func FilterLabels(e database.Env, f database.Filter, short bool) []string {
 
 	labels := []string{}
 
@@ -225,7 +224,7 @@ func FilterLabels(e env.Env, f database.Filter, short bool) []string {
 // ShortenQuery removes all group filtering options, leaving
 // just date, resultset and national/yeargroup options.
 // If these are not present, adds in default options.
-func ShortenQuery(e env.Env, query url.Values) string {
+func ShortenQuery(e database.Env, query url.Values) string {
 
 	del := []string{}
 	for key, _ := range query {
@@ -246,7 +245,7 @@ func ShortenQuery(e env.Env, query url.Values) string {
 
 // LengthenQuery adds any default filtering options if they are
 // not already present.
-func LengthenQuery(e env.Env, query url.Values) string {
+func LengthenQuery(e database.Env, query url.Values) string {
 
 	if _, exists := query["date"]; !exists {
 		query.Add("date", e.Config.Date)
