@@ -1,6 +1,3 @@
-// Package env contains functions to
-// construct and initialise the environment
-// variable for the dashboard application
 package database
 
 import (

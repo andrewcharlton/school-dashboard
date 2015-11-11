@@ -453,8 +453,6 @@ func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 	}
 	query += ` ORDER BY (surname || " " || forename)`
 
-	fmt.Println(query)
-
 	rows, err := db.conn.Query(query)
 	if err != nil {
 		return analysis.Group{}, err
@@ -641,11 +639,27 @@ func (db sqliteDB) NationalYears() ([]Lookup, error) {
 // National returns a set of national data for the given year.
 func (db sqliteDB) National(yearID string) (national.National, error) {
 
+	att8, err := dd.loadAtt8(yearID)
+	if err != nil {
+		return national.National{}, err
+	}
+
+	tms, err := db.loadTMs(yearID)
+	if err != nil {
+		return national.National{}, err
+	}
+
+	nat := national.National{Att8: att8, TMs: tms}
+	return nat, nil
+}
+
+func (db sqliteDB) loadAtt8(yearID string) (map[string]float64, error) {
+
 	// Load attainment 8 data
 	rows, err := db.conn.Query(`SELECT ks2, att8 FROM nat_progress8
 								WHERE year_ID=?`, yearID)
 	if err != nil {
-		return national.National{}, err
+		return map[string]float64{}, err
 	}
 	defer rows.Close()
 
@@ -655,12 +669,47 @@ func (db sqliteDB) National(yearID string) (national.National, error) {
 		var a8 float64
 		err := rows.Scan(&ks2, &a8)
 		if err != nil {
-			return national.National{}, err
+			return map[string]float64{}, err
 		}
 		att8[ks2] = a8
 	}
 
-	nat := national.National{att8}
+	return att8, nil
+}
 
-	return nat, nil
+// loadTMs loads up the transition matrices from a particular year
+func (db sqliteDB) loadTMs(yearID string) (map[string]float64, error) {
+
+	// Load Transition Matrices
+	rows, err := db.conn.Query(`SELECT subject, level_id, ks2, grade, probability
+								FROM tms
+								WHERE year_ID=?`, yearID)
+	if err != nil {
+		return map[string]float64{}, err
+	}
+	defer rows.Close()
+
+	tms := map[string]national.TransitionMatrix{}
+	for rows.Next() {
+		var subj, ks2, grade string
+		var level int
+		var prob float64
+		err := rows.Scan(&subj, &level, &ks2, &grade, &prob)
+		if err != nil {
+			return national.National{}, err
+		}
+		tm, exists := tms[subj]
+		if !exists {
+			tm = national.TransitionMatrix{Level: db.levels[level]}
+		}
+		row, exists := tm[ks2]
+		if !exists {
+			row = national.TMRow{}
+		}
+		row[grade] = prob
+		tm[ks2] = row
+		tms[subj] = tm
+	}
+
+	return tms, nil
 }

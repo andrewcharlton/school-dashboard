@@ -18,6 +18,9 @@ type Subject struct {
 	// Empty for non-EBacc subjects
 	EBacc string
 
+	// Which Transition Matrix to use for the subject.
+	TM string
+
 	// Which KS2 score the subject TM is based on:
 	// En, Ma, Av
 	KS2Prior string

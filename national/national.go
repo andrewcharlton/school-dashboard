@@ -10,6 +10,9 @@ type National struct {
 
 	// Attainment 8 point scores for various ks2 scores.
 	Att8 map[string]float64
+
+	// Transition Matrices
+	TMs map[string]TransitionMatrix
 }
 
 // Attainment8 returns the expected Attainment 8 points score
