@@ -50,6 +50,12 @@ type Database interface {
 	// in the subject/class at the date specified in the filter.
 	GroupByClass(subject, class string, f Filter) (analysis.Group, error)
 
+	// GroupByFilteredClass returns a group of students who meet
+	// the filter criteria and are also present in the subject/
+	// class combination.  If class="", the group will include
+	// all students who study that subject.
+	GroupByFilteredClass(subject, class string, f Filter) (analysis.Group, error)
+
 	// Search returns a list of students from a search query.
 	Search(name, date string) ([]StudentLookup, error)
 

@@ -430,6 +430,20 @@ func (db sqliteDB) group(upns []string, f StudentFilter) (analysis.Group, error)
 // specified in the filter.
 func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 
+	query := db.groupFilter(f)
+	query += ` ORDER BY (surname || " " || forename)`
+
+	upns, err := db.getUPNs(query)
+	if err != nil {
+		return analysis.Group{}, err
+	}
+
+	return db.group(upns, StudentFilter{"", f.Date, f.Resultset})
+}
+
+// groupFilter dynamically constructs the SQL statement from a filter.
+func (db sqliteDB) groupFilter(f Filter) string {
+
 	query := fmt.Sprintf(`SELECT upn FROM students
 						  WHERE date_id = %v and year= %v`,
 		f.Date, f.Year)
@@ -452,11 +466,15 @@ func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 	if len(f.KS2Bands) > 0 {
 		query += fmt.Sprintf(` AND ks2_band IN ("` + strings.Join(f.KS2Bands, `", "`) + `")`)
 	}
-	query += ` ORDER BY (surname || " " || forename)`
+
+	return query
+}
+
+func (db sqliteDB) getUPNs(query string) ([]string, error) {
 
 	rows, err := db.conn.Query(query)
 	if err != nil {
-		return analysis.Group{}, err
+		return []string{}, err
 	}
 	defer rows.Close()
 
@@ -464,12 +482,11 @@ func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 	for rows.Next() {
 		var upn string
 		if err := rows.Scan(&upn); err != nil {
-			return analysis.Group{}, err
+			return []string{}, err
 		}
 		upns = append(upns, upn)
 	}
-
-	return db.group(upns, StudentFilter{"", f.Date, f.Resultset})
+	return upns, nil
 }
 
 // GroupByClass returns a group of students who are present in the
@@ -489,6 +506,30 @@ func (db sqliteDB) GroupByClass(subject, class string, f Filter) (analysis.Group
 			return analysis.Group{}, err
 		}
 		upns = append(upns, upn)
+	}
+
+	return db.group(upns, StudentFilter{"", f.Date, f.Resultset})
+}
+
+// GroupByFilteredClass returns a group of students who meet the filter criteria
+// and are in the subject/class combination specified.
+// If class="", then all students in that subject are returned.
+func (db sqliteDB) GroupByFilteredClass(subject, class string, f Filter) (analysis.Group, error) {
+
+	if subject == "" {
+		return db.GroupByFilter(f)
+	}
+
+	query := db.groupFilter(f)
+	query += fmt.Sprintf(` AND subject="%v"`, subject)
+
+	if class != "" {
+		query += fmt.Sprintf(` AND class="%v"`, class)
+	}
+
+	upns, err := db.getUPNs(query)
+	if err != nil {
+		return analysis.Group{}, err
 	}
 
 	return db.group(upns, StudentFilter{"", f.Date, f.Resultset})
