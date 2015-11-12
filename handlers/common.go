@@ -265,3 +265,13 @@ func LengthenQuery(e database.Env, query url.Values) string {
 
 	return query.Encode()
 }
+
+// ChangeYear changes the yeargroup filtered by the query
+func ChangeYear(query url.Values, year string) string {
+
+	if _, exists := query["year"]; exists {
+		query.Del("year")
+	}
+	query.Add("year", year)
+	return query.Encode()
+}

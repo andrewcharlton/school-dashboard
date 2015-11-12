@@ -84,7 +84,8 @@ var sqliteStmts = map[string]string{
 				WHERE upn=? AND resultset=?`,
 
 	"classes": `SELECT subject, class, teacher FROM classes
-				WHERE upn=? AND date_id=?`,
+				WHERE upn=? AND date_id=?
+				ORDER BY class`,
 
 	"inClass": `SELECT upn FROM classes
 				WHERE date_id=? AND subject=? AND class=?
@@ -205,7 +206,7 @@ func (db *sqliteDB) loadGrades(lvl int) (map[string]*level.Grade, error) {
 // loadSubjects pulls in the subject list for caching
 func (db *sqliteDB) loadSubjects() error {
 
-	rows, err := db.conn.Query(`SELECT id, subject, level_id, ebacc, ks2_prior
+	rows, err := db.conn.Query(`SELECT id, subject, level_id, ebacc, tm, ks2_prior
 								FROM subjects`)
 	if err != nil {
 		return err
@@ -216,7 +217,7 @@ func (db *sqliteDB) loadSubjects() error {
 	for rows.Next() {
 		var id, lvl int
 		var s analysis.Subject
-		err := rows.Scan(&id, &s.Subj, &lvl, &s.EBacc, &s.KS2Prior)
+		err := rows.Scan(&id, &s.Subj, &lvl, &s.EBacc, &s.TM, &s.KS2Prior)
 		if err != nil {
 			return err
 		}
@@ -430,7 +431,7 @@ func (db sqliteDB) group(upns []string, f StudentFilter) (analysis.Group, error)
 // specified in the filter.
 func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 
-	query := db.groupFilter(f)
+	query := db.groupFilter(f, "students")
 	query += ` ORDER BY (surname || " " || forename)`
 
 	upns, err := db.getUPNs(query)
@@ -442,11 +443,11 @@ func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 }
 
 // groupFilter dynamically constructs the SQL statement from a filter.
-func (db sqliteDB) groupFilter(f Filter) string {
+func (db sqliteDB) groupFilter(f Filter, table string) string {
 
-	query := fmt.Sprintf(`SELECT upn FROM students
+	query := fmt.Sprintf(`SELECT upn FROM %v
 						  WHERE date_id = %v and year= %v`,
-		f.Date, f.Year)
+		table, f.Date, f.Year)
 
 	if f.PP != "" {
 		query += fmt.Sprintf(" AND pp = %v", f.PP)
@@ -474,6 +475,7 @@ func (db sqliteDB) getUPNs(query string) ([]string, error) {
 
 	rows, err := db.conn.Query(query)
 	if err != nil {
+		fmt.Println(query)
 		return []string{}, err
 	}
 	defer rows.Close()
@@ -520,12 +522,12 @@ func (db sqliteDB) GroupByFilteredClass(subject, class string, f Filter) (analys
 		return db.GroupByFilter(f)
 	}
 
-	query := db.groupFilter(f)
+	query := db.groupFilter(f, "classes_filter")
 	query += fmt.Sprintf(` AND subject="%v"`, subject)
-
 	if class != "" {
 		query += fmt.Sprintf(` AND class="%v"`, class)
 	}
+	query += ` ORDER BY (surname || " " || forename)`
 
 	upns, err := db.getUPNs(query)
 	if err != nil {

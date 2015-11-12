@@ -15,24 +15,23 @@ func ClassList(e database.Env) http.HandlerFunc {
 
 		Header(e, w, r)
 		FilterPage(e, w, r, true)
+		defer Footer(e, w, r)
 
 		path := strings.Split(r.URL.Path, "/")
 
 		switch {
 		case len(path) < 3 || path[2] == "":
-			subjectList(e, w, r)
+			clSubjects(e, w, r)
 		case len(path) < 4 || path[3] == "":
-			classlist(e, w, r, path[2])
+			clClasses(e, w, r, path[2])
 		default:
-			studentlist(e, w, r, path[2], path[3])
+			clStudents(e, w, r, path[2], path[3])
 		}
-
-		Footer(e, w, r)
 	}
 }
 
 // Return page to pick a subject from.
-func subjectList(e database.Env, w http.ResponseWriter, r *http.Request) {
+func clSubjects(e database.Env, w http.ResponseWriter, r *http.Request) {
 
 	subjects, err := e.DB.Subjects()
 	if err != nil {
@@ -55,7 +54,7 @@ func subjectList(e database.Env, w http.ResponseWriter, r *http.Request) {
 }
 
 // Return page to pick a class from.
-func classlist(e database.Env, w http.ResponseWriter, r *http.Request, subj string) {
+func clClasses(e database.Env, w http.ResponseWriter, r *http.Request, subj string) {
 
 	f := GetFilter(e, r)
 	classes, err := e.DB.Classes(subj, f.Date)
@@ -81,7 +80,7 @@ func classlist(e database.Env, w http.ResponseWriter, r *http.Request, subj stri
 }
 
 // Return a list of students
-func studentlist(e database.Env, w http.ResponseWriter, r *http.Request, subj, class string) {
+func clStudents(e database.Env, w http.ResponseWriter, r *http.Request, subj, class string) {
 
 	f := GetFilter(e, r)
 	g, err := e.DB.GroupByClass(subj, class, f)

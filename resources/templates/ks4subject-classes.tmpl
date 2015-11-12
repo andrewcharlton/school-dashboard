@@ -1,0 +1,36 @@
+<h2>KS4 Subject Analysis</h2>
+
+<ul class="breadcrumb">
+		<li><a href="/ks4subject/?{{.Query}}">Subjects</a></li>
+		<li class="active">{{.Subject}}</li>
+</ul>
+
+{{ $subj := .Subject }}
+
+<h4>Year 11</h4>
+<div class="row">
+		<div class="col-sm-3"></div>
+		<div class="col-sm-6">
+				{{ $q := .Y11Query }}
+				<ul class="list-group">
+						{{ range .Y11 }}
+						<a class="list-group-item" href="/ks4subject/{{$subj}}/{{.}}/?{{ $q }}">{{.}}</a>
+						{{ end }}
+				</ul>
+		</div>
+		<div class="col-sm-3"></div>
+</div>
+
+<h4>Year 10</h4>
+<div class="row">
+		<div class="col-sm-3"></div>
+		<div class="col-sm-6">
+				{{ $q := .Y10Query }}
+				<ul class="list-group">
+						{{ range .Y10 }}
+						<a class="list-group-item" href="/ks4subject/{{$subj}}/{{.}}/?{{ $q }}">{{.}}</a>
+						{{ end }}
+				</ul>
+		</div>
+		<div class="col-sm-3"></div>
+</div>
