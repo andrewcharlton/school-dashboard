@@ -2,6 +2,8 @@
 // can be used in both analysis and national packages.
 package level
 
+import "sort"
+
 // A Level brings together the details and grades
 // of a particular qualification level.
 type Level struct {
@@ -32,4 +34,32 @@ type Grade struct {
 	// Whether the grade counts as a pass at levels 1/2
 	L1Pass bool
 	L2Pass bool
+}
+
+type grdPt struct {
+	Grade  string
+	Points int
+}
+
+type grdPts []grdPt
+
+func (g grdPts) Len() int           { return len(g) }
+func (g grdPts) Swap(i, j int)      { g[i], g[j] = g[j], g[i] }
+func (g grdPts) Less(i, j int) bool { return g[i].Points < g[j].Points }
+
+// Produces a list of grades, sorted by points score.
+func (l Level) SortedGrades() []string {
+
+	grades := grdPts{}
+	for _, grade := range l.Gradeset {
+		grades = append(grades, grdPt{grade.Grd, grade.Pts})
+	}
+
+	sort.Sort(grades)
+	names := []string{}
+	for _, g := range grades {
+		names = append(names, g.Grade)
+	}
+
+	return names
 }

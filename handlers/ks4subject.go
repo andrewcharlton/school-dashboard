@@ -8,6 +8,7 @@ import (
 
 	"github.com/andrewcharlton/school-dashboard/analysis"
 	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/level"
 	"github.com/andrewcharlton/school-dashboard/national"
 )
 
@@ -122,6 +123,15 @@ func ks4Analysis(e database.Env, w http.ResponseWriter, r *http.Request, subj, c
 		Attendance float64
 	}
 
+	var tm national.TransitionMatrix
+	for _, s := range g.Students {
+		t, err := s.TM(subj, nat)
+		if err == nil {
+			tm = t
+			break
+		}
+	}
+
 	students := []student{}
 	groupVA := float64(0)
 	num := 0
@@ -152,11 +162,14 @@ func ks4Analysis(e database.Env, w http.ResponseWriter, r *http.Request, subj, c
 		students = append(students, stdnt)
 	}
 
+	grid, va := ks4Grid(g, subj, tm)
 	data := struct {
 		Subject  string
 		Class    string
 		Students []student
 		Group    analysis.Group
+		Grid     progressGrid
+		VA       float64
 		Query    template.URL
 		Nat      national.National
 	}{
@@ -164,6 +177,8 @@ func ks4Analysis(e database.Env, w http.ResponseWriter, r *http.Request, subj, c
 		class,
 		students,
 		g,
+		grid,
+		va,
 		template.URL(r.URL.RawQuery),
 		nat,
 	}
@@ -172,4 +187,94 @@ func ks4Analysis(e database.Env, w http.ResponseWriter, r *http.Request, subj, c
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 	}
+}
+
+type cell struct {
+	Num     int
+	BGColor string
+	FGColor string
+}
+
+type progressGridRow struct {
+	KS2   string
+	Cells []cell
+	VA    float64
+}
+
+type progressGrid struct {
+	Rows   []progressGridRow
+	Grades []string
+}
+
+func ks4Grid(g analysis.Group, subj string, tm national.TransitionMatrix) (progressGrid, float64) {
+
+	var lvl *level.Level
+	nums := map[string](map[string]int){}
+	for _, s := range g.Students {
+		c, exists := s.Courses[subj]
+		if !exists {
+			continue
+		}
+
+		if lvl == nil {
+			lvl = c.Level
+		}
+
+		var ks2 string
+		switch c.KS2Prior {
+		case "En":
+			ks2 = s.KS2.En
+		case "Ma":
+			ks2 = s.KS2.Ma
+		default:
+			ks2 = s.KS2.Av
+		}
+
+		row, exists := nums[ks2]
+		if !exists {
+			row = map[string]int{}
+		}
+		row[c.Grd] += 1
+		nums[ks2] = row
+	}
+
+	totalVA := 0.0
+	totalN := 0
+
+	levelGrades := lvl.SortedGrades()
+	grid := progressGrid{Grades: levelGrades, Rows: []progressGridRow{}}
+	ks2Grades := []string{"1", "2", "3C", "3B", "3A", "4C", "4B", "4A", "5C", "5B", "5A", "6"}
+
+	for _, ks2 := range ks2Grades {
+		row := progressGridRow{KS2: ks2, Cells: []cell{}}
+		n := 0
+		for _, grade := range levelGrades {
+			c := cell{Num: nums[ks2][grade], FGColor: "#000000", BGColor: "#FFFFFF"}
+			va, err := tm.ValueAdded(ks2, grade)
+			if err == nil {
+				switch {
+				case va < -0.33:
+					c.BGColor = "#FA6E2D"
+				case va > 0.0:
+					c.BGColor = "#2EB02E"
+				default:
+					c.BGColor = "#FCF4A4"
+				}
+				row.VA += va * float64(c.Num)
+				totalVA += va * float64(c.Num)
+				n += c.Num
+				totalN += 1
+			}
+			row.Cells = append(row.Cells, c)
+		}
+		if n > 0 {
+			row.VA = row.VA / float64(n)
+		}
+		grid.Rows = append(grid.Rows, row)
+	}
+
+	if totalN == 0 {
+		return grid, 0.0
+	}
+	return grid, totalVA / float64(totalN)
 }

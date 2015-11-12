@@ -10,6 +10,38 @@
 {{ $subj := .Subject }}
 {{ $nat := .Nat }}
 
+<h3>Progress Grid</h3>
+<table class="table">
+		{{ with .Grid }}
+		<thead>
+				<th>KS2</th>
+				{{ range .Grades }}
+				<th style="text-align:center;">{{.}}</th>
+				{{ end }}
+				<th>&nbsp;</th>
+				<th style="text-align:center;">VA</th>
+		</thead>
+		<tbody>
+				{{ range .Rows }}
+				<tr>
+						<td>{{.KS2}}</td>
+						{{ range .Cells }}
+						<td style="text-align:center;color:{{.FGColor}}; background-color:{{.BGColor}};">{{if ne .Num 0}}{{.Num}}{{end}}</td>
+						{{ end }}
+						<td>&nbsp;</td>
+						<td style="text-align:center;">{{printf "%.2f" .VA}}</td>
+				</tr>
+				{{ end }}
+		</tbody>
+		{{ end }}
+</table>
+				
+<br>
+
+<h4>Overall Value Added: {{printf "%.2f" .VA}}</h4>
+
+<br>
+
 <h4>Students</h4>
 <table class="table table-striped table-hover sortable">
 		<thead>

@@ -2,9 +2,27 @@ package analysis
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/andrewcharlton/school-dashboard/national"
 )
+
+// TM retrieves the transition matrix for a particular subject.
+func (s Student) TM(subject string, nat national.National) (national.TransitionMatrix, error) {
+
+	c, exists := s.Courses[subject]
+	if !exists {
+		return national.TransitionMatrix{},
+			fmt.Errorf("Course not recognised. UPN: %s, Subject: %v", s.UPN, subject)
+	}
+
+	tm, exists := nat.TMs[c.TM]
+	if !exists {
+		return national.TransitionMatrix{}, fmt.Errorf("TM not found: %v", c.TM)
+	}
+
+	return tm, nil
+}
 
 // SubjectVA calculates the value added score for a student in a particular
 // subject.
