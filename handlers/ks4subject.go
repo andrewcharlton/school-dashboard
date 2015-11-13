@@ -45,7 +45,7 @@ func ks4Subjects(e database.Env, w http.ResponseWriter, r *http.Request) {
 		Query    template.URL
 	}{
 		subjects,
-		template.URL(r.URL.RawQuery),
+		template.URL(ShortenQuery(e, r.URL.Query())),
 	}
 
 	err = e.Templates.ExecuteTemplate(w, "ks4subject-subjects.tmpl", data)
@@ -190,9 +190,8 @@ func ks4Analysis(e database.Env, w http.ResponseWriter, r *http.Request, subj, c
 }
 
 type cell struct {
-	Num     int
-	BGColor string
-	FGColor string
+	Num   int
+	Style string
 }
 
 type progressGridRow struct {
@@ -249,16 +248,16 @@ func ks4Grid(g analysis.Group, subj string, tm national.TransitionMatrix) (progr
 		row := progressGridRow{KS2: ks2, Cells: []cell{}}
 		n := 0
 		for _, grade := range levelGrades {
-			c := cell{Num: nums[ks2][grade], FGColor: "#000000", BGColor: "#FFFFFF"}
+			c := cell{Num: nums[ks2][grade], Style: ""}
 			va, err := tm.ValueAdded(ks2, grade)
 			if err == nil {
 				switch {
 				case va < -0.33:
-					c.BGColor = "#FA6E2D"
+					c.Style = "danger"
 				case va > 0.0:
-					c.BGColor = "#2EB02E"
+					c.Style = "success"
 				default:
-					c.BGColor = "#FCF4A4"
+					c.Style = "warning"
 				}
 				row.VA += va * float64(c.Num)
 				totalVA += va * float64(c.Num)

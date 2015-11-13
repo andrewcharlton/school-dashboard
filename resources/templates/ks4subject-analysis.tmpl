@@ -26,7 +26,7 @@
 				<tr>
 						<td>{{.KS2}}</td>
 						{{ range .Cells }}
-						<td style="text-align:center;color:{{.FGColor}}; background-color:{{.BGColor}};">{{if ne .Num 0}}{{.Num}}{{end}}</td>
+						<td class="{{.Style}}" style="text-align:center;">{{if ne .Num 0}}{{.Num}}{{end}}</td>
 						{{ end }}
 						<td>&nbsp;</td>
 						<td style="text-align:center;">{{printf "%.2f" .VA}}</td>
