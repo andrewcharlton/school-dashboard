@@ -48,23 +48,23 @@ type Database interface {
 
 	// GroupByClass returns a group of students who are present
 	// in the subject/class at the date specified in the filter.
-	GroupByClass(subject, class string, f Filter) (analysis.Group, error)
+	GroupByClass(subj_id, class string, f Filter) (analysis.Group, error)
 
 	// GroupByFilteredClass returns a group of students who meet
 	// the filter criteria and are also present in the subject/
 	// class combination.  If class="", the group will include
 	// all students who study that subject.
-	GroupByFilteredClass(subject, class string, f Filter) (analysis.Group, error)
+	GroupByFilteredClass(subj_id, class string, f Filter) (analysis.Group, error)
 
 	// Search returns a list of students from a search query.
 	Search(name, date string) ([]StudentLookup, error)
 
-	// Subjects returns a list of subjects being studied.
-	Subjects() ([]string, error)
+	// Subjects returns a list of all subjects available.
+	Subjects() map[int]*analysis.Subject
 
 	// Classes returns a list of classes that exist for a subject,
 	// at a particular date (date_id should be provided).
-	Classes(subject, date string) ([]string, error)
+	Classes(subj_id, date string) ([]string, error)
 
 	// NationalYears returns a sorted list of all years
 	// for which national data is available

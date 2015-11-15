@@ -83,19 +83,21 @@ var sqliteStmts = map[string]string{
 	"results": `SELECT subject_id, subject, grade, effort FROM results
 				WHERE upn=? AND resultset=?`,
 
-	"classes": `SELECT subject, class, teacher FROM classes
+	"classes": `SELECT subject_id, class, teacher FROM classes
 				WHERE upn=? AND date_id=?
 				ORDER BY class`,
 
 	"inClass": `SELECT upn FROM classes
-				WHERE date_id=? AND subject=? AND class=?
+				WHERE date_id=? AND subject_id=? AND class=?
 				ORDER BY name`,
 
-	"subjects": `SELECT DISTINCT subject FROM subjects
-				 ORDER BY subject`,
+	"subjects": `SELECT subjects.id as id
+				FROM subjects
+				INNER JOIN levels ON subjects.level_id = levels.id
+				WHERE keystage=?`,
 
 	"classlist": `SELECT DISTINCT class FROM classes
-					WHERE date_id=? AND subject=?
+					WHERE date_id=? AND subject_id=?
 					ORDER BY (
 						CASE WHEN substr(class, 1, 1) == "1"
 						THEN class
@@ -337,32 +339,16 @@ func (db sqliteDB) Resultsets() ([]Lookup, error) {
 	return rs, nil
 }
 
-// Subjects returns a sorted list of subjects.
-func (db sqliteDB) Subjects() ([]string, error) {
-
-	rows, err := db.stmts["subjects"].Query()
-	if err != nil {
-		return []string{}, err
-	}
-	defer rows.Close()
-
-	subjects := []string{}
-	for rows.Next() {
-		var subj string
-		if err := rows.Scan(&subj); err != nil {
-			return []string{}, err
-		}
-		subjects = append(subjects, subj)
-	}
-
-	return subjects, nil
+// Subjects returns all of the subjects, indexed by their id number
+func (db sqliteDB) Subjects() map[int]*analysis.Subject {
+	return db.subjects
 }
 
 // Classes returns a sorted list of classes present
 // for a subject.
-func (db sqliteDB) Classes(subject, date string) ([]string, error) {
+func (db sqliteDB) Classes(subj_id, date string) ([]string, error) {
 
-	rows, err := db.stmts["classlist"].Query(date, subject)
+	rows, err := db.stmts["classlist"].Query(date, subj_id)
 	if err == sql.ErrNoRows {
 		return []string{}, errors.New("No classes present for this subject, on this date.")
 	}
@@ -493,9 +479,9 @@ func (db sqliteDB) getUPNs(query string) ([]string, error) {
 
 // GroupByClass returns a group of students who are present in the
 // subject/class specified at the particular date.
-func (db sqliteDB) GroupByClass(subject, class string, f Filter) (analysis.Group, error) {
+func (db sqliteDB) GroupByClass(subj_id, class string, f Filter) (analysis.Group, error) {
 
-	rows, err := db.stmts["inClass"].Query(f.Date, subject, class)
+	rows, err := db.stmts["inClass"].Query(f.Date, subj_id, class)
 	if err != nil {
 		return analysis.Group{}, err
 	}
@@ -516,14 +502,14 @@ func (db sqliteDB) GroupByClass(subject, class string, f Filter) (analysis.Group
 // GroupByFilteredClass returns a group of students who meet the filter criteria
 // and are in the subject/class combination specified.
 // If class="", then all students in that subject are returned.
-func (db sqliteDB) GroupByFilteredClass(subject, class string, f Filter) (analysis.Group, error) {
+func (db sqliteDB) GroupByFilteredClass(subj_id, class string, f Filter) (analysis.Group, error) {
 
-	if subject == "" {
+	if subj_id == "" {
 		return db.GroupByFilter(f)
 	}
 
 	query := db.groupFilter(f, "classes_filter")
-	query += fmt.Sprintf(` AND subject="%v"`, subject)
+	query += fmt.Sprintf(` AND subject_id=%v`, subj_id)
 	if class != "" {
 		query += fmt.Sprintf(` AND class="%v"`, class)
 	}
@@ -544,9 +530,10 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 	row := db.stmts["student"].QueryRow(f.UPN, f.Date)
 	sen := analysis.SENInfo{}
 	ks2 := analysis.KS2Info{}
+	var male bool
 	s := analysis.Student{}
 	err := row.Scan(&s.UPN, &s.Surname, &s.Forename, &s.Year, &s.Form,
-		&s.PP, &s.EAL, &s.Gender, &s.Ethnicity, &sen.Status, &sen.Need,
+		&s.PP, &s.EAL, &male, &s.Ethnicity, &sen.Status, &sen.Need,
 		&sen.Info, &sen.Strategies, &sen.Access, &sen.IEP, &ks2.APS,
 		&ks2.Band, &ks2.En, &ks2.Ma, &ks2.Av, &ks2.Re, &ks2.Wr, &ks2.GPS)
 	if err == sql.ErrNoRows {
@@ -557,6 +544,11 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 	}
 	s.SEN = sen
 	s.KS2 = ks2
+	if male {
+		s.Gender = "Male"
+	} else {
+		s.Gender = "Female"
+	}
 
 	// Load courses
 	var rows *sql.Rows
@@ -602,11 +594,13 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var subj, class, teacher string
-		err := rows.Scan(&subj, &class, &teacher)
+		var subj_id int
+		var class, teacher string
+		err := rows.Scan(&subj_id, &class, &teacher)
 		if err != nil {
 			return analysis.Student{}, nil
 		}
+		subj := db.subjects[subj_id].Subj
 		if c, exists := s.Courses[subj]; exists {
 			c.Class = class
 			c.Teacher = teacher

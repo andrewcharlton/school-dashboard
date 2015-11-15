@@ -1,0 +1,28 @@
+<h2>{{.Heading}}</h2>
+
+<ul class="breadcrumb">
+		<li><a href="{{.BasePath}}/?{{.Query}}">Subjects</a></li>
+		<li><a href="{{.BasePath}}/{{.Subject}}/?{{.Query}}">{{.Subject}}</a></li>
+		<li class="active">{{.Level}}</li>
+</ul>
+
+{{ $p := .Path }}
+{{ $c := .Classes }}
+{{ $q := .Queries }}
+
+{{ range .Years }}
+<h4>Year {{.}}</h4>
+<div class="row">
+		<div class="col-sm-3"></div>
+		<div class="col-sm-6">
+				<ul class="list-group">
+						<a class="list-group-item" href="{{ $p }}/All Students/?{{ index $q . }}">All Students</a>
+						{{ range index $c . }}
+						<a class="list-group-item" href="{{ $p }}/{{ . }}/?{{ index $q . }}">{{ . }}</a>
+						{{ end }}
+				</ul>
+		</div>
+		<div class="col-sm-3"></div>
+</div>
+{{ end }}
+

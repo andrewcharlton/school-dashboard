@@ -33,7 +33,7 @@ func main() {
 	http.Handle("/images/", http.StripPrefix("/images/", is))
 
 	// Handlers
-	http.HandleFunc("/index/", handlers.Index(env))
+	http.HandleFunc("/", handlers.Index(env))
 	http.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
 	http.HandleFunc("/headlines/", handlers.Headlines(env))
 	http.HandleFunc("/effort/", handlers.Effort(env))

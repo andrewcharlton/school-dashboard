@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/analysis"
@@ -13,77 +14,38 @@ import (
 func ClassList(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		Header(e, w, r)
-		FilterPage(e, w, r, true)
-		defer Footer(e, w, r)
-
 		path := strings.Split(r.URL.Path, "/")
-
-		switch {
-		case len(path) < 3 || path[2] == "":
-			clSubjects(e, w, r)
-		case len(path) < 4 || path[3] == "":
-			clClasses(e, w, r, path[2])
-		default:
-			clStudents(e, w, r, path[2], path[3])
+		switch len(path) {
+		case 3:
+			selectSubject(e, w, r, "Class Lists")
+		case 4:
+			selectLevel(e, w, r, "Class Lists")
+		case 5:
+			selectClass(e, w, r, "Class Lists")
+		case 6:
+			classStudentList(e, w, r)
 		}
 	}
 }
 
-// Return page to pick a subject from.
-func clSubjects(e database.Env, w http.ResponseWriter, r *http.Request) {
+// Class list for the students
+func classStudentList(e database.Env, w http.ResponseWriter, r *http.Request) {
 
-	subjects, err := e.DB.Subjects()
+	Header(e, w, r)
+	FilterPage(e, w, r, true)
+	defer Footer(e, w, r)
+
+	path := strings.Split(r.URL.Path, "/")
+	subjID, err := strconv.Atoi(path[3])
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-
-	data := struct {
-		Subjects []string
-		Query    template.URL
-	}{
-		subjects,
-		template.URL(r.URL.RawQuery),
-	}
-
-	err = e.Templates.ExecuteTemplate(w, "classlist-subjects.tmpl", data)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-	}
-}
-
-// Return page to pick a class from.
-func clClasses(e database.Env, w http.ResponseWriter, r *http.Request, subj string) {
+	subject := e.DB.Subjects()[subjID]
+	class := path[4]
 
 	f := GetFilter(e, r)
-	classes, err := e.DB.Classes(subj, f.Date)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-
-	data := struct {
-		Subject string
-		Classes []string
-		Query   template.URL
-	}{
-		subj,
-		classes,
-		template.URL(r.URL.RawQuery),
-	}
-
-	err = e.Templates.ExecuteTemplate(w, "classlist-classes.tmpl", data)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-	}
-}
-
-// Return a list of students
-func clStudents(e database.Env, w http.ResponseWriter, r *http.Request, subj, class string) {
-
-	f := GetFilter(e, r)
-	g, err := e.DB.GroupByClass(subj, class, f)
+	g, err := e.DB.GroupByClass(path[3], class, f)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -91,17 +53,21 @@ func clStudents(e database.Env, w http.ResponseWriter, r *http.Request, subj, cl
 
 	data := struct {
 		Subject  string
+		Level    string
+		SubjID   string
 		Class    string
 		Query    template.URL
 		Students []analysis.Student
 	}{
-		subj,
+		subject.Subj,
+		subject.Lvl,
+		path[3],
 		class,
 		template.URL(ShortenQuery(e, r.URL.Query())),
 		g.Students,
 	}
 
-	err = e.Templates.ExecuteTemplate(w, "classlist-students.tmpl", data)
+	err = e.Templates.ExecuteTemplate(w, "classlist.tmpl", data)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 	}
