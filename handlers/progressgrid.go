@@ -61,16 +61,16 @@ func pgAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) {
 		Level    string
 		SubjID   string
 		Class    string
-		Students []vaStudent
-		Grid     vaGrid
+		Students []pgStudent
+		Grid     pgGrid
 		Query    template.URL
 	}{
 		subject.Subj,
 		subject.Lvl,
 		path[3],
 		path[4],
-		ks4VAStudents(subject, g.Students, nat),
-		ks4VAGrid(subject, g.Students, nat),
+		pgStudentList(subject, g.Students, nat),
+		pgGridAnalysis(subject, g.Students, nat),
 		template.URL(ShortenQuery(e, r.URL.Query())),
 	}
 
@@ -96,6 +96,7 @@ type pgGrid struct {
 	Cells    map[string](map[string]pgCell)
 	KS2      []string
 	Grades   []string
+	Counts   map[string]int
 	VA       map[string]float64
 	TotalVA  float64
 	TMExists bool
@@ -106,12 +107,14 @@ func pgGridAnalysis(subject *analysis.Subject, students []analysis.Student, nat 
 	ks2grades := []string{"None", "1", "2", "3C", "3B", "3A", "4C", "4B", "4A", "5C", "5B", "5A", "6"}
 	grades := subject.Level.SortedGrades()
 
+	// Initialise grid
 	grid := pgGrid{KS2: ks2grades, Grades: grades, Cells: map[string](map[string]pgCell){},
-		VA: map[string]float64{}}
+		Counts: map[string]int{}, VA: map[string]float64{}}
 	for _, ks2 := range ks2grades {
 		grid.Cells[ks2] = map[string]pgCell{}
 	}
 
+	// Populate cell lists
 	for _, s := range students {
 		c, exists := s.Courses[subject.Subj]
 		if !exists {
@@ -135,8 +138,10 @@ func pgGridAnalysis(subject *analysis.Subject, students []analysis.Student, nat 
 		cell := grid.Cells[ks2][c.Grd]
 		cell.Students = append(cell.Students, pgCellStudent{s.UPN, s.Name()})
 		grid.Cells[ks2][c.Grd] = cell
+		grid.Counts[c.Grd]++
 	}
 
+	// Otherwise, assume KS4 and try to load TMs.
 	tm, exists := nat.TMs[subject.TM]
 	if !exists {
 		return grid
@@ -185,7 +190,6 @@ type pgStudent struct {
 	Effort     int
 	VAExists   bool
 	VA         float64
-	Sublevels  int
 	Attendance float64
 }
 
@@ -218,7 +222,6 @@ func pgStudentList(subject *analysis.Subject, students []analysis.Student, nat n
 			c.Effort,
 			va.Error == nil,
 			va.Pts,
-			0,
 			s.Attendance.Latest(),
 		})
 	}

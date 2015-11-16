@@ -344,6 +344,17 @@ func (db sqliteDB) Subjects() map[int]*analysis.Subject {
 	return db.subjects
 }
 
+// Level returns the named level
+func (db sqliteDB) Level(name string) *level.Level {
+
+	for _, l := range db.levels {
+		if l.Lvl == name {
+			return l
+		}
+	}
+	return nil
+}
+
 // Classes returns a sorted list of classes present
 // for a subject.
 func (db sqliteDB) Classes(subj_id, date string) ([]string, error) {

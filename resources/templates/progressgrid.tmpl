@@ -1,4 +1,4 @@
-<h2>KS4 Subject Analysis</h2>
+<h2>Progress Grid</h2>
 
 <ul class="breadcrumb">
 		<li><a href="/progressgrid/?{{.Query}}">Subjects</a></li>
@@ -15,7 +15,6 @@
 {{ $va := .VA }}
 {{ $tm := .TMExists }}
 
-<h3>Progress Grid</h3>
 <table class="table table-condensed" style="table-layout:fixed;">
 		<thead>
 				<th>KS2</th>
@@ -54,6 +53,12 @@
 				</tr>
 				{{ end }}
 		</tbody>
+		<tfoot>
+				<th>Total</th>
+				{{ $counts := .Counts }}
+				{{ range $g }}<th style="text-align:center;">{{ index $counts . }} </th>{{ end }}
+				<th style="text-align:center;">{{printf "%+.2f" .TotalVA }}</th>
+		</tfoot>
 </table>
 
 {{ end }}
@@ -65,23 +70,12 @@ $(function () {
 </script>
 
 <br>
-<h4>Headlines</h4>
-<table class="table table-condensed table-hover">
-		<tbody>
-				<tr>
-						<td>Overall Value Added</td>
-						<td>{{printf "%+.2f" .Grid.TotalVA}}</td>
-						<td>&nbsp;</td>
-				</tr>
-		</tbody>
-</table>
-
-<br>
 <h4>Students</h4>
 <table class="table table-condensed table-striped table-hover sortable">
 		<thead>
 				<th>Name</th>
 				<th>Class</th>
+				<th style="text-align:center;">PP</th>
 				<th style="text-align:center;">KS2</th>
 				<th style="text-align:center;">Grade</th>
 				<th style="text-align:center;">Effort</th>
@@ -93,6 +87,11 @@ $(function () {
 		<tr>
 				<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
 				<td>{{.Class}}</td>
+				<td style="text-align:center;">
+						{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
+						{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
+						{{end}}
+				</td>
 				<td style="text-align:center;">{{.KS2}}</td>
 				<td style="text-align:center;">{{.Grade}}</td>
 				<td style="text-align:center;">{{.Effort}}</td>

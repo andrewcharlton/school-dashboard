@@ -9,6 +9,7 @@ package database
 
 import (
 	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/level"
 	"github.com/andrewcharlton/school-dashboard/national"
 )
 
@@ -61,6 +62,9 @@ type Database interface {
 
 	// Subjects returns a list of all subjects available.
 	Subjects() map[int]*analysis.Subject
+
+	// Levels returns a list of all levels available.
+	Level(name string) *level.Level
 
 	// Classes returns a list of classes that exist for a subject,
 	// at a particular date (date_id should be provided).
