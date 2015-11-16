@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/andrewcharlton/school-dashboard/analysis"
 	"github.com/andrewcharlton/school-dashboard/database"
 )
 
@@ -24,8 +25,7 @@ func EnglishAndMaths(e database.Env) http.HandlerFunc {
 		nat := e.Nationals[f.NatYear]
 
 		type student struct {
-			UPN    string
-			Name   string
+			analysis.Student
 			EnGrd  string
 			EnEff  int
 			MaGrd  string
@@ -79,8 +79,7 @@ func EnglishAndMaths(e database.Env) http.HandlerFunc {
 				}
 			}
 
-			data.Students = append(data.Students, student{s.UPN,
-				s.Name(),
+			data.Students = append(data.Students, student{s,
 				enGrd,
 				enEff,
 				maGrd,

@@ -39,20 +39,27 @@ type Grade struct {
 type grdPt struct {
 	Grade  string
 	Points int
+	Att8   float64
 }
 
 type grdPts []grdPt
 
-func (g grdPts) Len() int           { return len(g) }
-func (g grdPts) Swap(i, j int)      { g[i], g[j] = g[j], g[i] }
-func (g grdPts) Less(i, j int) bool { return g[i].Points < g[j].Points }
+func (g grdPts) Len() int      { return len(g) }
+func (g grdPts) Swap(i, j int) { g[i], g[j] = g[j], g[i] }
+func (g grdPts) Less(i, j int) bool {
+	// Try to sort by points first, otherwise use attainment 8 scores.
+	if g[i].Points != g[j].Points {
+		return g[i].Points < g[j].Points
+	}
+	return g[i].Att8 < g[j].Att8
+}
 
 // Produces a list of grades, sorted by points score.
 func (l Level) SortedGrades() []string {
 
 	grades := grdPts{}
 	for _, grade := range l.Gradeset {
-		grades = append(grades, grdPt{grade.Grd, grade.Pts})
+		grades = append(grades, grdPt{grade.Grd, grade.Pts, grade.Att8})
 	}
 
 	sort.Sort(grades)
