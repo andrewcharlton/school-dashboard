@@ -37,7 +37,7 @@ func main() {
 	http.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
 	http.HandleFunc("/headlines/", handlers.Headlines(env))
 	http.HandleFunc("/effort/", handlers.Effort(env))
-	http.HandleFunc("/ks4subject/", handlers.KS4Subject(env))
+	http.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
 	http.HandleFunc("/classlist/", handlers.ClassList(env))
 	http.HandleFunc("/students/", handlers.Student(env))
 	http.HandleFunc("/studentsearch/", handlers.SearchRedirect(env))

@@ -12,25 +12,25 @@ import (
 	"github.com/andrewcharlton/school-dashboard/national"
 )
 
-func KS4Subject(e database.Env) http.HandlerFunc {
+func ProgressGrid(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		path := strings.Split(r.URL.Path, "/")
 		switch len(path) {
 		case 3:
-			selectSubject(e, w, r, "KS4 Analysis")
+			selectSubject(e, w, r, "Progress Grid")
 		case 4:
-			selectLevel(e, w, r, "KS4 Analysis")
+			selectLevel(e, w, r, "Progress Grid")
 		case 5:
-			selectClass(e, w, r, "KS4 Analysis")
+			selectClass(e, w, r, "Progress Grid")
 		case 6:
-			ks4SubjectAnalysis(e, w, r)
+			pgAnalysis(e, w, r)
 		}
 	}
 }
 
 // Performs analysis of the results
-func ks4SubjectAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) {
+func pgAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) {
 
 	Header(e, w, r)
 	FilterPage(e, w, r, false)
@@ -44,7 +44,7 @@ func ks4SubjectAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) 
 	}
 	subject := e.DB.Subjects()[subjID]
 	class := path[4]
-	if path[4] == "All Students" {
+	if strings.HasPrefix(path[4], "All") {
 		class = ""
 	}
 
@@ -74,7 +74,7 @@ func ks4SubjectAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) 
 		template.URL(ShortenQuery(e, r.URL.Query())),
 	}
 
-	err = e.Templates.ExecuteTemplate(w, "ks4subject.tmpl", data)
+	err = e.Templates.ExecuteTemplate(w, "progressgrid.tmpl", data)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -82,18 +82,18 @@ func ks4SubjectAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) 
 
 }
 
-type vaCellStudent struct {
+type pgCellStudent struct {
 	UPN  string
 	Name string
 }
 
-type vaCell struct {
+type pgCell struct {
 	VA       float64
-	Students []vaCellStudent
+	Students []pgCellStudent
 }
 
-type vaGrid struct {
-	Cells    map[string](map[string]vaCell)
+type pgGrid struct {
+	Cells    map[string](map[string]pgCell)
 	KS2      []string
 	Grades   []string
 	VA       map[string]float64
@@ -101,15 +101,15 @@ type vaGrid struct {
 	TMExists bool
 }
 
-func ks4VAGrid(subject *analysis.Subject, students []analysis.Student, nat national.National) vaGrid {
+func pgGridAnalysis(subject *analysis.Subject, students []analysis.Student, nat national.National) pgGrid {
 
 	ks2grades := []string{"None", "1", "2", "3C", "3B", "3A", "4C", "4B", "4A", "5C", "5B", "5A", "6"}
 	grades := subject.Level.SortedGrades()
 
-	grid := vaGrid{KS2: ks2grades, Grades: grades, Cells: map[string](map[string]vaCell){},
+	grid := pgGrid{KS2: ks2grades, Grades: grades, Cells: map[string](map[string]pgCell){},
 		VA: map[string]float64{}}
 	for _, ks2 := range ks2grades {
-		grid.Cells[ks2] = map[string]vaCell{}
+		grid.Cells[ks2] = map[string]pgCell{}
 	}
 
 	for _, s := range students {
@@ -133,7 +133,7 @@ func ks4VAGrid(subject *analysis.Subject, students []analysis.Student, nat natio
 		}
 
 		cell := grid.Cells[ks2][c.Grd]
-		cell.Students = append(cell.Students, vaCellStudent{s.UPN, s.Name()})
+		cell.Students = append(cell.Students, pgCellStudent{s.UPN, s.Name()})
 		grid.Cells[ks2][c.Grd] = cell
 	}
 
@@ -177,7 +177,7 @@ func ks4VAGrid(subject *analysis.Subject, students []analysis.Student, nat natio
 	return grid
 }
 
-type vaStudent struct {
+type pgStudent struct {
 	analysis.Student
 	Class      string
 	KS2        string
@@ -185,12 +185,13 @@ type vaStudent struct {
 	Effort     int
 	VAExists   bool
 	VA         float64
+	Sublevels  int
 	Attendance float64
 }
 
-func ks4VAStudents(subject *analysis.Subject, students []analysis.Student, nat national.National) []vaStudent {
+func pgStudentList(subject *analysis.Subject, students []analysis.Student, nat national.National) []pgStudent {
 
-	stdnts := []vaStudent{}
+	stdnts := []pgStudent{}
 	for _, s := range students {
 		c, exists := s.Courses[subject.Subj]
 		if !exists {
@@ -209,7 +210,7 @@ func ks4VAStudents(subject *analysis.Subject, students []analysis.Student, nat n
 
 		va := s.SubjectVA(subject.Subj, nat)
 
-		stdnts = append(stdnts, vaStudent{
+		stdnts = append(stdnts, pgStudent{
 			s,
 			c.Class,
 			ks2,
@@ -217,6 +218,7 @@ func ks4VAStudents(subject *analysis.Subject, students []analysis.Student, nat n
 			c.Effort,
 			va.Error == nil,
 			va.Pts,
+			0,
 			s.Attendance.Latest(),
 		})
 	}
