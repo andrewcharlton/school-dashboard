@@ -144,7 +144,9 @@ func pgGridAnalysis(subject *analysis.Subject, students []analysis.Student, nat 
 	// Otherwise, assume KS4 and try to load TMs.
 	tm, exists := nat.TMs[subject.TM]
 	if !exists {
-		fmt.Println("TM not found:", subject.TM)
+		if subject.TM != "" {
+			fmt.Println("TM not found:", subject.TM)
+		}
 		return grid
 	}
 	grid.TMExists = true
