@@ -79,6 +79,12 @@ func EnglishAndMaths(e database.Env) http.HandlerFunc {
 				}
 			}
 
+			natP8, err := nat.Progress8(s.KS2.APS)
+			p8 := 0.0
+			if err == nil {
+				p8 = s.Basket().Progress8(natP8).Pts
+			}
+
 			data.Students = append(data.Students, student{s,
 				enGrd,
 				enEff,
@@ -86,7 +92,7 @@ func EnglishAndMaths(e database.Env) http.HandlerFunc {
 				maEff,
 				s.Basics().AchB,
 				s.Effort().Pts,
-				s.Basket().Progress8(nat).Pts,
+				p8,
 				s.Attendance.Latest(),
 			})
 		}

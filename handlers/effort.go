@@ -8,11 +8,20 @@ import (
 	"github.com/andrewcharlton/school-dashboard/database"
 )
 
+type effort struct {
+	UPN     string
+	Name    string
+	Scores  map[int]int
+	Average float64
+	Prog8   float64
+}
+
 func Effort(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		Header(e, w, r)
 		FilterPage(e, w, r, false)
+		defer Footer(e, w, r)
 
 		f := GetFilter(e, r)
 		g, err := e.DB.GroupByFilter(f)
@@ -21,14 +30,6 @@ func Effort(e database.Env) http.HandlerFunc {
 		}
 
 		nat := e.Nationals[f.NatYear]
-
-		type effort struct {
-			UPN     string
-			Name    string
-			Scores  map[int]int
-			Average float64
-			Prog8   float64
-		}
 
 		efforts := []effort{}
 		prog8 := float64(0)
@@ -47,8 +48,11 @@ func Effort(e database.Env) http.HandlerFunc {
 			}
 
 			b := s.Basket()
-			eff.Prog8 = b.Progress8(nat).Pts
-			prog8 += eff.Prog8
+			natP8, err := nat.Progress8(s.KS2.APS)
+			if err != nil {
+				eff.Prog8 = b.Progress8(natP8).Pts
+				prog8 += eff.Prog8
+			}
 
 			efforts = append(efforts, eff)
 		}
@@ -64,8 +68,5 @@ func Effort(e database.Env) http.HandlerFunc {
 		}
 
 		e.Templates.ExecuteTemplate(w, "effort.tmpl", data)
-
-		Footer(e, w, r)
-
 	}
 }

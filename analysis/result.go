@@ -26,8 +26,9 @@ type Result struct {
 	// how many they were expected to achieve.
 	// Example: Points in the Progress 8 Basket, and the national
 	// figure for similar students.
-	Pts float64
+	Ach float64
 	Exp float64
+	Pts float64
 
 	// Any errors thrown up in the calculation.
 	Error error

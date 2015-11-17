@@ -688,7 +688,7 @@ func (db sqliteDB) NationalYears() ([]Lookup, error) {
 // National returns a set of national data for the given year.
 func (db sqliteDB) National(yearID string) (national.National, error) {
 
-	att8, err := db.loadAtt8(yearID)
+	prog8, err := db.loadProgress8(yearID)
 	if err != nil {
 		return national.National{}, err
 	}
@@ -698,32 +698,34 @@ func (db sqliteDB) National(yearID string) (national.National, error) {
 		return national.National{}, err
 	}
 
-	nat := national.National{Att8: att8, TMs: tms}
+	nat := national.National{Prog8: prog8, TMs: tms}
 	return nat, nil
 }
 
-func (db sqliteDB) loadAtt8(yearID string) (map[string]float64, error) {
+func (db sqliteDB) loadProgress8(yearID string) (map[string]national.Progress8, error) {
 
 	// Load attainment 8 data
-	rows, err := db.conn.Query(`SELECT ks2, att8 FROM nat_progress8
+	rows, err := db.conn.Query(`SELECT ks2, att8, english, maths, ebacc, other
+								FROM nat_progress8
 								WHERE year_ID=?`, yearID)
 	if err != nil {
-		return map[string]float64{}, err
+		return map[string]national.Progress8{}, err
 	}
 	defer rows.Close()
 
-	att8 := map[string]float64{}
+	prog8 := map[string]national.Progress8{}
 	for rows.Next() {
 		var ks2 string
-		var a8 float64
-		err := rows.Scan(&ks2, &a8)
+		var a8, en, ma, eb, oth float64
+		err := rows.Scan(&ks2, &a8, &en, &ma, &eb, &oth)
 		if err != nil {
-			return map[string]float64{}, err
+			return map[string]national.Progress8{}, err
 		}
-		att8[ks2] = a8
+		prog8[ks2] = national.Progress8{English: en, Maths: ma, EBacc: eb,
+			Other: oth, Att8: a8}
 	}
 
-	return att8, nil
+	return prog8, nil
 }
 
 // loadTMs loads up the transition matrices from a particular year

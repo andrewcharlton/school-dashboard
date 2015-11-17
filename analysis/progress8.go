@@ -50,20 +50,6 @@ func (s Student) Basket() Basket {
 	used := map[string]bool{}
 	b := Basket{ks2: s.KS2.APS}
 
-	// Maths baskets
-	maths := slots{}
-	for _, c := range s.Courses {
-		if c.EBacc == "M" {
-			maths = append(maths, Slot{c.Subj, c.Grd, c.Att8})
-		}
-	}
-	sort.Sort(sort.Reverse(maths))
-	if len(maths) > 0 {
-		b.Slots[0] = maths[0]
-		b.Slots[1] = maths[0]
-		used[maths[0].Subj] = true
-	}
-
 	// English baskets - double weighted only if Lang & Lit are
 	// present
 	lang, lit := false, false
@@ -81,10 +67,24 @@ func (s Student) Basket() Basket {
 	sort.Sort(sort.Reverse(eng))
 	if len(eng) > 0 {
 		used[eng[0].Subj] = true
-		b.Slots[2] = eng[0]
+		b.Slots[0] = eng[0]
 		if lang && lit {
-			b.Slots[3] = eng[0]
+			b.Slots[1] = eng[0]
 		}
+	}
+
+	// Maths baskets
+	maths := slots{}
+	for _, c := range s.Courses {
+		if c.EBacc == "M" {
+			maths = append(maths, Slot{c.Subj, c.Grd, c.Att8})
+		}
+	}
+	sort.Sort(sort.Reverse(maths))
+	if len(maths) > 0 {
+		b.Slots[2] = maths[0]
+		b.Slots[3] = maths[0]
+		used[maths[0].Subj] = true
 	}
 
 	// EBacc Basket
@@ -121,37 +121,78 @@ func (s Student) Basket() Basket {
 	return b
 }
 
-// TotalPoints calculates the total number of points in the basket
-func (b Basket) TotalPoints() float64 {
+// Progress 8 calculates a progress 8 score for the student,
+// compared to the national data provided.
+func (b Basket) Progress8(nat national.Progress8) Result {
 
-	points := float64(0)
-	for _, slot := range b.Slots {
-		points += slot.Points
-	}
-	return points
-}
-
-// Entries calculates how many slots in the basket were filled (out of 10)
-func (b Basket) Entries() int {
-
+	actual := 0.0
 	entries := 0
 	for _, slot := range b.Slots {
+		actual += slot.Points
 		if slot.Points > 0 {
 			entries++
 		}
 	}
-	return entries
+
+	return Result{Ach: actual, Exp: nat.Att8, Pts: (actual - nat.Att8) / 10, EntN: entries}
 }
 
-// Progress 8 calculates a progress 8 score for the student,
-// compared to the national data provided.
-func (b Basket) Progress8(nat national.National) Result {
+// English calculates the progress 8 scores for the English
+// element of the Progress 8 Basket.
+func (b Basket) English(nat national.Progress8) Result {
 
-	actual := b.TotalPoints()
-	exp, err := nat.Attainment8(b.ks2)
-	if err != nil {
-		return Result{Error: err}
+	actual := b.Slots[0].Points + b.Slots[1].Points
+	entries := 0
+	for _, slot := range b.Slots[2:4] {
+		if slot.Points > 0 {
+			entries++
+		}
 	}
 
-	return Result{Exp: exp, Pts: (actual - exp) / 10, Error: nil}
+	return Result{Ach: actual, Exp: nat.English, Pts: (actual - nat.English) / 2.0, EntN: entries}
+}
+
+// Mathematics calculates the progress 8 scores for the Mathematics
+// element of the Progress 8 Basket.
+func (b Basket) Mathematics(nat national.Progress8) Result {
+
+	actual := b.Slots[2].Points + b.Slots[3].Points
+	entries := 0
+	for _, slot := range b.Slots[:2] {
+		if slot.Points > 0 {
+			entries++
+		}
+	}
+
+	return Result{Ach: actual, Exp: nat.Maths, Pts: (actual - nat.Maths) / 2.0, EntN: entries}
+}
+
+// EBacc calculates the progress 8 scores for the EBacc
+// element of the Progress 8 Basket.
+func (b Basket) EBacc(nat national.Progress8) Result {
+
+	actual := b.Slots[4].Points + b.Slots[5].Points + b.Slots[6].Points
+	entries := 0
+	for _, slot := range b.Slots[4:7] {
+		if slot.Points > 0 {
+			entries++
+		}
+	}
+
+	return Result{Ach: actual, Exp: nat.EBacc, Pts: (actual - nat.EBacc) / 3.0, EntN: entries}
+}
+
+// Other calculates the progress 8 scores for the Other
+// element of the Progress 8 Basket.
+func (b Basket) Other(nat national.Progress8) Result {
+
+	actual := b.Slots[7].Points + b.Slots[8].Points + b.Slots[9].Points
+	entries := 0
+	for _, slot := range b.Slots[7:10] {
+		if slot.Points > 0 {
+			entries++
+		}
+	}
+
+	return Result{Ach: actual, Exp: nat.Other, Pts: (actual - nat.Other) / 3.0, EntN: entries}
 }

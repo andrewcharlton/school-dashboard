@@ -9,7 +9,7 @@ import "fmt"
 type National struct {
 
 	// Attainment 8 point scores for various ks2 scores.
-	Att8 map[string]float64
+	Prog8 map[string]Progress8
 
 	// Transition Matrices
 	TMs map[string]TransitionMatrix
@@ -17,10 +17,10 @@ type National struct {
 
 // Attainment8 returns the expected Attainment 8 points score
 // for a student with the given KS2 APS score.
-func (n National) Attainment8(ks2aps float64) (float64, error) {
+func (n National) Progress8(ks2aps float64) (Progress8, error) {
 
 	if ks2aps == 0 {
-		return 0, fmt.Errorf("No KS2 data")
+		return Progress8{}, fmt.Errorf("No KS2 data")
 	}
 
 	var dec string
@@ -39,10 +39,10 @@ func (n National) Attainment8(ks2aps float64) (float64, error) {
 		dec = fmt.Sprintf("%1.1f", ks2aps/6)
 	}
 
-	att8, exists := n.Att8[dec]
+	prog8, exists := n.Prog8[dec]
 	if !exists {
-		return 0, fmt.Errorf("Decimal level not found in table: %v", dec)
+		return Progress8{}, fmt.Errorf("Decimal level not found in table: %v", dec)
 	}
 
-	return att8, nil
+	return prog8, nil
 }

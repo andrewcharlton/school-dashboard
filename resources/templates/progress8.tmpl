@@ -1,0 +1,103 @@
+<script src="/static/js/plotly.min.js"></script>
+
+<h3>Progress 8</h3>
+
+<br>
+
+<div class="row">
+		<div class="col-sm-1"></div>
+		<div class="col-sm-10">
+
+				<table class="table">
+						<thead>
+								<th width="25%">&nbsp;</th>
+								<th width="15%" style="text-align:center;">English</th>
+								<th width="15%" style="text-align:center;">Maths</th>
+								<th width="15%" style="text-align:center;">EBacc</th>
+								<th width="15%" style="text-align:center;">Other</th>
+								<th width="15%" style="text-align:center;">Overall</th>
+						</thead>
+						<tbody>
+								<tr>
+										<td>Attainment 8</td>
+										{{ range .Slots }}
+										<td style="text-align:center;">{{printf "%.2f" .Att8 }}</td>
+										{{ end }}
+								</tr>
+								<tr>
+										<td>Points per Slot</td>
+										{{ range .Slots }}
+										<td style="text-align:center;">{{printf "%.2f" .Att8PerSlot }}</td>
+										{{ end }}
+								</tr>
+								<tr>
+										<td>Entries</td>
+										{{ range .Slots }}
+										<td style="text-align:center;">{{printf "%.2f" .Entries }}</td>
+										{{ end }}
+								</tr>
+								<tr>
+										<td>Progress 8</td>
+										{{ range .Slots }}
+										<td style="text-align:center;">{{printf "%+.2f" .Prog8 }}</td>
+										{{ end }}
+								</tr>
+						</tbody>
+				</table>
+
+				<br>
+
+				<div width="100%" id="chart"></div>
+
+				<br>
+
+				<table class="table table-striped table-hover sortable">
+						<thead>
+								<th>Name</th>
+								<th style="text-align:center;">KS2</th>
+								<th style="text-align:center;">PP</th>
+								<th style="text-align:center;">English</th>
+								<th style="text-align:center;">Maths</th>
+								<th style="text-align:center;">EBacc</th>
+								<th style="text-align:center;">Other</th>
+								<th style="text-align:center;">Overall</th>
+								<th style="text-align:center;">Attendance</th>
+						</thead>
+						<tbody>
+								{{ $q := .Query }}
+								{{ range .Students }}
+								<tr>
+										<td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+										<td style="text-align:center;">{{ .KS2.Av }}</td>
+										<td style="text-align:center;">
+												{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
+												{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
+												{{end}}
+										</td>
+									
+										{{ range .Slots }}
+										<td style="text-align:center;"
+												data-container="body"
+												data-toggle="popover"
+												data-placement="right"
+												data-html="true"
+												data-trigger="hover"
+												data-content="{{ .Text }}"> {{printf "%+.2f" .Prog8 }}
+										</td>
+										{{ end }}
+
+										<td style="text-align:center;">{{printf "%.1f"  .Attendance.Latest }}</td>
+								</tr>
+								{{ end }}
+						</tbody>
+				</table>
+		</div>
+		<div class="col-sm-1"></div>
+</div>
+
+
+<script>
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
+</script>
