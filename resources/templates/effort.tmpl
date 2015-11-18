@@ -6,34 +6,26 @@
 		<table class="table table-hover sortable">
 				<thead>
 						<th>Name</th>
-						<th>1's</th>
-						<th>2's</th>
-						<th>3's</th>
-						<th>4's</th>
-						<th>Average</th>
-						<th>Progress 8 Score</th>
+						<th style="text-align:center;">1's</th>
+						<th style="text-align:center;">2's</th>
+						<th style="text-align:center;">3's</th>
+						<th style="text-align:center;">4's</th>
+						<th style="text-align:center;">Average</th>
+						<th style="text-align:center;">Progress 8 Score</th>
 				</thead>
 				<tbody>
 				{{ $q := .Query }}
 				{{ range .Efforts }}
 						<tr>
 								<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
-								<td>{{index .Scores 1}}</td>
-								<td>{{index .Scores 2}}</td>
-								<td>{{index .Scores 3}}</td>
-								<td>{{index .Scores 4}}</td>
-								<td>{{printf "%1.1f" .Average}}</td>
-								<td>{{printf "%1.1f" .Prog8}}</td>
+								<td style="text-align:center;">{{index .Scores 1}}</td>
+								<td style="text-align:center;">{{index .Scores 2}}</td>
+								<td style="text-align:center;">{{index .Scores 3}}</td>
+								<td style="text-align:center;">{{index .Scores 4}}</td>
+								<td style="text-align:center;">{{printf "%1.1f" .Average}}</td>
+								<td style="text-align:center;">{{printf "%1.1f" .Prog8}}</td>
 						</tr>
 				{{ end }}
-						<tr class="warning">
-								<td>Overall Progress 8</td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td>{{printf "%1.2f" .Prog8}}</td>
 				</tbody>
 		</table>
 		</div>

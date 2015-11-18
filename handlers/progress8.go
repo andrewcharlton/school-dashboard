@@ -74,9 +74,14 @@ func Progress8(e database.Env) http.HandlerFunc {
 		for _, key := range keys {
 			p8 := nat.Prog8[key]
 			ks2, err := strconv.ParseFloat(key, 64)
-			if err != nil {
+			if err == national.ErrNoKS2 {
 				continue
 			}
+			if err != nil {
+				fmt.Printf("Error: %v", err)
+				continue
+			}
+
 			data.GraphNat.X = append(data.GraphNat.X, ks2)
 			data.GraphNat.Y = append(data.GraphNat.Y, p8.Att8)
 		}
@@ -85,7 +90,6 @@ func Progress8(e database.Env) http.HandlerFunc {
 		for _, s := range g.Students {
 			slots, err := p8StudentData(s, nat)
 			if err != nil {
-				fmt.Printf("Progress8 Handler - Error: %v", err)
 				continue
 			}
 			stdnt := p8Student{s, slots, 100.0 * s.Attendance.Latest()}

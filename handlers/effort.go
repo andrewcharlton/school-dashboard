@@ -32,7 +32,6 @@ func Effort(e database.Env) http.HandlerFunc {
 		nat := e.Nationals[f.NatYear]
 
 		efforts := []effort{}
-		prog8 := float64(0)
 		for _, s := range g.Students {
 			eff := effort{UPN: s.UPN, Name: s.Name(), Scores: map[int]int{}}
 			total, num := 0, 0
@@ -49,9 +48,8 @@ func Effort(e database.Env) http.HandlerFunc {
 
 			b := s.Basket()
 			natP8, err := nat.Progress8(s.KS2.APS)
-			if err != nil {
+			if err == nil {
 				eff.Prog8 = b.Progress8(natP8).Pts
-				prog8 += eff.Prog8
 			}
 
 			efforts = append(efforts, eff)
@@ -60,11 +58,9 @@ func Effort(e database.Env) http.HandlerFunc {
 		data := struct {
 			Efforts []effort
 			Query   template.URL
-			Prog8   float64
 		}{
 			efforts,
 			template.URL(ShortenQuery(e, r.URL.Query())),
-			prog8 / float64(len(efforts)),
 		}
 
 		e.Templates.ExecuteTemplate(w, "effort.tmpl", data)
