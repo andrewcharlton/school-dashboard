@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"sort"
+	"strconv"
 
 	"github.com/andrewcharlton/school-dashboard/analysis"
 	"github.com/andrewcharlton/school-dashboard/database"
@@ -24,6 +26,12 @@ type p8Student struct {
 	Att   float64
 }
 
+type p8Graph struct {
+	X    []float64
+	Y    []float64
+	Text []string
+}
+
 func Progress8(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -32,13 +40,17 @@ func Progress8(e database.Env) http.HandlerFunc {
 		defer Footer(e, w, r)
 
 		data := struct {
-			Slots    [5]p8Slot
-			Students []p8Student
-			Query    template.URL
+			Slots       [5]p8Slot
+			Students    []p8Student
+			Query       template.URL
+			GraphNat    p8Graph
+			GraphPupils [4]p8Graph
 		}{
 			[5]p8Slot{},
 			[]p8Student{},
 			template.URL(ShortenQuery(e, r.URL.Query())),
+			p8Graph{},
+			[4]p8Graph{},
 		}
 
 		f := GetFilter(e, r)
@@ -53,6 +65,22 @@ func Progress8(e database.Env) http.HandlerFunc {
 			fmt.Fprintf(w, "Error: %v", err)
 		}
 
+		keys := []string{}
+		for key := range nat.Prog8 {
+			keys = append(keys, key)
+		}
+		sort.Sort(sort.StringSlice(keys))
+
+		for _, key := range keys {
+			p8 := nat.Prog8[key]
+			ks2, err := strconv.ParseFloat(key, 64)
+			if err != nil {
+				continue
+			}
+			data.GraphNat.X = append(data.GraphNat.X, ks2)
+			data.GraphNat.Y = append(data.GraphNat.Y, p8.Att8)
+		}
+
 		totalN := 0
 		for _, s := range g.Students {
 			slots, err := p8StudentData(s, nat)
@@ -62,6 +90,21 @@ func Progress8(e database.Env) http.HandlerFunc {
 			}
 			stdnt := p8Student{s, slots, 100.0 * s.Attendance.Latest()}
 			data.Students = append(data.Students, stdnt)
+
+			var key int
+			switch {
+			case s.PP && s.Gender == "Male":
+				key = 0
+			case s.Gender == "Male":
+				key = 1
+			case s.PP && s.Gender == "Female":
+				key = 2
+			case s.Gender == "Female":
+				key = 3
+			}
+			data.GraphPupils[key].X = append(data.GraphPupils[key].X, s.KS2.APS/6.0)
+			data.GraphPupils[key].Y = append(data.GraphPupils[key].Y, slots[4].Att8)
+			data.GraphPupils[key].Text = append(data.GraphPupils[key].Text, fmt.Sprintf("<b>%v</b><br>%v", s.Name(), slots[4].Text))
 
 			for i := 0; i < 5; i++ {
 				data.Slots[i].Att8 += slots[i].Att8

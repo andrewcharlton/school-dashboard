@@ -4,6 +4,10 @@
 
 <br>
 
+<div width="100%" id="chart"></div>
+
+<br>
+
 <div class="row">
 		<div class="col-sm-1"></div>
 		<div class="col-sm-10">
@@ -47,11 +51,7 @@
 
 				<br>
 
-				<div width="100%" id="chart"></div>
-
-				<br>
-
-				<table class="table table-striped table-hover sortable">
+				<table class="table table-condensed table-striped table-hover sortable">
 						<thead>
 								<th>Name</th>
 								<th style="text-align:center;">KS2</th>
@@ -101,3 +101,87 @@ $(function () {
   $('[data-toggle="popover"]').popover()
 })
 </script>
+
+<script src="/static/js/plotly.min.js"></script>
+
+<script>
+        var national = {
+        x: [{{ range .GraphNat.X }}{{.}}, {{end}}], 
+        y: [{{ range .GraphNat.Y }}{{.}}, {{end}}], 
+        mode: 'lines',
+        name: 'National',
+        line: {shape: 'spline'},
+        type: 'scatter',
+        hoverinfo: 'none',
+        };
+
+        {{ with index .GraphPupils 0 }}
+        var male_pp = {
+        x: [{{ range .X }}{{ . }}, {{ end }}],
+        y: [{{ range .Y }}{{ . }}, {{ end }}],
+        mode: 'markers',
+        type: 'scatter',
+        name: 'Male - Disadvantaged',
+        text: [{{ range .Text }}"{{.}}", {{ end }}],
+        marker: { size: 8 },
+        hoverinfo: 'text',
+        };
+        {{ end }}
+
+        {{ with index .GraphPupils 1 }}
+        var male_non = {
+        x: [{{ range .X }}{{ . }}, {{ end }}],
+        y: [{{ range .Y }}{{ . }}, {{ end }}],
+        mode: 'markers',
+        type: 'scatter',
+        name: 'Male - Non-Disadvantaged',
+        text: [{{ range .Text }}"{{.}}", {{ end }}],
+        marker: { size: 8 },
+        hoverinfo: 'text',
+        };
+        {{ end }}
+
+        {{ with index .GraphPupils 2 }}
+        var female_pp = {
+        x: [{{ range .X }}{{ . }}, {{ end }}],
+        y: [{{ range .Y }}{{ . }}, {{ end }}],
+        mode: 'markers',
+        type: 'scatter',
+        name: 'Female - Disadvantaged',
+        text: [{{ range .Text }}"{{.}}", {{ end }}],
+        marker: { size: 8 },
+        hoverinfo: 'text',
+        };
+        {{ end }}
+
+        {{ with index .GraphPupils 3 }}
+        var female_non = {
+        x: [{{ range .X }}{{ . }}, {{ end }}],
+        y: [{{ range .Y }}{{ . }}, {{ end }}],
+        mode: 'markers',
+        type: 'scatter',
+        name: 'Female - Non-Disadvantaged',
+        text: [{{ range .Text }}"{{.}}", {{ end }}],
+        marker: { size: 8 },
+        hoverinfo: 'text',
+        };
+        {{ end }}
+
+        var data = [ national, male_pp, male_non, female_pp , female_non, ];
+
+        var layout = {
+                hovermode: 'closest',
+        xaxis: {
+                title: "KS2 Average Point Score",
+                range: [ 0.75, 6.25 ]
+        },
+        yaxis: {
+                title: "Attainment 8 Score",
+                range: [0, 80]
+        },
+        title:'Progress 8'
+        };
+
+        Plotly.newPlot('chart', data, layout);
+</script>
+

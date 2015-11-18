@@ -456,7 +456,7 @@ func (db sqliteDB) groupFilter(f Filter, table string) string {
 		query += fmt.Sprintf(" AND gender = %v", f.Gender)
 	}
 	if len(f.SEN) > 0 {
-		query += fmt.Sprintf(` AND sen IN ("` + strings.Join(f.SEN, `", "`) + `")`)
+		query += fmt.Sprintf(` AND sen_status IN ("` + strings.Join(f.SEN, `", "`) + `")`)
 	}
 	if len(f.Ethnicities) > 0 {
 		query += fmt.Sprintf(` AND ethnicity IN ("` + strings.Join(f.Ethnicities, `", "`) + `")`)
