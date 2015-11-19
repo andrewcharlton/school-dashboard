@@ -43,6 +43,9 @@ func classStudentList(e database.Env, w http.ResponseWriter, r *http.Request) {
 	}
 	subject := e.DB.Subjects()[subjID]
 	class := path[4]
+	if strings.HasPrefix(class, "All") {
+		class = ""
+	}
 
 	f := GetFilter(e, r)
 	g, err := e.DB.GroupByClass(path[3], class, f)

@@ -1,5 +1,3 @@
-<script src="/static/js/plotly.min.js"></script>
-
 <h3>Progress 8</h3>
 
 <br>
@@ -171,15 +169,26 @@ $(function () {
 
         var layout = {
                 hovermode: 'closest',
-        xaxis: {
-                title: "KS2 Average Point Score",
-                range: [ 0.75, 6.25 ]
-        },
-        yaxis: {
-                title: "Attainment 8 Score",
-                range: [0, 80]
-        },
-        title:'Progress 8'
+                scene: {
+                        aspectratio: {
+                                        x: 3,
+                                        y: 2,
+                                    },
+                },
+                xaxis: {
+                        title: "KS2 Average Point Score",
+                        range: [ 0.75, 6.25 ]
+                },
+                yaxis: {
+                        title: "Attainment 8 Score",
+                        range: [0, 80]
+                },
+                legend: {
+                        x: 0.05,
+                        y: 1,
+                        xanchor: "left",
+                        yanchor: "top",
+                },
         };
 
         Plotly.newPlot('chart', data, layout);

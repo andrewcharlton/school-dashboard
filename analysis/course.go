@@ -8,6 +8,9 @@ type Subject struct {
 	// Name of the subject
 	Subj string
 
+	// Unique ID of the subject
+	SubjID int
+
 	// The Level of the subject
 	*level.Level
 

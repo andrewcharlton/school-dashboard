@@ -217,14 +217,14 @@ func (db *sqliteDB) loadSubjects() error {
 
 	db.subjects = map[int]*analysis.Subject{}
 	for rows.Next() {
-		var id, lvl int
+		var lvl int
 		var s analysis.Subject
-		err := rows.Scan(&id, &s.Subj, &lvl, &s.EBacc, &s.TM, &s.KS2Prior)
+		err := rows.Scan(&s.SubjID, &s.Subj, &lvl, &s.EBacc, &s.TM, &s.KS2Prior)
 		if err != nil {
 			return err
 		}
 		s.Level = db.levels[lvl]
-		db.subjects[id] = &s
+		db.subjects[s.SubjID] = &s
 	}
 
 	return nil

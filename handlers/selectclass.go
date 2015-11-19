@@ -80,7 +80,7 @@ func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading
 
 	// If only one level, just redirect to that page
 	if len(levels) == 1 {
-		url := fmt.Sprintf("%v/%v?%v", r.URL.Path, levels[0].SubjID, r.URL.RawQuery)
+		url := fmt.Sprintf("%v/%v/?%v", r.URL.Path, levels[0].SubjID, r.URL.RawQuery)
 		http.Redirect(w, r, url, 301)
 		return
 	}
