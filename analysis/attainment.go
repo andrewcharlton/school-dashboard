@@ -13,6 +13,10 @@ func (s Student) Basics() Result {
 			if c.L2Pass {
 				eng = true
 			}
+		case "El":
+			if c.L2Pass {
+				eng = true
+			}
 		case "M":
 			if c.L2Pass {
 				maths = true

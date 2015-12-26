@@ -45,17 +45,20 @@ func (s Student) EBacc() EBaccResult {
 			Pts:  float64(points[key][0])}
 	}
 
-	// English - needs pass in Language, and an entry in Literature
-	if entered["El"] < 1 {
+	// English - needs to be entered in both Language and Literature, and
+	// achieve a pass in either one of them.
+	switch {
+	case !(entered["El"] >= 1 && entered["En"] >= 1):
 		results["E"] = Result{EntB: false, AchB: false}
-		entAll, passAll = false, false
-	} else {
-		results["E"] = Result{EntB: entered["En"] >= 1,
-			AchB: passed["En"] >= 1,
-			Pts:  float64(points["En"][0])}
-		entAll = entAll && (entered["En"] >= 1)
-		passAll = passAll && (passed["En"] >= 1)
+	case !(passed["El"] >= 1 || passed["En"] >= 1):
+		results["E"] = Result{EntB: true, AchB: false}
+	case points["En"][0] > points["El"][0]:
+		results["E"] = Result{EntB: true, AchB: true, Pts: float64(points["En"][0])}
+	default:
+		results["E"] = Result{EntB: true, AchB: true, Pts: float64(points["El"][0])}
 	}
+	entAll = entAll && results["E"].EntB
+	passAll = passAll && results["E"].AchB
 
 	// Science - needs entries/passes in Core/Additional or Double Science
 	// or any two of the triple sciences/computer science.
