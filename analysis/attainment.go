@@ -30,9 +30,9 @@ func (g Group) Basics() Result {
 	passes, entered := 0, 0
 	for _, s := range g.Students {
 		if s.Basics().AchB {
-			passes += 1
+			passes++
 		}
-		entered += 1
+		entered++
 	}
 
 	if entered == 0 {

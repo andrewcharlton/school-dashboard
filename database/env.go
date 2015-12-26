@@ -136,7 +136,7 @@ func (e *Env) LoadFilterItems() error {
 	return nil
 }
 
-// LoadNational result data
+// LoadNationals result data
 func (e *Env) LoadNationals() error {
 
 	years, err := e.DB.NationalYears()
