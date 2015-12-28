@@ -38,12 +38,17 @@ func Student(e database.Env) http.HandlerFunc {
 			return
 		}
 
+		nat := e.Nationals[query.Get("natyear")]
+		p8, err := nat.Progress8(s.KS2.APS)
+
 		data := struct {
 			Student analysis.Student
-			Nat     national.National
+			Nat     national.Progress8
+			HasNat  bool
 		}{
 			s,
-			e.Nationals[query.Get("natyear")],
+			p8,
+			err == nil,
 		}
 
 		e.Templates.ExecuteTemplate(w, "student.tmpl", data)
