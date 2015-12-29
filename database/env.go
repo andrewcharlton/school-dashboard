@@ -2,10 +2,9 @@ package database
 
 import (
 	"html/template"
-	"io/ioutil"
-	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/national"
+	"github.com/andrewcharlton/school-dashboard/templates"
 )
 
 // An Env contains all of the environment variables
@@ -74,26 +73,28 @@ func (e *Env) LoadConfig() error {
 	return nil
 }
 
-// LoadTemplates searches for all template files in
-// ./templates and parses them.
+// LoadTemplates parses the contents of the templates package
+// and creates an html.Template from the contents
 func (e *Env) LoadTemplates() error {
 
-	filenames := []string{}
-	files, err := ioutil.ReadDir("templates/")
-	if err != nil {
-		return err
-	}
+	var t *template.Template
+	for name, contents := range templates.Templates {
+		var tmpl *template.Template
 
-	// Check they are .html and give full path back
-	for _, f := range files {
-		if strings.Contains(f.Name(), ".tmpl") {
-			filenames = append(filenames, "templates/"+f.Name())
+		if t == nil {
+			t = template.New(name)
 		}
-	}
 
-	t, err := template.ParseFiles(filenames...)
-	if err != nil {
-		return err
+		if name == t.Name() {
+			tmpl = t
+		} else {
+			tmpl = t.New(name)
+		}
+
+		_, err := tmpl.Parse(contents)
+		if err != nil {
+			return err
+		}
 	}
 
 	e.Templates = t
