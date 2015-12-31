@@ -25,12 +25,12 @@ func main() {
 	}
 
 	// Serve static files
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	static := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", static))
 
 	// Serve image files
-	is := http.FileServer(http.Dir("./images"))
-	http.Handle("/images/", http.StripPrefix("/images/", is))
+	images := http.FileServer(http.Dir("./images"))
+	http.Handle("/images/", http.StripPrefix("/images/", images))
 
 	// Handlers
 	http.HandleFunc("/", handlers.Index(env))
