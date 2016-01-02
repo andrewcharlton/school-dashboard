@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -24,18 +25,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Add client server
-	clientMux := http.NewServeMux()
-
-	// Serve static files
+	// Static and Image servers
 	static := http.FileServer(http.Dir("./static"))
-	clientMux.Handle("/static/", http.StripPrefix("/static/", static))
-
-	// Serve image files
 	images := http.FileServer(http.Dir("./images"))
-	clientMux.Handle("/images/", http.StripPrefix("/images/", images))
 
-	// Handlers
+	// Client Server
+	clientMux := http.NewServeMux()
+	clientMux.Handle("/static/", http.StripPrefix("/static/", static))
+	clientMux.Handle("/images/", http.StripPrefix("/images/", images))
 	clientMux.HandleFunc("/", handlers.Index(env))
 	clientMux.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
 	clientMux.HandleFunc("/headlines/", handlers.Headlines(env))
@@ -47,9 +44,12 @@ func main() {
 	clientMux.HandleFunc("/students/", handlers.Student(env))
 	clientMux.HandleFunc("/studentsearch/", handlers.SearchRedirect(env))
 	clientMux.HandleFunc("/search/", handlers.Search(env))
-
-	// Start client server
 	go func() {
 		http.ListenAndServe(":8080", clientMux)
 	}()
+
+	adminMux := http.NewServeMux()
+	adminMux.Handle("/static/", http.StripPrefix("/static/", static))
+	adminMux.HandleFunc("/admin/", func(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, "Hello") })
+	http.ListenAndServe(":8081", adminMux)
 }
