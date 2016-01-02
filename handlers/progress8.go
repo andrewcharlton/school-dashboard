@@ -52,7 +52,7 @@ func Progress8(e database.Env) http.HandlerFunc {
 		}{
 			[5]p8Slot{},
 			[]p8Student{},
-			template.URL(ShortenQuery(e, r.URL.Query())),
+			template.URL(r.URL.RawQuery),
 			p8Graph{},
 			[4]p8Graph{},
 		}

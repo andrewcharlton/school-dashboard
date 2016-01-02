@@ -64,7 +64,7 @@ func Effort(e database.Env) http.HandlerFunc {
 			Query   template.URL
 		}{
 			efforts,
-			template.URL(ShortenQuery(e, r.URL.Query())),
+			template.URL(r.URL.RawQuery),
 		}
 
 		e.Templates.ExecuteTemplate(w, "effort.tmpl", data)

@@ -52,7 +52,7 @@ func EnglishAndMaths(e database.Env) http.HandlerFunc {
 			BothPassPct float64
 		}{
 			Students: []student{},
-			Query:    template.URL(ShortenQuery(e, r.URL.Query())),
+			Query:    template.URL(r.URL.RawQuery),
 		}
 
 		for _, s := range g.Students {

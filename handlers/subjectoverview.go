@@ -37,7 +37,7 @@ func SubjectOverview(e database.Env) http.HandlerFunc {
 		}{
 			subjSummaries,
 			f.Year,
-			template.URL(ShortenQuery(e, r.URL.Query())),
+			template.URL(r.URL.RawQuery),
 		}
 
 		err = e.Templates.ExecuteTemplate(w, "subject-overview.tmpl", data)

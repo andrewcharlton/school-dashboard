@@ -70,7 +70,7 @@ func classStudentList(e database.Env, w http.ResponseWriter, r *http.Request) {
 		subject.Lvl,
 		path[3],
 		class,
-		template.URL(ShortenQuery(e, r.URL.Query())),
+		template.URL(r.URL.RawQuery),
 		g.Students,
 	}
 

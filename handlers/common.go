@@ -17,8 +17,7 @@ import (
 func Redirect(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		query := ShortenQuery(e, r.URL.Query())
-		url := "/index/?" + query
+		url := "/index/?" + r.URL.RawQuery
 		http.Redirect(w, r, url, 301)
 
 	}
@@ -225,51 +224,6 @@ func FilterLabels(e database.Env, f database.Filter, short bool) []label {
 	}
 
 	return labels
-}
-
-// ShortenQuery removes all group filtering options, leaving
-// just date, resultset and national/yeargroup options.
-// If these are not present, adds in default options.
-func ShortenQuery(e database.Env, query url.Values) string {
-
-	del := []string{}
-	for key, _ := range query {
-		switch key {
-		case "date", "resultset", "natyear", "year":
-			continue
-		default:
-			del = append(del, key)
-		}
-	}
-
-	for _, key := range del {
-		query.Del(key)
-	}
-
-	return LengthenQuery(e, query)
-}
-
-// LengthenQuery adds any default filtering options if they are
-// not already present.
-func LengthenQuery(e database.Env, query url.Values) string {
-
-	if _, exists := query["date"]; !exists {
-		query.Add("date", e.Config.Date)
-	}
-
-	if _, exists := query["resultset"]; !exists {
-		query.Add("resultset", e.Config.Resultset)
-	}
-
-	if _, exists := query["natyear"]; !exists {
-		query.Add("natyear", e.Config.NatYear)
-	}
-
-	if _, exists := query["year"]; !exists {
-		query.Add("year", e.Config.Year)
-	}
-
-	return query.Encode()
 }
 
 // ChangeYear changes the yeargroup filtered by the query

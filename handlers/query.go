@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/andrewcharlton/school-dashboard/database"
@@ -11,8 +10,8 @@ import (
 // Year - whether a year group is necessary
 // Shory - whether other filter options are needed
 type queryOpts struct {
-	Year  bool
-	Short bool
+	Year   bool
+	Others bool
 }
 
 // checkRedirect checks whether the query string has
@@ -49,7 +48,7 @@ func checkRedirect(e database.Env, opts queryOpts, w http.ResponseWriter, r *htt
 		redirect = true
 	}
 
-	if opts.Short {
+	if !opts.Others {
 		del := []string{}
 		for key, _ := range query {
 			switch key {
@@ -71,7 +70,6 @@ func checkRedirect(e database.Env, opts queryOpts, w http.ResponseWriter, r *htt
 	}
 
 	path := r.URL.Path + "?" + query.Encode()
-	fmt.Println(path)
 	http.Redirect(w, r, path, 301)
 	return true
 }

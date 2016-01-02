@@ -15,7 +15,7 @@ func SearchRedirect(e database.Env) http.HandlerFunc {
 
 		query := r.URL.Query()
 		name := query.Get("name")
-		url := "/search/" + name + "/?" + ShortenQuery(e, query)
+		url := "/search/" + name + "/?" + r.URL.RawQuery
 
 		http.Redirect(w, r, url, 301)
 	}

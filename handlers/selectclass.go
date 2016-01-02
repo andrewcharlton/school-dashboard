@@ -42,7 +42,7 @@ func selectSubject(e database.Env, w http.ResponseWriter, r *http.Request, headi
 		heading,
 		[]string{},
 		template.URL(r.URL.Path),
-		template.URL(ShortenQuery(e, r.URL.Query())),
+		template.URL(r.URL.RawQuery),
 	}
 
 	for subj := range distinct {
@@ -110,7 +110,7 @@ func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading
 		levels,
 		template.URL("/" + path[1]),
 		template.URL(r.URL.Path),
-		template.URL(ShortenQuery(e, r.URL.Query())),
+		template.URL(r.URL.RawQuery),
 	}
 
 	err := e.Templates.ExecuteTemplate(w, "select-level.tmpl", data)
@@ -165,7 +165,7 @@ func selectClass(e database.Env, w http.ResponseWriter, r *http.Request, heading
 		map[string]template.URL{},
 		template.URL("/" + path[1]),
 		template.URL(r.URL.Path),
-		template.URL(ShortenQuery(e, r.URL.Query())),
+		template.URL(r.URL.RawQuery),
 	}
 
 	years := map[string]bool{}

@@ -75,7 +75,7 @@ func pgAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) {
 		path[4],
 		pgStudentList(subject, g.Students, nat),
 		pgGridAnalysis(subject, g.Students, nat),
-		template.URL(ShortenQuery(e, r.URL.Query())),
+		template.URL(r.URL.RawQuery),
 	}
 
 	err = e.Templates.ExecuteTemplate(w, "progressgrid.tmpl", data)
