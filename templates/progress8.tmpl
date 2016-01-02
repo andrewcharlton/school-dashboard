@@ -7,90 +7,90 @@
 <br>
 
 <div class="row">
-		<div class="col-sm-1"></div>
-		<div class="col-sm-10">
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
 
-				<table class="table">
-						<thead>
-								<th width="25%">&nbsp;</th>
-								<th width="15%" style="text-align:center;">English</th>
-								<th width="15%" style="text-align:center;">Maths</th>
-								<th width="15%" style="text-align:center;">EBacc</th>
-								<th width="15%" style="text-align:center;">Other</th>
-								<th width="15%" style="text-align:center;">Overall</th>
-						</thead>
-						<tbody>
-								<tr>
-										<td>Attainment 8</td>
-										{{ range .Slots }}
-										<td style="text-align:center;">{{printf "%.2f" .Att8 }}</td>
-										{{ end }}
-								</tr>
-								<tr>
-										<td>Points per Slot</td>
-										{{ range .Slots }}
-										<td style="text-align:center;">{{printf "%.2f" .Att8PerSlot }}</td>
-										{{ end }}
-								</tr>
-								<tr>
-										<td>Entries</td>
-										{{ range .Slots }}
-										<td style="text-align:center;">{{printf "%.2f" .Entries }}</td>
-										{{ end }}
-								</tr>
-								<tr>
-										<td>Progress 8</td>
-										{{ range .Slots }}
-										<td style="text-align:center;">{{printf "%+.2f" .Prog8 }}</td>
-										{{ end }}
-								</tr>
-						</tbody>
-				</table>
+	<table class="table">
+	  <thead>
+		<th width="25%">&nbsp;</th>
+		<th width="15%" style="text-align:center;">English</th>
+		<th width="15%" style="text-align:center;">Maths</th>
+		<th width="15%" style="text-align:center;">EBacc</th>
+		<th width="15%" style="text-align:center;">Other</th>
+		<th width="15%" style="text-align:center;">Overall</th>
+	  </thead>
+	  <tbody>
+		<tr>
+		  <td>Attainment 8</td>
+		  {{ range .Slots }}
+		  <td style="text-align:center;">{{printf "%.2f" .Att8 }}</td>
+		  {{ end }}
+		</tr>
+		<tr>
+		  <td>Points per Slot</td>
+		  {{ range .Slots }}
+		  <td style="text-align:center;">{{printf "%.2f" .Att8PerSlot }}</td>
+		  {{ end }}
+		</tr>
+		<tr>
+		  <td>Entries</td>
+		  {{ range .Slots }}
+		  <td style="text-align:center;">{{printf "%.2f" .Entries }}</td>
+		  {{ end }}
+		</tr>
+		<tr>
+		  <td>Progress 8</td>
+		  {{ range .Slots }}
+		  <td style="text-align:center;">{{printf "%+.2f" .Prog8 }}</td>
+		  {{ end }}
+		</tr>
+	  </tbody>
+	</table>
 
-				<br>
+	<br>
 
-				<table class="table table-condensed table-striped table-hover sortable">
-						<thead>
-								<th>Name</th>
-								<th style="text-align:center;">KS2</th>
-								<th style="text-align:center;">PP</th>
-								<th style="text-align:center;">English</th>
-								<th style="text-align:center;">Maths</th>
-								<th style="text-align:center;">EBacc</th>
-								<th style="text-align:center;">Other</th>
-								<th style="text-align:center;">Overall</th>
-								<th style="text-align:center;">Attendance</th>
-						</thead>
-						<tbody>
-								{{ $q := .Query }}
-								{{ range .Students }}
-								<tr>
-										<td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
-										<td style="text-align:center;">{{ .KS2.Av }}</td>
-										<td style="text-align:center;">
-												{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
-												{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
-												{{end}}
-										</td>
-									
-										{{ range .Slots }}
-										<td style="text-align:center;"
-												data-container="body"
-												data-toggle="popover"
-												data-placement="right"
-												data-html="true"
-												data-trigger="hover"
-												data-content="{{ .Text }}"> {{printf "%+.2f" .Prog8 }}
-										</td>
-										{{ end }}
+	<table class="table table-condensed table-striped table-hover sortable">
+	  <thead>
+		<th>Name</th>
+		<th style="text-align:center;">KS2</th>
+		<th style="text-align:center;">PP</th>
+		<th style="text-align:center;">English</th>
+		<th style="text-align:center;">Maths</th>
+		<th style="text-align:center;">EBacc</th>
+		<th style="text-align:center;">Other</th>
+		<th style="text-align:center;">Overall</th>
+		<th style="text-align:center;">Attendance</th>
+	  </thead>
+	  <tbody>
+		{{ $q := .Query }}
+		{{ range .Students }}
+		<tr>
+		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+		  <td style="text-align:center;">{{ .KS2.Av }}</td>
+		  <td style="text-align:center;">
+			{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
+			{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
+			{{end}}
+		  </td>
 
-										<td style="text-align:center;">{{printf "%.1f"  .Attendance.Latest }}</td>
-								</tr>
-								{{ end }}
-						</tbody>
-				</table>
-		</div>
-		<div class="col-sm-1"></div>
+		  {{ range .Slots }}
+		  <td style="text-align:center;"
+		data-container="body"
+  data-toggle="popover"
+  data-placement="right"
+  data-html="true"
+  data-trigger="hover"
+  data-content="{{ .Text }}"> {{printf "%+.2f" .Prog8 }}
+		  </td>
+		  {{ end }}
+
+		  <td style="text-align:center;">{{printf "%.1f"  .Attendance.Latest }}</td>
+		</tr>
+		{{ end }}
+	  </tbody>
+	</table>
+  </div>
+  <div class="col-sm-1"></div>
 </div>
 
 
@@ -103,94 +103,94 @@ $(function () {
 <script src="/static/js/plotly.min.js"></script>
 
 <script>
-        var national = {
-        x: [{{ range .GraphNat.X }}{{.}}, {{end}}], 
-        y: [{{ range .GraphNat.Y }}{{.}}, {{end}}], 
-        mode: 'lines',
-        name: 'National',
-        line: {shape: 'spline'},
-        type: 'scatter',
-        hoverinfo: 'none',
-        };
+var national = {
+  x: [{{ range .GraphNat.X }}{{.}}, {{end}}], 
+  y: [{{ range .GraphNat.Y }}{{.}}, {{end}}], 
+  mode: 'lines',
+  name: 'National',
+  line: {shape: 'spline'},
+  type: 'scatter',
+  hoverinfo: 'none',
+};
 
-        {{ with index .GraphPupils 0 }}
-        var male_pp = {
-        x: [{{ range .X }}{{ . }}, {{ end }}],
-        y: [{{ range .Y }}{{ . }}, {{ end }}],
-        mode: 'markers',
-        type: 'scatter',
-        name: 'Male - Disadvantaged',
-        text: [{{ range .Text }}"{{.}}", {{ end }}],
-        marker: { size: 8 },
-        hoverinfo: 'text',
-        };
-        {{ end }}
+{{ with index .GraphPupils 0 }}
+var male_pp = {
+  x: [{{ range .X }}{{ . }}, {{ end }}],
+  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  mode: 'markers',
+  type: 'scatter',
+  name: 'Male - Disadvantaged',
+  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  marker: { size: 8 },
+  hoverinfo: 'text',
+};
+{{ end }}
 
-        {{ with index .GraphPupils 1 }}
-        var male_non = {
-        x: [{{ range .X }}{{ . }}, {{ end }}],
-        y: [{{ range .Y }}{{ . }}, {{ end }}],
-        mode: 'markers',
-        type: 'scatter',
-        name: 'Male - Non-Disadvantaged',
-        text: [{{ range .Text }}"{{.}}", {{ end }}],
-        marker: { size: 8 },
-        hoverinfo: 'text',
-        };
-        {{ end }}
+{{ with index .GraphPupils 1 }}
+var male_non = {
+  x: [{{ range .X }}{{ . }}, {{ end }}],
+  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  mode: 'markers',
+  type: 'scatter',
+  name: 'Male - Non-Disadvantaged',
+  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  marker: { size: 8 },
+  hoverinfo: 'text',
+};
+{{ end }}
 
-        {{ with index .GraphPupils 2 }}
-        var female_pp = {
-        x: [{{ range .X }}{{ . }}, {{ end }}],
-        y: [{{ range .Y }}{{ . }}, {{ end }}],
-        mode: 'markers',
-        type: 'scatter',
-        name: 'Female - Disadvantaged',
-        text: [{{ range .Text }}"{{.}}", {{ end }}],
-        marker: { size: 8 },
-        hoverinfo: 'text',
-        };
-        {{ end }}
+{{ with index .GraphPupils 2 }}
+var female_pp = {
+  x: [{{ range .X }}{{ . }}, {{ end }}],
+  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  mode: 'markers',
+  type: 'scatter',
+  name: 'Female - Disadvantaged',
+  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  marker: { size: 8 },
+  hoverinfo: 'text',
+};
+{{ end }}
 
-        {{ with index .GraphPupils 3 }}
-        var female_non = {
-        x: [{{ range .X }}{{ . }}, {{ end }}],
-        y: [{{ range .Y }}{{ . }}, {{ end }}],
-        mode: 'markers',
-        type: 'scatter',
-        name: 'Female - Non-Disadvantaged',
-        text: [{{ range .Text }}"{{.}}", {{ end }}],
-        marker: { size: 8 },
-        hoverinfo: 'text',
-        };
-        {{ end }}
+{{ with index .GraphPupils 3 }}
+var female_non = {
+  x: [{{ range .X }}{{ . }}, {{ end }}],
+  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  mode: 'markers',
+  type: 'scatter',
+  name: 'Female - Non-Disadvantaged',
+  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  marker: { size: 8 },
+  hoverinfo: 'text',
+};
+{{ end }}
 
-        var data = [ national, male_pp, male_non, female_pp , female_non, ];
+var data = [ national, male_pp, male_non, female_pp , female_non, ];
 
-        var layout = {
-                hovermode: 'closest',
-                scene: {
-                        aspectratio: {
-                                        x: 3,
-                                        y: 2,
-                                    },
-                },
-                xaxis: {
-                        title: "KS2 Average Point Score",
-                        range: [ 0.75, 6.25 ]
-                },
-                yaxis: {
-                        title: "Attainment 8 Score",
-                        range: [0, 80]
-                },
-                legend: {
-                        x: 0.05,
-                        y: 1,
-                        xanchor: "left",
-                        yanchor: "top",
-                },
-        };
+var layout = {
+  hovermode: 'closest',
+  scene: {
+	aspectratio: {
+	  x: 3,
+	  y: 2,
+	},
+  },
+  xaxis: {
+	title: "KS2 Average Point Score",
+	range: [ 0.75, 6.25 ]
+  },
+  yaxis: {
+	title: "Attainment 8 Score",
+	range: [0, 80]
+  },
+  legend: {
+	x: 0.05,
+	y: 1,
+	xanchor: "left",
+	yanchor: "top",
+  },
+};
 
-        Plotly.newPlot('chart', data, layout);
+Plotly.newPlot('chart', data, layout);
 </script>
 
