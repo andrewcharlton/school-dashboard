@@ -485,10 +485,10 @@ var Templates = map[string]string{
 						<li class="disabled"><a href="/summary/?{{.Query}}">Summary</a></li>
 						<li class="divider"></li>
 						<li><a href="/progress8/?{{.Query}}">Progress 8</a></li>
-						<li><a href="/basics?{{.Query}}">English and Maths</a></li>
+						<li><a href="/basics/?{{.Query}}">English and Maths</a></li>
 						<li class="disabled"><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
 						<li class="divider"></li>
-						<li><a href="/effort?{{.Query}}">Effort</a></li>
+						<li><a href="/effort/?{{.Query}}">Effort</a></li>
 						<li class="disabled"><a href="/attendance?{{.Query}}">Attendance</a></li>
 					</ul>
 				</li>
