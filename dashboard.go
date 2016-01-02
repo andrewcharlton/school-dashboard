@@ -24,27 +24,32 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Add client server
+	clientMux := http.NewServeMux()
+
 	// Serve static files
 	static := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", static))
+	clientMux.Handle("/static/", http.StripPrefix("/static/", static))
 
 	// Serve image files
 	images := http.FileServer(http.Dir("./images"))
-	http.Handle("/images/", http.StripPrefix("/images/", images))
+	clientMux.Handle("/images/", http.StripPrefix("/images/", images))
 
 	// Handlers
-	http.HandleFunc("/", handlers.Index(env))
-	http.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
-	http.HandleFunc("/headlines/", handlers.Headlines(env))
-	http.HandleFunc("/progress8/", handlers.Progress8(env))
-	http.HandleFunc("/effort/", handlers.Effort(env))
-	http.HandleFunc("/subjects/", handlers.SubjectOverview(env))
-	http.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
-	http.HandleFunc("/classlist/", handlers.ClassList(env))
-	http.HandleFunc("/students/", handlers.Student(env))
-	http.HandleFunc("/studentsearch/", handlers.SearchRedirect(env))
-	http.HandleFunc("/search/", handlers.Search(env))
+	clientMux.HandleFunc("/", handlers.Index(env))
+	clientMux.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
+	clientMux.HandleFunc("/headlines/", handlers.Headlines(env))
+	clientMux.HandleFunc("/progress8/", handlers.Progress8(env))
+	clientMux.HandleFunc("/effort/", handlers.Effort(env))
+	clientMux.HandleFunc("/subjects/", handlers.SubjectOverview(env))
+	clientMux.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
+	clientMux.HandleFunc("/classlist/", handlers.ClassList(env))
+	clientMux.HandleFunc("/students/", handlers.Student(env))
+	clientMux.HandleFunc("/studentsearch/", handlers.SearchRedirect(env))
+	clientMux.HandleFunc("/search/", handlers.Search(env))
 
-	// Start server
-	http.ListenAndServe(":8080", nil)
+	// Start client server
+	go func() {
+		http.ListenAndServe(":8080", clientMux)
+	}()
 }
