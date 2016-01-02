@@ -424,7 +424,7 @@ func (db sqliteDB) group(upns []string, f StudentFilter) (analysis.Group, error)
 	return analysis.Group{students}, nil
 }
 
-// Group returns a group of students who satisfy the criteria
+// GroupByFilter returns a group of students who satisfy the criteria
 // specified in the filter.
 func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 
@@ -443,17 +443,20 @@ func (db sqliteDB) GroupByFilter(f Filter) (analysis.Group, error) {
 func (db sqliteDB) groupFilter(f Filter, table string) string {
 
 	query := fmt.Sprintf(`SELECT upn FROM %v
-						  WHERE date_id = %v and year= %v`,
-		table, f.Date, f.Year)
+						  WHERE date_id=%v`,
+		table, f.Date)
 
+	if f.Year != "" {
+		query += fmt.Sprintf(" AND year=%v", f.Year)
+	}
 	if f.PP != "" {
-		query += fmt.Sprintf(" AND pp = %v", f.PP)
+		query += fmt.Sprintf(" AND pp=%v", f.PP)
 	}
 	if f.EAL != "" {
-		query += fmt.Sprintf(" AND eal = %v", f.EAL)
+		query += fmt.Sprintf(" AND eal=%v", f.EAL)
 	}
 	if f.Gender != "" {
-		query += fmt.Sprintf(" AND gender = %v", f.Gender)
+		query += fmt.Sprintf(" AND gender=%v", f.Gender)
 	}
 	if len(f.SEN) > 0 {
 		query += fmt.Sprintf(` AND sen_status IN ("` + strings.Join(f.SEN, `", "`) + `")`)

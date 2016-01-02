@@ -189,188 +189,188 @@ var Templates = map[string]string{
 
 "filter.tmpl" : `
 <div class="row" id="filter_bar" style="display: block;">
-	<div class="col-sm-10">
-		{{range .Labels}}
-		<a href="#" class="btn btn-primary btn-sm disabled" style="margin-bottom: 2px;">{{.}}</a>
-		{{end}}
-	</div>
-	<div class="col-sm-2">
-		<button type="button" class="btn btn-primary btn-sm pull-right" onclick="toggle_visibility('filter_bar'); toggle_visibility('filter_form');">
-			<span class="glyphicon glyphicon-cog"> Options</span>
-		</button>
-	</div>
+  <div class="col-sm-10">
+	{{range .Labels}}
+	<a href="#" class="btn btn-{{ .Format }} btn-sm disabled" style="margin-bottom: 2px;">{{ .Text }}</a>
+	{{end}}
+  </div>
+  <div class="col-sm-2">
+	<button type="button" class="btn btn-primary btn-sm pull-right" onclick="toggle_visibility('filter_bar'); toggle_visibility('filter_form');">
+	  <span class="glyphicon glyphicon-cog"> Options</span>
+	</button>
+  </div>
 </div>
 
 <div class="row" id="filter_form" style="display: none;">
-	<div class="col-sm-2"></div>
-	<div class="col-sm-8">
-		<form role="form" class="form-horizontal" style="margin-bottom: 0px">
-			<div class="row">
-				<div class="form-group form-group-sm">
-					<label for="f_date" class="control-label col-sm-2">Effective Date</label>
-					<div class="col-sm-10">
-						<select name="date" id="f_date" class="form-control input-sm">
-							{{$d := .Date}}
-							{{range .Dates}}
-							<option value="{{.ID}}"{{if eq .ID $d}} selected="yes"{{end}}>{{.Name}}</option>
-							{{end}}
-						</select>
-					</div>
-				</div>
-			</div>
+  <div class="col-sm-2"></div>
+  <div class="col-sm-8">
+	<form role="form" class="form-horizontal" style="margin-bottom: 0px">
+	  <div class="row">
+		<div class="form-group form-group-sm">
+		  <label for="f_natyear" class="control-label col-sm-2">National Data</label>
+		  <div class="col-sm-10">
+			<select name="natyear" id="f_resultset" class="form-control input-sm">
+			  {{$rs := .NatYear}}
+			  {{range .NatYears}}
+			  <option value="{{.ID}}"{{if eq .ID $rs}} selected="yes"{{end}}>{{.Name}}</option>
+			  {{end}}
+			</select>
+		  </div>
+		</div>
+	  </div>
 
-			<div class="row">
-				<div class="form-group form-group-sm">
-					<label for="f_resultset" class="control-label col-sm-2">Resultset</label>
-					<div class="col-sm-10">
-						<select name="resultset" id="f_resultset" class="form-control input-sm">
-							{{$rs := .Resultset}}
-							{{range .Resultsets}}
-								<option value="{{.ID}}"{{if eq .ID $rs}} selected="yes"{{end}}>{{.Name}}</option>
-							{{end}}
-						</select>
-					</div>
-				</div>
-			</div>
+	  <div class="row">
+		<div class="form-group form-group-sm">
+		  <label for="f_date" class="control-label col-sm-2">Effective Date</label>
+		  <div class="col-sm-10">
+			<select name="date" id="f_date" class="form-control input-sm">
+			  {{$d := .Date}}
+			  {{range .Dates}}
+			  <option value="{{.ID}}"{{if eq .ID $d}} selected="yes"{{end}}>{{.Name}}</option>
+			  {{end}}
+			</select>
+		  </div>
+		</div>
+	  </div>
 
-			<div class="row">
-				<div class="form-group form-group-sm">
-					<label for="f_natyear" class="control-label col-sm-2">National Data</label>
-					<div class="col-sm-10">
-						<select name="natyear" id="f_resultset" class="form-control input-sm">
-							{{$rs := .NatYear}}
-							{{range .NatYears}}
-								<option value="{{.ID}}"{{if eq .ID $rs}} selected="yes"{{end}}>{{.Name}}</option>
-							{{end}}
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			{{if not .Short}}
-			<div class="row" style="margin-top: -6px;">
-				<div class="form-group form-group-sm">
-					<label for="f_yeargroup" class="control-label col-sm-2">Yeargroup</label>
-					<div class="col-sm-10">
-						<select name="year" id="f_resultset" class="form-control input-sm">
-								<option value="7"{{if eq .Year "7"}} selected="yes"{{end}}>7</option>
-								<option value="8"{{if eq .Year "8"}} selected="yes"{{end}}>8</option>
-								<option value="9"{{if eq .Year "9"}} selected="yes"{{end}}>9</option>
-								<option value="10"{{if eq .Year "10"}} selected="yes"{{end}}>10</option>
-								<option value="11"{{if eq .Year "11"}} selected="yes"{{end}}>11</option>
-						</select>
-					</div>
-				</div>
-			</div>
+	  <div class="row">
+		<div class="form-group form-group-sm">
+		  <label for="f_resultset" class="control-label col-sm-2">Resultset</label>
+		  <div class="col-sm-10">
+			<select name="resultset" id="f_resultset" class="form-control input-sm">
+			  {{$rs := .Resultset}}
+			  {{range .Resultsets}}
+			  <option value="{{.ID}}"{{if eq .ID $rs}} selected="yes"{{end}}>{{.Name}}</option>
+			  {{end}}
+			</select>
+		  </div>
+		</div>
+	  </div>
 
-			<div class="row" style="margin-top: -6px;">
-				<div class="form-group form-group-sm">
-					<label for="f_gender" class="control-label col-sm-2">Gender</label>
-					<div class="col-sm-10">
-						<select name="gender" id="f_gender" class="form-control input-sm">
-							<option value=""{{if eq .Gender ""}} selected="yes"{{end}}>All Students</option>
-							<option value="1"{{if eq .Gender "1"}} selected="yes"{{end}}>Male</option>
-							<option value="0"{{if eq .Gender "0"}} selected="yes"{{end}}>Female</option>
-						</select>
-					</div>
-				</div>
-			</div>
+	  {{if not .Short}}
+	  <div class="row" style="margin-top: -6px;">
+		<div class="form-group form-group-sm">
+		  <label for="f_yeargroup" class="control-label col-sm-2">Yeargroup</label>
+		  <div class="col-sm-10">
+			<select name="year" id="f_resultset" class="form-control input-sm">
+			  <option value="7"{{if eq .Year "7"}} selected="yes"{{end}}>7</option>
+			  <option value="8"{{if eq .Year "8"}} selected="yes"{{end}}>8</option>
+			  <option value="9"{{if eq .Year "9"}} selected="yes"{{end}}>9</option>
+			  <option value="10"{{if eq .Year "10"}} selected="yes"{{end}}>10</option>
+			  <option value="11"{{if eq .Year "11"}} selected="yes"{{end}}>11</option>
+			</select>
+		  </div>
+		</div>
+	  </div>
 
-			<div class="row" style="margin-top: -6px;">
-				<div class="form-group form-group-sm">
-					<label for="f_pp" class="control-label col-sm-2">Pupil Premium</label>
-					<div class="col-sm-10">
-						<select name="pp" id="f_pp" class="form-control input-sm">
-							<option value=""{{if eq .PP ""}} selected="yes"{{end}}>All Students</option>
-							<option value="1"{{if eq .PP "1"}} selected="yes"{{end}}>Disadvantaged Students</option>
-							<option value="0"{{if eq .PP "0"}} selected="yes"{{end}}>Non-Disadvantaged Students</option>
-						</select>
-					</div>
-				</div>
-			</div>
+	  <div class="row" style="margin-top: -6px;">
+		<div class="form-group form-group-sm">
+		  <label for="f_gender" class="control-label col-sm-2">Gender</label>
+		  <div class="col-sm-10">
+			<select name="gender" id="f_gender" class="form-control input-sm">
+			  <option value=""{{if eq .Gender ""}} selected="yes"{{end}}>All Students</option>
+			  <option value="1"{{if eq .Gender "1"}} selected="yes"{{end}}>Male</option>
+			  <option value="0"{{if eq .Gender "0"}} selected="yes"{{end}}>Female</option>
+			</select>
+		  </div>
+		</div>
+	  </div>
 
-			<div class="row" style="margin-top: -6px;">
-				<div class="form-group form-group-sm">
-					<label for="f_eal" class="control-label col-sm-2">EAL</label>
-					<div class="col-sm-10">
-					<select name="eal" id="f_eal" class="form-control input-sm">
-						<option value=""{{if eq .EAL ""}} selected="yes"{{end}}>All Students</option>
-						<option value="1"{{if eq .EAL "1"}} selected="yes"{{end}}>English as an Additional Language</option>
-						<option value="0"{{if eq .EAL "0"}} selected="yes"{{end}}>English as a First Language</option>
-					</select>
-					</div>
-				</div>
-			</div>
+	  <div class="row" style="margin-top: -6px;">
+		<div class="form-group form-group-sm">
+		  <label for="f_pp" class="control-label col-sm-2">Pupil Premium</label>
+		  <div class="col-sm-10">
+			<select name="pp" id="f_pp" class="form-control input-sm">
+			  <option value=""{{if eq .PP ""}} selected="yes"{{end}}>All Students</option>
+			  <option value="1"{{if eq .PP "1"}} selected="yes"{{end}}>Disadvantaged Students</option>
+			  <option value="0"{{if eq .PP "0"}} selected="yes"{{end}}>Non-Disadvantaged Students</option>
+			</select>
+		  </div>
+		</div>
+	  </div>
 
-			<div class="row" style="margin-top: -6px;">
-				<div class="form-group form-group-sm">
-					<label class="control-label col-sm-2">KS2 Band</label>
-					<div class="col-sm-10">
-						<label class="checkbox-inline"><input type="checkbox" name="ks2band" value="High"{{if index .B "High"}} checked="yes"{{end}}>High</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="ks2band" value="Middle"{{if index .B "Middle"}} checked="yes"{{end}}>Middle</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="ks2band" value="Low"{{if index .B "Low"}} checked="yes"{{end}}>Low</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="ks2band" value="None"{{if index .B "None"}} checked="yes"{{end}}>None</input></label>
-					</div>
-				</div>
-			</div>
+	  <div class="row" style="margin-top: -6px;">
+		<div class="form-group form-group-sm">
+		  <label for="f_eal" class="control-label col-sm-2">EAL</label>
+		  <div class="col-sm-10">
+			<select name="eal" id="f_eal" class="form-control input-sm">
+			  <option value=""{{if eq .EAL ""}} selected="yes"{{end}}>All Students</option>
+			  <option value="1"{{if eq .EAL "1"}} selected="yes"{{end}}>English as an Additional Language</option>
+			  <option value="0"{{if eq .EAL "0"}} selected="yes"{{end}}>English as a First Language</option>
+			</select>
+		  </div>
+		</div>
+	  </div>
 
-			<div class="row" style="margin-top: -6px;">
-				<div class="form-group form-group-sm">
-					<label class="control-label col-sm-2">SEN</label>
-					<div class="col-sm-10">
-						<label class="checkbox-inline"><input type="checkbox" name="sen" value=""{{if index .S ""}} checked="yes"{{end}}>No SEN</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="sen" value="A"{{if index .S "A"}} checked="yes"{{end}}>School Action</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="sen" value="P"{{if index .S "P"}} checked="yes"{{end}}>School Action Plus</input></label>
-						<label class="checkbox-inline"><input type="checkbox" name="sen" value="S"{{if index .S "S"}} checked="yes"{{end}}>SEN with a Statement</input></label>
-					</div>
-				</div>
-			</div>
+	  <div class="row" style="margin-top: -6px;">
+		<div class="form-group form-group-sm">
+		  <label class="control-label col-sm-2">KS2 Band</label>
+		  <div class="col-sm-10">
+			<label class="checkbox-inline"><input type="checkbox" name="ks2band" value="High"{{if index .B "High"}} checked="yes"{{end}}>High</input></label>
+			<label class="checkbox-inline"><input type="checkbox" name="ks2band" value="Middle"{{if index .B "Middle"}} checked="yes"{{end}}>Middle</input></label>
+			<label class="checkbox-inline"><input type="checkbox" name="ks2band" value="Low"{{if index .B "Low"}} checked="yes"{{end}}>Low</input></label>
+			<label class="checkbox-inline"><input type="checkbox" name="ks2band" value="None"{{if index .B "None"}} checked="yes"{{end}}>None</input></label>
+		  </div>
+		</div>
+	  </div>
 
-			<div class="row" style="margin-top: -6px;">
-				<div class="form-group form-group-sm">
-					<label class="control-label col-sm-2">Ethnicities</label>
-					<div class="col-sm-10">
-						{{ $E := .E }}
-						{{ $O := .O }}
-						{{range .Ethnicities}}
-						{{if not (index $O .)}}
-						<label class="checkbox-inline"><input type="checkbox" name="ethnicity" value="{{.}}"{{if index $E .}} checked="yes"{{end}}>{{.}}</input></label>
-						{{end}}
-						{{end}}
-						<label class="checkbox-inline"><input type="checkbox" name="ethnicity" value="Other"{{if index $E "Other"}} checked="yes"{{end}}>Other</input></label>
-					</div>
-				</div>
-			</div>
-			
-		{{end}}
-			<div class="row" style="margin-top: -6px;">
-				<div class="form-group form-group-sm">
-					<div class="col-sm-10"></div>
-					<div class="col-sm-2">
-						<input type="Submit" class="btn btn-primary btn-sm btn-block" value="Apply Filter">
-					</div>
-				</div>
-			</div>
-		</form>
+	  <div class="row" style="margin-top: -6px;">
+		<div class="form-group form-group-sm">
+		  <label class="control-label col-sm-2">SEN</label>
+		  <div class="col-sm-10">
+			<label class="checkbox-inline"><input type="checkbox" name="sen" value=""{{if index .S ""}} checked="yes"{{end}}>No SEN</input></label>
+			<label class="checkbox-inline"><input type="checkbox" name="sen" value="A"{{if index .S "A"}} checked="yes"{{end}}>School Action</input></label>
+			<label class="checkbox-inline"><input type="checkbox" name="sen" value="P"{{if index .S "P"}} checked="yes"{{end}}>School Action Plus</input></label>
+			<label class="checkbox-inline"><input type="checkbox" name="sen" value="S"{{if index .S "S"}} checked="yes"{{end}}>SEN with a Statement</input></label>
+		  </div>
+		</div>
+	  </div>
 
-		<form role="form" class="form-horizontal" style="margin-top: -12px;">
-			<div class="row">
-				<div class="form-group form-group-sm">
-					<div class="col-sm-10"></div>
-					<div class="col-sm-2">
-						<input type="Submit" class="btn btn-default btn-sm btn-block" value="Reset Filter">
-					</div>
-				</div>
-			</div>
-		</form>
+	  <div class="row" style="margin-top: -6px;">
+		<div class="form-group form-group-sm">
+		  <label class="control-label col-sm-2">Ethnicities</label>
+		  <div class="col-sm-10">
+			{{ $E := .E }}
+			{{ $O := .O }}
+			{{range .Ethnicities}}
+			{{if not (index $O .)}}
+			<label class="checkbox-inline"><input type="checkbox" name="ethnicity" value="{{.}}"{{if index $E .}} checked="yes"{{end}}>{{.}}</input></label>
+			{{end}}
+			{{end}}
+			<label class="checkbox-inline"><input type="checkbox" name="ethnicity" value="Other"{{if index $E "Other"}} checked="yes"{{end}}>Other</input></label>
+		  </div>
+		</div>
+	  </div>
 
-	</div>
-	<div class="col-sm-1"></div>
-	<div class="col-sm-1">
-		<button type="button" class="btn btn-primary btn-sm" onclick="toggle_visibility('filter_bar'); toggle_visibility('filter_form');">
-			<span class="glyphicon glyphicon-cog"> Options</span>
-		</button>
-	</div>
+	  {{end}}
+	  <div class="row" style="margin-top: -6px;">
+		<div class="form-group form-group-sm">
+		  <div class="col-sm-10"></div>
+		  <div class="col-sm-2">
+			<input type="Submit" class="btn btn-primary btn-sm btn-block" value="Apply Filter">
+		  </div>
+		</div>
+	  </div>
+	</form>
+
+	<form role="form" class="form-horizontal" style="margin-top: -12px;">
+	  <div class="row">
+		<div class="form-group form-group-sm">
+		  <div class="col-sm-10"></div>
+		  <div class="col-sm-2">
+			<input type="Submit" class="btn btn-default btn-sm btn-block" value="Reset Filter">
+		  </div>
+		</div>
+	  </div>
+	</form>
+
+  </div>
+  <div class="col-sm-1"></div>
+  <div class="col-sm-1">
+	<button type="button" class="btn btn-primary btn-sm" onclick="toggle_visibility('filter_bar'); toggle_visibility('filter_form');">
+	  <span class="glyphicon glyphicon-cog"> Options</span>
+	</button>
+  </div>
 </div>
 
 <hr>

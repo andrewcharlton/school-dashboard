@@ -17,7 +17,6 @@ import (
 func Redirect(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Println("Redirect being called!")
 		query := ShortenQuery(e, r.URL.Query())
 		url := "/index/?" + query
 		http.Redirect(w, r, url, 301)
@@ -110,7 +109,7 @@ func FilterPage(e database.Env, w http.ResponseWriter, r *http.Request, short bo
 		E           map[string]bool //Ethnicities checked
 		O           map[string]bool //Ethnicities in the "Other" category
 		S           map[string]bool //SEN ticked
-		Labels      []string
+		Labels      []label
 		Short       bool
 	}{
 		f,
@@ -144,10 +143,16 @@ func FilterPage(e database.Env, w http.ResponseWriter, r *http.Request, short bo
 	}
 }
 
-// FilterLabels generates the labels for the filter page
-func FilterLabels(e database.Env, f database.Filter, short bool) []string {
+// Label holds the label text, as well as its formatting options
+type label struct {
+	Text   string
+	Format string
+}
 
-	labels := []string{}
+// FilterLabels generates the labels for the filter page
+func FilterLabels(e database.Env, f database.Filter, short bool) []label {
+
+	labels := []label{}
 
 	// Lookup date and resultset names
 	// Lookup date and resultset names
@@ -169,43 +174,45 @@ func FilterLabels(e database.Env, f database.Filter, short bool) []string {
 		}
 	}
 
-	labels = append(labels, "Date: "+date)
-	labels = append(labels, "Resultset: "+rs)
-	labels = append(labels, "National: "+nat)
+	labels = append(labels, label{nat, "default"})
+	labels = append(labels, label{date, "primary"})
+	labels = append(labels, label{rs, "primary"})
 
 	if short {
 		return labels
 	}
 
-	labels = append(labels, "Yeargroup: "+f.Year)
+	if f.Year != "" {
+		labels = append(labels, label{"Yeargroup: " + f.Year, "success"})
+	}
 
 	switch f.Gender {
 	case "1":
-		labels = append(labels, "Boys")
+		labels = append(labels, label{"Boys", "warning"})
 	case "0":
-		labels = append(labels, "Girls")
+		labels = append(labels, label{"Girls", "warning"})
 	}
 
 	switch f.PP {
 	case "1":
-		labels = append(labels, "Disadvantaged")
+		labels = append(labels, label{"Disadvantaged", "warning"})
 	case "0":
-		labels = append(labels, "Non-Disadvantaged")
+		labels = append(labels, label{"Non-Disadvantaged", "warning"})
 	}
 
 	switch f.EAL {
 	case "1":
-		labels = append(labels, "EAL")
+		labels = append(labels, label{"EAL", "warning"})
 	case "0":
-		labels = append(labels, "Non-EAL")
+		labels = append(labels, label{"Non-EAL", "warning"})
 	}
 
 	if len(f.SEN) >= 1 && len(f.SEN) < 4 {
-		labels = append(labels, "SEN: "+strings.Join(f.SEN, ", "))
+		labels = append(labels, label{"SEN: " + strings.Join(f.SEN, ", "), "warning"})
 	}
 
 	if len(f.KS2Bands) >= 1 && len(f.SEN) < 4 {
-		labels = append(labels, "KS2: "+strings.Join(f.KS2Bands, ", "))
+		labels = append(labels, label{"KS2: " + strings.Join(f.KS2Bands, ", "), "warning"})
 	}
 
 	if len(f.Ethnicities) >= 1 && len(f.Ethnicities) <= len(e.Ethnicities) {
@@ -215,7 +222,7 @@ func FilterLabels(e database.Env, f database.Filter, short bool) []string {
 				eths = append(eths, eth)
 			}
 		}
-		labels = append(labels, "Ethnicity: "+strings.Join(eths, ", "))
+		labels = append(labels, label{"Ethnicity: " + strings.Join(eths, ", "), "warning"})
 	}
 
 	return labels
