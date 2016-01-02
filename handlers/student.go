@@ -13,8 +13,13 @@ import (
 func Student(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+			return
+		}
+
 		Header(e, w, r)
 		FilterPage(e, w, r, true)
+		defer Footer(e, w, r)
 
 		upn := ""
 		path := strings.Split(r.URL.Path, "/")
@@ -51,8 +56,9 @@ func Student(e database.Env) http.HandlerFunc {
 			err == nil,
 		}
 
-		e.Templates.ExecuteTemplate(w, "student.tmpl", data)
-
-		Footer(e, w, r)
+		err = e.Templates.ExecuteTemplate(w, "student.tmpl", data)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+		}
 	}
 }

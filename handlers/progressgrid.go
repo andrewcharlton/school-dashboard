@@ -32,6 +32,10 @@ func ProgressGrid(e database.Env) http.HandlerFunc {
 // Performs analysis of the results
 func pgAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) {
 
+	if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
+		return
+	}
+
 	Header(e, w, r)
 	FilterPage(e, w, r, false)
 	defer Footer(e, w, r)

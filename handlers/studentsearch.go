@@ -24,8 +24,13 @@ func SearchRedirect(e database.Env) http.HandlerFunc {
 func Search(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+			return
+		}
+
 		Header(e, w, r)
 		FilterPage(e, w, r, true)
+		defer Footer(e, w, r)
 
 		name := ""
 		path := strings.Split(r.URL.Path, "/")
@@ -59,7 +64,5 @@ func Search(e database.Env) http.HandlerFunc {
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 		}
-
-		Footer(e, w, r)
 	}
 }

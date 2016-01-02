@@ -31,6 +31,10 @@ func ClassList(e database.Env) http.HandlerFunc {
 // Class list for the students
 func classStudentList(e database.Env, w http.ResponseWriter, r *http.Request) {
 
+	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+		return
+	}
+
 	Header(e, w, r)
 	FilterPage(e, w, r, true)
 	defer Footer(e, w, r)

@@ -19,6 +19,10 @@ type effort struct {
 func Effort(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
+			return
+		}
+
 		Header(e, w, r)
 		FilterPage(e, w, r, false)
 		defer Footer(e, w, r)

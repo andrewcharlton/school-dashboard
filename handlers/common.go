@@ -42,7 +42,6 @@ func Header(e database.Env, w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 // Footer writes the common html page header and menu bars

@@ -18,6 +18,10 @@ import (
 // Produce page to pick a subject from
 func selectSubject(e database.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
+	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+		return
+	}
+
 	Header(e, w, r)
 	FilterPage(e, w, r, true)
 	defer Footer(e, w, r)
@@ -66,6 +70,10 @@ func (s subjLevels) Less(i, j int) bool { return s[i].Level < s[j].Level }
 // Produce page to pick a level from
 func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
+	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+		return
+	}
+
 	// Assume subject is final part of path
 	path := strings.Split(r.URL.Path, "/")
 	subject := path[2]
@@ -113,6 +121,10 @@ func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading
 
 // Produce page to pick a class from
 func selectClass(e database.Env, w http.ResponseWriter, r *http.Request, heading string) {
+
+	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+		return
+	}
 
 	Header(e, w, r)
 	FilterPage(e, w, r, true)
