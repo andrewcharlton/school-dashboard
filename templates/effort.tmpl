@@ -1,33 +1,33 @@
 <div class="row">
-		<div class="col-sm-1"></div>
-		<div class="col-sm-10">
-		<h3>Attitude to Learning</h3>
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
+	<h3>Attitude to Learning</h3>
 
-		<table class="table table-hover sortable">
-				<thead>
-						<th>Name</th>
-						<th style="text-align:center;">1's</th>
-						<th style="text-align:center;">2's</th>
-						<th style="text-align:center;">3's</th>
-						<th style="text-align:center;">4's</th>
-						<th style="text-align:center;">Average</th>
-						<th style="text-align:center;">Progress 8 Score</th>
-				</thead>
-				<tbody>
-				{{ $q := .Query }}
-				{{ range .Efforts }}
-						<tr>
-								<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
-								<td style="text-align:center;">{{index .Scores 1}}</td>
-								<td style="text-align:center;">{{index .Scores 2}}</td>
-								<td style="text-align:center;">{{index .Scores 3}}</td>
-								<td style="text-align:center;">{{index .Scores 4}}</td>
-								<td style="text-align:center;">{{printf "%1.1f" .Average}}</td>
-								<td style="text-align:center;">{{printf "%1.1f" .Prog8}}</td>
-						</tr>
-				{{ end }}
-				</tbody>
-		</table>
-		</div>
-	<div class="col-sm-1"></div>
+	<table class="table table-hover sortable">
+	  <thead>
+		<th>Name</th>
+		<th style="text-align:center;">1's</th>
+		<th style="text-align:center;">2's</th>
+		<th style="text-align:center;">3's</th>
+		<th style="text-align:center;">4's</th>
+		<th style="text-align:center;">Average</th>
+		<th style="text-align:center;">Progress 8 Score</th>
+	  </thead>
+	  <tbody>
+		{{ $q := .Query }}
+		{{ range .Efforts }}
+		<tr>
+		  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+		  <td style="text-align:center;">{{index .Scores 1}}</td>
+		  <td style="text-align:center;">{{index .Scores 2}}</td>
+		  <td style="text-align:center;">{{index .Scores 3}}</td>
+		  <td style="text-align:center;">{{index .Scores 4}}</td>
+		  <td style="text-align:center;">{{printf "%1.1f" .Average}}</td>
+		  <td style="text-align:center;">{{printf "%1.1f" .Prog8}}</td>
+		</tr>
+		{{ end }}
+	  </tbody>
+	</table>
+  </div>
+  <div class="col-sm-1"></div>
 </div>

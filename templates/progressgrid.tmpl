@@ -1,10 +1,10 @@
 <h2>Progress Grid</h2>
 
 <ul class="breadcrumb">
-		<li><a href="/progressgrid/?{{.Query}}">Subjects</a></li>
-		<li><a href="/progressgrid/{{.Subject}}/?{{.Query}}">{{.Subject}}</a></li>
-		<li><a href="/progressgrid/{{.Subject}}/{{.SubjID}}/?{{.Query}}">{{.Level}}</a></li>
-		<li class="active">{{.Class}}</li>
+  <li><a href="/progressgrid/?{{.Query}}">Subjects</a></li>
+  <li><a href="/progressgrid/{{.Subject}}/?{{.Query}}">{{.Subject}}</a></li>
+  <li><a href="/progressgrid/{{.Subject}}/{{.SubjID}}/?{{.Query}}">{{.Level}}</a></li>
+  <li class="active">{{.Class}}</li>
 </ul>
 
 {{ $q := .Query }}
@@ -16,49 +16,49 @@
 {{ $tm := .TMExists }}
 
 <table class="table table-condensed" style="table-layout:fixed;">
-		<thead>
-				<th>KS2</th>
-				{{ range .Grades }}
-				<th style="text-align:center;">{{.}}</th>
-				{{ end }}
-				<th style="text-align:center;">VA</th>
-		</thead>
-		<tbody>
-				{{ range .KS2 }}
-				{{ $ks2 := . }}
-				<tr>
-						<td>{{.}}</td>
-						{{ range $g }}
-						{{ with index $c $ks2 . }}
-						<td style="text-align:center; border:1px solid #888888"
-								{{ if ge .VA 0.67 }}class="success"{{ end }}
-								{{ if lt .VA -0.33 }}class="danger"{{ end }}
-								{{ if (ge .VA -0.33) and (lt .VA 0.67) }}class="warning"{{ end }}
-								{{ if eq (len .Students) 0 }}></td>
-								{{ else }}
-										data-container="body"
-										data-toggle="popover"
-										data-placement="right"
-										title="VA {{if $tm}}{{printf "%0.2f" .VA}}{{end}}"
-										data-html="true"
-										data-trigger="hover click"
-										data-content="{{range .Students}}
-										<a href='/students/{{.UPN}}/?{{$q}}' target='_blank'>{{.Name}}</a><br>
-								{{end}}"
-						>{{len .Students}}</td>
-						{{ end }}
-						{{ end }}
-						{{ end }}
-						<td style="text-align:center;">{{printf "%+.2f" (index $va .)}}</td>
-				</tr>
-				{{ end }}
-		</tbody>
-		<tfoot>
-				<th>Total</th>
-				{{ $counts := .Counts }}
-				{{ range $g }}<th style="text-align:center;">{{ index $counts . }} </th>{{ end }}
-				<th style="text-align:center;">{{printf "%+.2f" .TotalVA }}</th>
-		</tfoot>
+  <thead>
+	<th>KS2</th>
+	{{ range .Grades }}
+	<th style="text-align:center;">{{.}}</th>
+	{{ end }}
+	<th style="text-align:center;">VA</th>
+  </thead>
+  <tbody>
+	{{ range .KS2 }}
+	{{ $ks2 := . }}
+	<tr>
+	  <td>{{.}}</td>
+	  {{ range $g }}
+	  {{ with index $c $ks2 . }}
+	  <td style="text-align:center; border:1px solid #888888"
+	   {{ if ge .VA 0.67 }}class="success"{{ end }}
+	   {{ if lt .VA -0.33 }}class="danger"{{ end }}
+	   {{ if (ge .VA -0.33) and (lt .VA 0.67) }}class="warning"{{ end }}
+	   {{ if eq (len .Students) 0 }}></td>
+	  {{ else }}
+	  data-container="body"
+	  data-toggle="popover"
+	  data-placement="right"
+	  title="VA {{if $tm}}{{printf "%0.2f" .VA}}{{end}}"
+	  data-html="true"
+	  data-trigger="hover click"
+	  data-content="{{range .Students}}
+	  <a href='/students/{{.UPN}}/?{{$q}}' target='_blank'>{{.Name}}</a><br>
+	  {{end}}"
+	  >{{len .Students}}</td>
+	{{ end }}
+	{{ end }}
+	{{ end }}
+	<td style="text-align:center;">{{printf "%+.2f" (index $va .)}}</td>
+	</tr>
+	{{ end }}
+  </tbody>
+  <tfoot>
+	<th>Total</th>
+	{{ $counts := .Counts }}
+	{{ range $g }}<th style="text-align:center;">{{ index $counts . }} </th>{{ end }}
+	<th style="text-align:center;">{{printf "%+.2f" .TotalVA }}</th>
+  </tfoot>
 </table>
 
 {{ end }}
@@ -72,32 +72,32 @@ $(function () {
 <br>
 <h4>Students</h4>
 <table class="table table-condensed table-striped table-hover sortable">
-		<thead>
-				<th>Name</th>
-				<th>Class</th>
-				<th style="text-align:center;">PP</th>
-				<th style="text-align:center;">KS2</th>
-				<th style="text-align:center;">Grade</th>
-				<th style="text-align:center;">Effort</th>
-				<th style="text-align:center;">Value Added</th>
-				<th style="text-align:center;">Attendance</th>
-		</thead>
-		<tbody>
-		{{range .Students}}
-		<tr>
-				<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
-				<td>{{.Class}}</td>
-				<td style="text-align:center;">
-						{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
-						{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
-						{{end}}
-				</td>
-				<td style="text-align:center;">{{.KS2}}</td>
-				<td style="text-align:center;">{{.Grade}}</td>
-				<td style="text-align:center;">{{.Effort}}</td>
-				<td style="text-align:center;">{{if .VAExists}}{{printf "%.1f" .VA}}{{end}}</td>
-				<td style="text-align:center;">{{printf "%.1f" .Attendance}}</td>
-		</tr>
+  <thead>
+	<th>Name</th>
+	<th>Class</th>
+	<th style="text-align:center;">PP</th>
+	<th style="text-align:center;">KS2</th>
+	<th style="text-align:center;">Grade</th>
+	<th style="text-align:center;">Effort</th>
+	<th style="text-align:center;">Value Added</th>
+	<th style="text-align:center;">Attendance</th>
+  </thead>
+  <tbody>
+	{{range .Students}}
+	<tr>
+	  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+	  <td>{{.Class}}</td>
+	  <td style="text-align:center;">
+		{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
+		{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
 		{{end}}
-		</tbody>
+	  </td>
+	  <td style="text-align:center;">{{.KS2}}</td>
+	  <td style="text-align:center;">{{.Grade}}</td>
+	  <td style="text-align:center;">{{.Effort}}</td>
+	  <td style="text-align:center;">{{if .VAExists}}{{printf "%.1f" .VA}}{{end}}</td>
+	  <td style="text-align:center;">{{printf "%.1f" .Attendance}}</td>
+	</tr>
+	{{end}}
+  </tbody>
 </table>

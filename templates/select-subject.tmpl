@@ -5,15 +5,15 @@
 </ul>
 
 <div class="row">
-		<div class="col-sm-3"></div>
-		<div class="col-sm-6">
-				{{ $p := .Path }}
-				{{ $q := .Query }}
-				<ul class="list-group">
-						{{ range .Subjects }}
-						<a class="list-group-item" href="{{ $p }}/{{.}}/?{{ $q }}">{{.}}</a>
-						{{ end }}
-				</ul>
-		</div>
-		<div class="col-sm-3"></div>
+  <div class="col-sm-3"></div>
+  <div class="col-sm-6">
+	{{ $p := .Path }}
+	{{ $q := .Query }}
+	<ul class="list-group">
+	  {{ range .Subjects }}
+	  <a class="list-group-item" href="{{ $p }}/{{.}}/?{{ $q }}">{{.}}</a>
+	  {{ end }}
+	</ul>
+  </div>
+  <div class="col-sm-3"></div>
 </div>

@@ -1,82 +1,79 @@
 <h3>English and Maths</h3>
-
 <br>
 
 <div class="row">
-<div class="col-sm-1"></div>
-<div class="col-sm-10">
-<h4>Headlines</h4>
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
+	<h4>Headlines</h4>
 
-<table class="table table-hover">
-		<thead>
-				<th></th>
-				<th style='text-align:center;vertical-align:middle'>Number</th>
-				<th style='text-align:center;vertical-align:middle'>Percent</th>
-		</thead>
-		<tbody>
-				<tr>
-						<td>Cohort</td>
-						<td style='text-align:center;vertical-align:middle'>{{.Cohort}}</td>
-						<td style='text-align:center;vertical-align:middle'></td>
-				</tr>
-				<tr>
-						<td>English</td>
-						<td style='text-align:center;vertical-align:middle'>{{.EnPass}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{printf "%1.f" .EnPassPct}}</td>
-				</tr>
-				<tr>
-						<td>Mathematics</td>
-						<td style='text-align:center;vertical-align:middle'>{{.MaPass}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{printf "%1.f" .MaPassPct}}</td>
-				</tr>
-				<tr>
-						<td>Both</td>
-						<td style='text-align:center;vertical-align:middle'>{{.BothPass}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{printf "%1.f" .BothPassPct}}</td>
-				</tr>
-		</tbody>
-</table>
+	<table class="table table-hover">
+	  <thead>
+		<th></th>
+		<th style='text-align:center;vertical-align:middle'>Number</th>
+		<th style='text-align:center;vertical-align:middle'>Percent</th>
+	  </thead>
+	  <tbody>
+		<tr>
+		  <td>Cohort</td>
+		  <td style='text-align:center;vertical-align:middle'>{{.Cohort}}</td>
+		  <td style='text-align:center;vertical-align:middle'></td>
+		</tr>
+		<tr>
+		  <td>English</td>
+		  <td style='text-align:center;vertical-align:middle'>{{.EnPass}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.f" .EnPassPct}}</td>
+		</tr>
+		<tr>
+		  <td>Mathematics</td>
+		  <td style='text-align:center;vertical-align:middle'>{{.MaPass}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.f" .MaPassPct}}</td>
+		</tr>
+		<tr>
+		  <td>Both</td>
+		  <td style='text-align:center;vertical-align:middle'>{{.BothPass}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.f" .BothPassPct}}</td>
+		</tr>
+	  </tbody>
+	</table>
 
-<br>
+	<br>
 
-<h4>Students</h4>
+	<h4>Students</h4>
 
-<table class="table table-condensed table-striped table-hover sortable">
-		<thead>
-						<th>Name</th>
-						<th>KS2</th>
-						<th style='text-align:center;vertical-align:middle'>Eng Grade</th>
-						<th style='text-align:center;vertical-align:middle'>Eng Effort</th>
-						<th style='text-align:center;vertical-align:middle'>Maths Grade</th>
-						<th style='text-align:center;vertical-align:middle'>Maths Effort</th>
-						<th style='text-align:center;vertical-align:middle'>Both</th>
-						<th style='text-align:center;vertical-align:middle'>Av Effort</th>
-						<th style='text-align:center;vertical-align:middle'>Progress 8</th>
-						<th style='text-align:center;vertical-align:middle'>Attendance</th>
-		</thead>
-		<tbody>
-				{{ $q := .Query }}
-				{{ range .Students }}
-				<tr>
-						<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
-						<td style='text-align:center;vertical-align:middle'>{{.KS2.Av}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{.EnGrd}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{.EnEff}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{.MaGrd}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{.MaEff}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{if .Basics}}<span style="color: #009933;">Y</span>
-								{{else}}<span style="color: #cc0000;">N</span>
-								{{end}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{printf "%1.1f" .AvEff}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{printf "%1.2f" .P8}}</td>
-						<td style='text-align:center;vertical-align:middle'>{{printf "%1.1f" .Att}}%</td>
-				</tr>
-				{{ end }}
-		</tbody>
-<table>
-</div>
-				
-</div>
-<div class="col-sm-1"></div>
+	<table class="table table-condensed table-striped table-hover sortable">
+	  <thead>
+		<th>Name</th>
+		<th>KS2</th>
+		<th style='text-align:center;vertical-align:middle'>Eng Grade</th>
+		<th style='text-align:center;vertical-align:middle'>Eng Effort</th>
+		<th style='text-align:center;vertical-align:middle'>Maths Grade</th>
+		<th style='text-align:center;vertical-align:middle'>Maths Effort</th>
+		<th style='text-align:center;vertical-align:middle'>Both</th>
+		<th style='text-align:center;vertical-align:middle'>Av Effort</th>
+		<th style='text-align:center;vertical-align:middle'>Progress 8</th>
+		<th style='text-align:center;vertical-align:middle'>Attendance</th>
+	  </thead>
+	  <tbody>
+		{{ $q := .Query }}
+		{{ range .Students }}
+		<tr>
+		  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+		  <td style='text-align:center;vertical-align:middle'>{{.KS2.Av}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{.EnGrd}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{.EnEff}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{.MaGrd}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{.MaEff}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{if .Basics}}<span style="color: #009933;">Y</span>
+			{{else}}<span style="color: #cc0000;">N</span>
+			{{end}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.1f" .AvEff}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.2f" .P8}}</td>
+		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.1f" .Att}}%</td>
+		</tr>
+		{{ end }}
+	  </tbody>
+	  <table>
+  </div>
+  <div class="col-sm-1"></div>
 </div>
 
