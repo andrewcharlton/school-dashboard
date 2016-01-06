@@ -23,3 +23,12 @@ var Groups = []GroupDef{
 	{"Disadvantaged", func(s analysis.Student) bool { return s.PP }},
 	{"Non-Disadvantaged", func(s analysis.Student) bool { return !s.PP }},
 }
+
+var YearGroups = []GroupDef{
+	{"All Students", func(s analysis.Student) bool { return true }},
+	{"Year 7", func(s analysis.Student) bool { return s.Year == 7 }},
+	{"Year 8", func(s analysis.Student) bool { return s.Year == 8 }},
+	{"Year 9", func(s analysis.Student) bool { return s.Year == 9 }},
+	{"Year 10", func(s analysis.Student) bool { return s.Year == 10 }},
+	{"Year 11", func(s analysis.Student) bool { return s.Year == 11 }},
+}

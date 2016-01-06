@@ -1,3 +1,4 @@
+
 // Package templates contains all of the templates needed for the dashboard.
 // This is automatically generated from the .tmpl files using the "embed-template"
 // script.
@@ -5,7 +6,50 @@ package templates
 
 var Templates = map[string]string{
 
-	"classlist.tmpl": `
+"attendance.tmpl" : `
+<h3>Attendance</h3>
+<br>
+
+<div class="row">
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
+	<table class="table table-condensed table-hover">
+	  <thead>
+		<th>Group</th>
+		<th style="text-align:center;">Cohort</th>
+		<th style="text-align:center;">Possible</th>
+		<th style="text-align:center;">Absences</th>
+		<th style="text-align:center;">Unauthorised</th>
+		<th style="text-align:center;">Attendance %</th>
+		<th style="text-align:center;">Under 85%</th>
+		<th style="text-align:center;">Under 90%</th>
+	  </thead>
+	  <tbody>
+		{{ $data := .AttGroups }}
+		{{ range .Headers }}
+		<tr>
+		  <td>{{ . }}</td>
+		  {{ with index $data . }}
+		  <td style="text-align:center;">{{ .Cohort }}</td>
+		  <td style="text-align:center;">{{ .Possible }}</td>
+		  <td style="text-align:center;">{{ .Absences }}</td>
+		  <td style="text-align:center;">{{ .Unauthorised }}</td>
+		  <td style="text-align:center;">{{ printf "%.1f" .PctAttendance }}</td>
+		  <td style="text-align:center;">{{ .Under85 }}</td>
+		  <td style="text-align:center;">{{ .Under90 }}</td>
+		  {{ end }}
+		</tr>
+		{{ end }}
+	  </tbody>
+	</table>
+  </div>
+  <div class="col-sm-1"></div>
+</div>
+
+
+`,
+
+"classlist.tmpl" : `
 <h2>Class Lists</h2>
 
 <ul class="breadcrumb">
@@ -65,7 +109,7 @@ var Templates = map[string]string{
 </div>
 `,
 
-	"effort.tmpl": `
+"effort.tmpl" : `
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
@@ -101,7 +145,7 @@ var Templates = map[string]string{
 </div>
 `,
 
-	"em.tmpl": `
+"em.tmpl" : `
 <h3>English and Maths</h3>
 <br>
 
@@ -183,7 +227,7 @@ var Templates = map[string]string{
 
 `,
 
-	"filter.tmpl": `
+"filter.tmpl" : `
 <div class="row" id="filter_bar" style="display: block;">
   <div class="col-sm-10">
 	{{range .Labels}}
@@ -372,13 +416,13 @@ var Templates = map[string]string{
 <hr>
 `,
 
-	"footer.tmpl": `
+"footer.tmpl" : `
 </div>
 </body>
 </html>
 `,
 
-	"group.tmpl": `
+"group.tmpl" : `
 <h3>{{.Title}}</h3>
 <br>
 
@@ -419,7 +463,7 @@ var Templates = map[string]string{
 
 `,
 
-	"header.tmpl": `
+"header.tmpl" : `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -482,7 +526,7 @@ var Templates = map[string]string{
 			  <li class="disabled"><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
 			  <li class="divider"></li>
 			  <li><a href="/effort/?{{.Query}}">Effort</a></li>
-			  <li class="disabled"><a href="/attendance?{{.Query}}">Attendance</a></li>
+			  <li><a href="/attendance/?{{.Query}}">Attendance</a></li>
 			</ul>
 		  </li>
 		</ul>
@@ -492,7 +536,7 @@ var Templates = map[string]string{
 	<div class="container">
 `,
 
-	"progress8.tmpl": `
+"progress8.tmpl" : `
 <h3>Progress 8</h3>
 
 <br>
@@ -691,7 +735,7 @@ Plotly.newPlot('chart', data, layout);
 
 `,
 
-	"progressgrid.tmpl": `
+"progressgrid.tmpl" : `
 <h2>Progress Grid</h2>
 
 <ul class="breadcrumb">
@@ -797,7 +841,7 @@ $(function () {
 </table>
 `,
 
-	"select-class.tmpl": `
+"select-class.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -829,7 +873,7 @@ $(function () {
 
 `,
 
-	"select-level.tmpl": `
+"select-level.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -852,7 +896,7 @@ $(function () {
 </div>
 `,
 
-	"select-subject.tmpl": `
+"select-subject.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -874,7 +918,7 @@ $(function () {
 </div>
 `,
 
-	"student.tmpl": `
+"student.tmpl" : `
 {{ $nat := .Nat }}
 {{ with .Student }}
 <div class="row">
@@ -1238,7 +1282,7 @@ $(function () {
 
 `,
 
-	"studentsearch.tmpl": `
+"studentsearch.tmpl" : `
 <h2>Student Search Results</h2>
 
 <p>Searching for: <b>{{.Name}}</b></p>
@@ -1267,7 +1311,7 @@ If you're unsure of the spelling, a '*' can be used to replace
 one or more characters.</p>
 `,
 
-	"subject-overview.tmpl": `
+"subject-overview.tmpl" : `
 <h3>Subject Summaries</h3>
 <br>
 <div class="row">
@@ -1302,4 +1346,5 @@ one or more characters.</p>
   <div class="col-sm-1"></div>
 </div>
 `,
+
 }
