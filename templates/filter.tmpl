@@ -63,6 +63,7 @@
 		  <label for="f_yeargroup" class="control-label col-sm-2">Yeargroup</label>
 		  <div class="col-sm-10">
 			<select name="year" id="f_resultset" class="form-control input-sm">
+			  <option value=""{{if eq .Year ""}} selected="yes"{{end}}>All Students</option>
 			  <option value="7"{{if eq .Year "7"}} selected="yes"{{end}}>7</option>
 			  <option value="8"{{if eq .Year "8"}} selected="yes"{{end}}>8</option>
 			  <option value="9"{{if eq .Year "9"}} selected="yes"{{end}}>9</option>

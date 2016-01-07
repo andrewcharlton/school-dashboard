@@ -8,6 +8,10 @@ import (
 	"github.com/andrewcharlton/school-dashboard/database"
 )
 
+// TODO: Attendance Explorer
+// Historical browser
+// week browser
+
 type attData struct {
 	Cohort       int
 	Possible     int
