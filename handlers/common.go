@@ -154,23 +154,9 @@ func FilterLabels(e database.Env, f database.Filter, short bool) []label {
 
 	// Lookup date and resultset names
 	// Lookup date and resultset names
-	var date, rs, nat string
-	for _, d := range e.Dates {
-		if d.ID == f.Date {
-			date = d.Name
-			break
-		}
-	}
-	for _, r := range e.Resultsets {
-		if r.ID == f.Resultset {
-			rs = r.Name
-		}
-	}
-	for _, r := range e.NatYears {
-		if r.ID == f.NatYear {
-			nat = r.Name
-		}
-	}
+	date, _ := e.LookupDate(f.Date)
+	rs, _ := e.LookupResultset(f.Resultset)
+	nat, _ := e.LookupNatYear(f.NatYear)
 
 	labels = append(labels, label{nat, "default"})
 	labels = append(labels, label{date, "primary"})

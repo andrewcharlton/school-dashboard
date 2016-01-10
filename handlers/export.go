@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/andrewcharlton/school-dashboard/database"
 	"github.com/andrewcharlton/school-dashboard/spreadsheets"
 )
 
-func ExportSummary(env) http.HandlerFunc {
+func ExportHeadlines(e database.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// Produce summary with only year group info
@@ -22,14 +23,8 @@ func ExportSummary(env) http.HandlerFunc {
 		w.Header().Set("Content-Disposition", disp)
 
 		f := GetFilter(e, r)
-		g, err := e.DB.GroupByFilter(f)
-		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
-			return
-		}
-		nat := e.Nationals[f.NatYear]
 
-		err = spreadsheets.Summary(g, f, nat, w)
+		err := spreadsheets.Headlines(e, f, w)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 		}

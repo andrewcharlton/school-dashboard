@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"html/template"
 
 	"github.com/andrewcharlton/school-dashboard/national"
@@ -156,4 +157,39 @@ func (e *Env) LoadNationals() error {
 	}
 
 	return nil
+}
+
+// LookupDate lookups the id number of the date, and returns its name
+func (e Env) LookupDate(id string) (string, error) {
+
+	for _, d := range e.Dates {
+		if d.ID == id {
+			return d.Name, nil
+		}
+	}
+	return "", fmt.Errorf("Date not found with id: %v", id)
+}
+
+// LookupResultset looks up the id number of the resultset and returns
+// its name
+func (e Env) LookupResultset(id string) (string, error) {
+
+	for _, r := range e.Resultsets {
+		if r.ID == id {
+			return r.Name, nil
+		}
+	}
+	return "", fmt.Errorf("Resultset not found with id: %v", id)
+}
+
+// LookupNatYear looks up the id number of the National Dataset and returns
+// its name
+func (e Env) LookupNatYear(id string) (string, error) {
+
+	for _, n := range e.NatYears {
+		if n.ID == id {
+			return n.Name, nil
+		}
+	}
+	return "", fmt.Errorf("National data not found with id: %v", id)
 }

@@ -538,7 +538,14 @@ var Templates = map[string]string{
 `,
 
 "progress8.tmpl" : `
-<h3>Progress 8</h3>
+<div class="row">
+  <div class="col-sm-10">
+	<h3>Progress 8</h3>
+  </div>
+  <div class="col-sm-2">
+	<a href="/export/headlines/?{{ .Query }}"><h5><span class="glyphicon glyphicon-download"> Download</span></h5></a>
+  </div>
+</div>
 
 <br>
 

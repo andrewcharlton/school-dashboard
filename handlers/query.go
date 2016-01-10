@@ -8,7 +8,7 @@ import (
 
 // queryOpts details what is needed in the query string
 // Year - whether a year group is necessary
-// Shory - whether other filter options are needed
+// Others - whether other filter options are needed
 type queryOpts struct {
 	Year   bool
 	Others bool
@@ -38,8 +38,9 @@ func checkRedirect(e database.Env, opts queryOpts, w http.ResponseWriter, r *htt
 		redirect = true
 	}
 
-	_, exists := query["year"]
-	if opts.Year && !exists {
+	y, exists := query["year"]
+	if opts.Year && (!exists || y[0] == "") {
+		query.Del("year")
 		query.Add("year", e.Config.Year)
 		redirect = true
 	}

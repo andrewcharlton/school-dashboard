@@ -543,13 +543,14 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 	// Load student details
 	row := db.stmts["student"].QueryRow(f.UPN, f.Date)
 	sen := analysis.SENInfo{}
-	ks2 := analysis.KS2Info{}
+	var aps float64
+	var band, en, ma, av, re, wr, gps string
 	var male bool
 	s := analysis.Student{}
 	err := row.Scan(&s.UPN, &s.Surname, &s.Forename, &s.Year, &s.Form,
 		&s.PP, &s.EAL, &male, &s.Ethnicity, &sen.Status, &sen.Need,
-		&sen.Info, &sen.Strategies, &sen.Access, &sen.IEP, &ks2.APS,
-		&ks2.Band, &ks2.En, &ks2.Ma, &ks2.Av, &ks2.Re, &ks2.Wr, &ks2.GPS)
+		&sen.Info, &sen.Strategies, &sen.Access, &sen.IEP, &aps,
+		&band, &en, &ma, &av, &re, &wr, &gps)
 	if err == sql.ErrNoRows {
 		return analysis.Student{}, errors.New("Student not on roll at this date.  Try changing the date, or search for another student.")
 	}
@@ -557,7 +558,10 @@ func (db sqliteDB) Student(f StudentFilter) (analysis.Student, error) {
 		return analysis.Student{}, err
 	}
 	s.SEN = sen
-	s.KS2 = ks2
+	s.KS2 = analysis.KS2Info{Exists: aps > 0.0, APS: aps, Band: band,
+		En: strings.ToUpper(en), Ma: strings.ToUpper(ma),
+		Av: strings.ToUpper(av), Re: strings.ToUpper(re),
+		Wr: strings.ToUpper(wr), GPS: strings.ToUpper(gps)}
 	if male {
 		s.Gender = "Male"
 	} else {
