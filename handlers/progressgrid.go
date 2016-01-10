@@ -9,7 +9,6 @@ import (
 
 	"github.com/andrewcharlton/school-dashboard/analysis"
 	"github.com/andrewcharlton/school-dashboard/database"
-	"github.com/andrewcharlton/school-dashboard/national"
 )
 
 func ProgressGrid(e database.Env) http.HandlerFunc {
@@ -65,16 +64,16 @@ func pgAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) {
 		Level    string
 		SubjID   string
 		Class    string
-		Students []pgStudent
-		Grid     pgGrid
+		Students []analysis.PGStudent
+		Grid     analysis.ProgressGrid
 		Query    template.URL
 	}{
 		subject.Subj,
 		subject.Lvl,
 		path[3],
 		path[4],
-		pgStudentList(subject, g.Students, nat),
-		pgGridAnalysis(subject, g.Students, nat),
+		analysis.PGStudentList(subject, g.Students, nat),
+		analysis.PGAnalysis(subject, g.Students, nat),
 		template.URL(r.URL.RawQuery),
 	}
 
@@ -84,154 +83,4 @@ func pgAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-}
-
-type pgCellStudent struct {
-	UPN  string
-	Name string
-}
-
-type pgCell struct {
-	VA       float64
-	Students []pgCellStudent
-}
-
-type pgGrid struct {
-	Cells    map[string](map[string]pgCell)
-	KS2      []string
-	Grades   []string
-	Counts   map[string]int
-	VA       map[string]float64
-	TotalVA  float64
-	TMExists bool
-}
-
-func pgGridAnalysis(subject *analysis.Subject, students []analysis.Student, nat national.National) pgGrid {
-
-	ks2grades := []string{"None", "1", "2", "3C", "3B", "3A", "4C", "4B", "4A", "5C", "5B", "5A", "6"}
-	grades := subject.Level.SortedGrades()
-
-	// Initialise grid
-	grid := pgGrid{KS2: ks2grades, Grades: grades, Cells: map[string](map[string]pgCell){},
-		Counts: map[string]int{}, VA: map[string]float64{}}
-	for _, ks2 := range ks2grades {
-		grid.Cells[ks2] = map[string]pgCell{}
-	}
-
-	// Populate cell lists
-	for _, s := range students {
-		c, exists := s.Courses[subject.Subj]
-		if !exists {
-			continue
-		}
-
-		var ks2 string
-		switch subject.KS2Prior {
-		case "En":
-			ks2 = s.KS2.En
-		case "Ma":
-			ks2 = s.KS2.Ma
-		default:
-			ks2 = s.KS2.Av
-		}
-
-		if ks2 == "" {
-			ks2 = "None"
-		}
-
-		cell := grid.Cells[ks2][c.Grd]
-		cell.Students = append(cell.Students, pgCellStudent{s.UPN, s.Name()})
-		grid.Cells[ks2][c.Grd] = cell
-		grid.Counts[c.Grd]++
-	}
-
-	// Otherwise, assume KS4 and try to load TMs.
-	tm, exists := nat.TMs[subject.TM]
-	if !exists {
-		if subject.TM != "" {
-			fmt.Println("TM not found:", subject.TM)
-		}
-		return grid
-	}
-	grid.TMExists = true
-
-	// Calculate VAs
-	totalVA := 0.0
-	totalN := 0
-	for _, ks2 := range ks2grades {
-		if ks2 == "None" {
-			continue
-		}
-		rowVA := 0.0
-		rowN := 0
-		for _, grd := range grades {
-			va, err := tm.ValueAdded(ks2, grd)
-			if ks2 == "None" {
-				continue
-			}
-			if err != nil {
-				fmt.Println("KS4VAGrid - Error:", err)
-			}
-			cell := grid.Cells[ks2][grd]
-			cell.VA = va
-			grid.Cells[ks2][grd] = cell
-			rowVA += va * float64(len(grid.Cells[ks2][grd].Students))
-			rowN += len(grid.Cells[ks2][grd].Students)
-		}
-		totalVA += rowVA
-		totalN += rowN
-		if rowN != 0 {
-			grid.VA[ks2] = rowVA / float64(rowN)
-		}
-	}
-	grid.TotalVA = totalVA / float64(totalN)
-
-	return grid
-}
-
-type pgStudent struct {
-	analysis.Student
-	Class      string
-	KS2        string
-	Grade      string
-	Effort     int
-	VAExists   bool
-	VA         float64
-	Attendance float64
-}
-
-func pgStudentList(subject *analysis.Subject, students []analysis.Student, nat national.National) []pgStudent {
-
-	stdnts := []pgStudent{}
-	for _, s := range students {
-		c, exists := s.Courses[subject.Subj]
-		if !exists {
-			continue
-		}
-
-		ks2 := ""
-		switch subject.KS2Prior {
-		case "En":
-			ks2 = s.KS2.En
-		case "Ma":
-			ks2 = s.KS2.Ma
-		default:
-			ks2 = s.KS2.Av
-		}
-
-		va := s.SubjectVA(subject.Subj, nat)
-
-		stdnts = append(stdnts, pgStudent{
-			s,
-			c.Class,
-			ks2,
-			c.Grd,
-			c.Effort,
-			va.Error == nil,
-			va.Pts,
-			s.Attendance.Latest(),
-		})
-	}
-
-	return stdnts
 }
