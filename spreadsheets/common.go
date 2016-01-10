@@ -10,7 +10,12 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
+var boldFont = xlsx.Font{11, "Calibri", 2, 0, "FF000000", true, false, false}
 var defaultFont = xlsx.Font{11, "Calibri", 2, 0, "FF000000", false, false, false}
+var titleFont = xlsx.Font{18, "Calibri", 2, 0, "FF000000", false, false, false}
+
+var bottomBorder = xlsx.Border{Bottom: "thin"}
+var allBorders = xlsx.Border{Left: "thin", Right: "thin", Top: "thin", Bottom: "thin"}
 
 type exportInfo struct {
 	Key   string
