@@ -76,6 +76,10 @@ type Database interface {
 
 	// National returns a set of national data for the given year.
 	National(yearID string) (national.National, error)
+
+	// HistoricalResults returns a map of student results for
+	// a particular subject, keyed by resultset id
+	HistoricalResults(upn, subjID string) (map[string]string, error)
 }
 
 // A Lookup holds an ID/Name pair for an item in the database.

@@ -1,4 +1,11 @@
-<h2>Progress Grid</h2>
+<div class="row">
+  <div class="col-sm-9"><h2>Progress Grid</h2></div>
+  <div class="col-sm-3">
+	<a href="/export/subject/{{.SubjID}}/?{{.Query}}" class="btn btn-primary btn-sm pull-right">
+	  <span class="glyphicon glyphicon-download-alt"> Download</span>
+	</a>
+  </div>
+</div>
 
 <ul class="breadcrumb">
   <li><a href="/progressgrid/?{{.Query}}">Subjects</a></li>

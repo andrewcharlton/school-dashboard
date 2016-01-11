@@ -126,6 +126,9 @@ var sqliteStmts = map[string]string{
 					WHERE upn=? AND year_id=?
 					ORDER BY week_start DESC
 					LIMIT 1`,
+
+	"historical": `SELECT resultset, grade FROM results
+					WHERE upn=? AND subject_id=? AND list=1`,
 }
 
 // prepareStatements prepares a query statement for each sql string
@@ -772,4 +775,27 @@ func (db sqliteDB) loadTMs(yearID string) (map[string]national.TransitionMatrix,
 	}
 
 	return tms, nil
+}
+
+// HistoricalResults returns a map of student results for
+// a particular subject, keyed by resultset name
+func (db sqliteDB) HistoricalResults(upn, subjID string) (map[string]string, error) {
+
+	rows, err := db.stmts["historical"].Query(upn, subjID)
+	if err != nil {
+		return map[string]string{}, err
+	}
+	defer rows.Close()
+
+	results := map[string]string{}
+	for rows.Next() {
+		var rs, grd string
+		err := rows.Scan(&rs, &grd)
+		if err != nil {
+			return map[string]string{}, err
+		}
+		results[rs] = grd
+	}
+
+	return results, nil
 }

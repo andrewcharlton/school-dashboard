@@ -7,7 +7,7 @@ package templates
 var Templates = map[string]string{
 
 "attendance.tmpl" : `
-<h3>Attendance</h3>
+<h2>Attendance</h2>
 <br>
 
 <div class="row">
@@ -110,10 +110,11 @@ var Templates = map[string]string{
 `,
 
 "effort.tmpl" : `
+<h2>Attitude to Learning</h2>
+
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
-	<h3>Attitude to Learning</h3>
 
 	<table class="table table-hover sortable">
 	  <thead>
@@ -146,7 +147,7 @@ var Templates = map[string]string{
 `,
 
 "em.tmpl" : `
-<h3>English and Maths</h3>
+<h2>English and Maths</h2>
 <br>
 
 <div class="row">
@@ -424,7 +425,7 @@ var Templates = map[string]string{
 `,
 
 "group.tmpl" : `
-<h3>{{.Title}}</h3>
+<h2>{{.Title}}</h2>
 <br>
 
 <div class="row">
@@ -540,7 +541,7 @@ var Templates = map[string]string{
 "progress8.tmpl" : `
 <div class="row">
   <div class="col-sm-10">
-	<h3>Progress 8</h3>
+	<h2>Progress 8</h2>
   </div>
   <div class="col-sm-2">
 	<a href="/export/headlines/?{{ .Query }}"><h5><span class="glyphicon glyphicon-download"> Download</span></h5></a>
@@ -744,7 +745,14 @@ Plotly.newPlot('chart', data, layout);
 `,
 
 "progressgrid.tmpl" : `
-<h2>Progress Grid</h2>
+<div class="row">
+  <div class="col-sm-9"><h2>Progress Grid</h2></div>
+  <div class="col-sm-3">
+	<a href="/export/subject/{{.SubjID}}/?{{.Query}}" class="btn btn-primary btn-sm pull-right">
+	  <span class="glyphicon glyphicon-download-alt"> Download</span>
+	</a>
+  </div>
+</div>
 
 <ul class="breadcrumb">
   <li><a href="/progressgrid/?{{.Query}}">Subjects</a></li>
@@ -1320,7 +1328,7 @@ one or more characters.</p>
 `,
 
 "subject-overview.tmpl" : `
-<h3>Subject Summaries</h3>
+<h2>Subject Summaries</h2>
 <br>
 <div class="row">
   <div class="col-sm-1"></div>

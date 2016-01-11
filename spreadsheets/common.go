@@ -17,6 +17,35 @@ var titleFont = xlsx.Font{18, "Calibri", 2, 0, "FF000000", false, false, false}
 var bottomBorder = xlsx.Border{Bottom: "thin"}
 var allBorders = xlsx.Border{Left: "thin", Right: "thin", Top: "thin", Bottom: "thin"}
 
+func formatBool(b bool) string {
+
+	if b {
+		return "Y"
+	}
+	return "N"
+}
+
+func newCell(row *xlsx.Row, contents string, style *xlsx.Style) {
+
+	cell := row.AddCell()
+	cell.Value = contents
+	cell.SetStyle(style)
+}
+
+func newInt(row *xlsx.Row, contents int, style *xlsx.Style) {
+
+	cell := row.AddCell()
+	cell.SetInt(contents)
+	cell.SetStyle(style)
+}
+
+func newFloat(row *xlsx.Row, contents float64, format string, style *xlsx.Style) {
+
+	cell := row.AddCell()
+	cell.SetFloatWithFormat(contents, format)
+	cell.SetStyle(style)
+}
+
 type exportInfo struct {
 	Key   string
 	Value string
