@@ -50,7 +50,7 @@ func ExportSubject(e database.Env) http.HandlerFunc {
 
 		y, m, d := time.Now().Date()
 		w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-		disp := fmt.Sprintf(`inline; filename="%v %d-%02d-%02d.xlsx"`, subject.Subj, y, m, d)
+		disp := fmt.Sprintf(`attachment; filename="%v %d-%02d-%02d.xlsx"`, subject.Subj, y, m, d)
 		w.Header().Set("Content-Disposition", disp)
 
 		f := GetFilter(e, r)

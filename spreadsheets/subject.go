@@ -43,56 +43,25 @@ func subjPopulateGrid(sheet *xlsx.Sheet, pg analysis.ProgressGrid, subj string) 
 
 	row := sheet.AddRow()
 	row = sheet.AddRow()
-	cell := row.AddCell()
-	cell = row.AddCell()
-	cell.Value = "Progress Grid: " + subj
-	style := xlsx.NewStyle()
-	style.Font = titleFont
-	style.ApplyFont = true
-	cell.SetStyle(style)
-	row = sheet.AddRow()
+	newCell(row, "", defaultStyle)
+	newCell(row, "Progress Grid: "+subj, title)
 
 	row = sheet.AddRow()
-	cell = row.AddCell()
-	cell = row.AddCell()
-	cell.Value = "KS2"
-	style = xlsx.NewStyle()
-	style.Font = boldFont
-	style.Border = bottomBorder
-	style.ApplyBorder = true
-	style.ApplyFont = true
-	cell.SetStyle(style)
-
-	style.Alignment.Horizontal = "center"
-	style.ApplyAlignment = true
-	grades := append(pg.Grades, "VA")
-	for _, g := range grades {
-		cell := row.AddCell()
-		cell.Value = g
-		cell.SetStyle(style)
+	row = sheet.AddRow()
+	newCell(row, "", defaultStyle)
+	newCell(row, "KS2", header)
+	for _, g := range pg.Grades {
+		newCell(row, g, centerHeader)
 	}
+	newCell(row, "VA", centerHeader)
 
 	for _, ks2 := range pg.KS2 {
 		row := sheet.AddRow()
-		cell := row.AddCell()
-		cell = row.AddCell()
-		cell.Value = ks2
-		style := xlsx.NewStyle()
-		style.Font = boldFont
-		style.ApplyFont = true
-		cell.SetStyle(style)
-
+		newCell(row, "", defaultStyle)
+		newCell(row, ks2, bold)
 		for _, g := range pg.Grades {
 			pgCell := pg.Cells[ks2][g]
-			cell := row.AddCell()
-			cell.SetInt(len(pgCell.Students))
-			style := xlsx.NewStyle()
-			style.Font = defaultFont
-			style.ApplyFont = true
-			style.Border = allBorders
-			style.ApplyBorder = true
-			style.Alignment.Horizontal = "center"
-			style.ApplyAlignment = true
+			style := copyStyle(gridStyle)
 			switch {
 			case pgCell.VA < -0.33:
 				style.Fill.FgColor = "FFF7774F"
@@ -103,48 +72,20 @@ func subjPopulateGrid(sheet *xlsx.Sheet, pg analysis.ProgressGrid, subj string) 
 			}
 			style.Fill.PatternType = "solid"
 			style.ApplyFill = true
-			cell.SetStyle(style)
+			newInt(row, len(pgCell.Students), style)
 		}
-
-		cell = row.AddCell()
-		cell.SetFloat(pg.VA[ks2])
-		cell.NumFmt = "+0.00;-0.00;0.00"
-		style = xlsx.NewStyle()
-		style.Alignment.Horizontal = "center"
-		style.ApplyAlignment = true
-		cell.SetStyle(style)
+		newFloat(row, pg.VA[ks2], "+0.00;-0.00;0.00", centered)
 	}
 
 	row = sheet.AddRow()
-	cell = row.AddCell()
-	cell = row.AddCell()
-	cell.Value = "Total"
-	style = xlsx.NewStyle()
+	newCell(row, "", defaultStyle)
+	newCell(row, "Total", bold)
+	style := copyStyle(bold)
 	style.Font = boldFont
-	style.ApplyFont = true
-	cell.SetStyle(style)
-
 	for _, g := range pg.Grades {
-		cell := row.AddCell()
-		cell.SetInt(pg.Counts[g])
-		style := xlsx.NewStyle()
-		style.Font = boldFont
-		style.ApplyFont = true
-		style.Alignment.Horizontal = "center"
-		style.ApplyAlignment = true
-		cell.SetStyle(style)
+		newInt(row, pg.Counts[g], style)
 	}
-
-	cell = row.AddCell()
-	cell.SetFloat(pg.TotalVA)
-	cell.NumFmt = "+0.00;-0.00;0.00"
-	style = xlsx.NewStyle()
-	style.Font = boldFont
-	style.ApplyFont = true
-	style.Alignment.Horizontal = "center"
-	style.ApplyAlignment = true
-	cell.SetStyle(style)
-
+	newFloat(row, pg.TotalVA, "+0.00;-0.00;0.00", style)
 }
 
 func subjPopulateStudents(e database.Env, subjID int, sheet *xlsx.Sheet, studList []analysis.PGStudent) error {
