@@ -43,49 +43,44 @@ func subjPopulateGrid(sheet *xlsx.Sheet, pg analysis.ProgressGrid, subj string) 
 
 	row := sheet.AddRow()
 	row = sheet.AddRow()
-	newCell(row, "", defaultStyle)
-	newCell(row, "Progress Grid: "+subj, title)
+	blankCell(row)
+	newCell(row, "Progress Grid: "+subj, newStyle("Title", "None", "None", "Left"))
 
 	row = sheet.AddRow()
 	row = sheet.AddRow()
-	newCell(row, "", defaultStyle)
-	newCell(row, "KS2", header)
+	blankCell(row)
+	newCell(row, "KS2", newStyle("Bold", "None", "Bottom", "Left"))
 	for _, g := range pg.Grades {
-		newCell(row, g, centerHeader)
+		newCell(row, g, newStyle("Bold", "None", "Bottom", "Center"))
 	}
-	newCell(row, "VA", centerHeader)
+	newCell(row, "VA", newStyle("Bold", "None", "Bottom", "Center"))
 
 	for _, ks2 := range pg.KS2 {
 		row := sheet.AddRow()
-		newCell(row, "", defaultStyle)
-		newCell(row, ks2, bold)
+		blankCell(row)
+		newCell(row, ks2, newStyle("Bold", "None", "None", "Left"))
 		for _, g := range pg.Grades {
 			pgCell := pg.Cells[ks2][g]
-			style := copyStyle(gridStyle)
 			switch {
 			case pgCell.VA < -0.33:
-				style.Fill.FgColor = "FFF7774F"
+				newInt(row, len(pgCell.Students), newStyle("Default", "Red", "None", "Center"))
 			case pgCell.VA > 0.67:
-				style.Fill.FgColor = "FF2FED4F"
+				newInt(row, len(pgCell.Students), newStyle("Default", "Green", "None", "Center"))
 			default:
-				style.Fill.FgColor = "FFF2EE54"
+				newInt(row, len(pgCell.Students), newStyle("Default", "Yellow", "None", "Center"))
 			}
-			style.Fill.PatternType = "solid"
-			style.ApplyFill = true
-			newInt(row, len(pgCell.Students), style)
+
 		}
-		newFloat(row, pg.VA[ks2], "+0.00;-0.00;0.00", centered)
+		newFloat(row, pg.VA[ks2], "+0.00;-0.00;0.00", newStyle("Default", "None", "None", "Center"))
 	}
 
 	row = sheet.AddRow()
-	newCell(row, "", defaultStyle)
-	newCell(row, "Total", bold)
-	style := copyStyle(bold)
-	style.Font = boldFont
+	blankCell(row)
+	newCell(row, "Total", newStyle("Bold", "None", "None", "None"))
 	for _, g := range pg.Grades {
-		newInt(row, pg.Counts[g], style)
+		newInt(row, pg.Counts[g], newStyle("Bold", "None", "None", "Center"))
 	}
-	newFloat(row, pg.TotalVA, "+0.00;-0.00;0.00", style)
+	newFloat(row, pg.TotalVA, "+0.00;-0.00;0.00", newStyle("Bold", "None", "None", "Center"))
 }
 
 func subjPopulateStudents(e database.Env, subjID int, sheet *xlsx.Sheet, studList []analysis.PGStudent) error {
@@ -128,69 +123,40 @@ func subjPopulateStudents(e database.Env, subjID int, sheet *xlsx.Sheet, studLis
 	// Write headers to the sheet
 	row := sheet.AddRow()
 	row.SetHeightCM(4.5)
-	style := xlsx.NewStyle()
-	style.Font = boldFont
-	style.ApplyFont = true
-	style.Border = bottomBorder
-	style.ApplyBorder = true
-	newCell(row, "Name", style)
-	newCell(row, "Class", style)
+	newCell(row, "Name", newStyle("Bold", "None", "Bottom", "Left"))
+	newCell(row, "Class", newStyle("Bold", "None", "Bottom", "Left"))
 
-	style = xlsx.NewStyle()
-	style.Font = boldFont
-	style.ApplyFont = true
-	style.Border = bottomBorder
-	style.ApplyBorder = true
-	style.Alignment.Horizontal = "center"
-	style.ApplyAlignment = true
 	headers := []string{"Gender", "PP", "KS2", "SEN", "Grade",
 		"Effort", "VA", "Attendance", ""}
 	for _, h := range headers {
-		newCell(row, h, style)
+		newCell(row, h, newStyle("Bold", "None", "Bottom", "Center"))
 	}
 
 	// Add historical resultsets to the headers
-	style = xlsx.NewStyle()
-	style.Font = boldFont
-	style.ApplyFont = true
-	style.Border = bottomBorder
-	style.ApplyBorder = true
-	style.Alignment.Horizontal = "center"
-	style.Alignment.TextRotation = 90
-	style.ApplyAlignment = true
 	for _, rs := range resultsets {
 		if !empty[rs.ID] {
-			newCell(row, rs.Name, style)
+			newCell(row, rs.Name, newStyle("Bold", "None", "Bottom", "Vertical"))
 		}
 	}
 
 	// Add Student data
-	style = xlsx.NewStyle()
-	style.Font = defaultFont
-	style.ApplyFont = true
-
-	center := xlsx.NewStyle()
-	center.Font = defaultFont
-	center.ApplyFont = true
-	center.Alignment.Horizontal = "center"
-	center.ApplyAlignment = true
 	for _, s := range studList {
 		row := sheet.AddRow()
-		newCell(row, s.Name(), style)
-		newCell(row, s.Class, style)
-		newCell(row, string(s.Gender[0]), center)
-		newCell(row, formatBool(s.PP), center)
-		newCell(row, s.KS2, center)
-		newCell(row, s.SEN.Status, center)
-		newCell(row, s.Grade, center)
-		newInt(row, s.Effort, center)
-		newFloat(row, s.VA, "+0.00;-0.00;0.00", center)
-		newFloat(row, s.Attendance, ".0", center)
-		newCell(row, "", center)
+		newCell(row, s.Name(), newStyle("Default", "None", "None", "Left"))
+		newCell(row, s.Class, newStyle("Default", "None", "None", "Left"))
+		newCell(row, string(s.Gender[0]), newStyle("Default", "None", "None", "Center"))
+		newBool(row, s.PP, newStyle("Default", "None", "None", "Center"))
+		newCell(row, s.KS2, newStyle("Default", "None", "None", "Center"))
+		newCell(row, s.SEN.Status, newStyle("Default", "None", "None", "Center"))
+		newCell(row, s.Grade, newStyle("Default", "None", "None", "Center"))
+		newInt(row, s.Effort, newStyle("Default", "None", "None", "Center"))
+		newFloat(row, s.VA, "+0.00;-0.00;0.00", newStyle("Default", "None", "None", "Center"))
+		newFloat(row, s.Attendance, ".0", newStyle("Default", "None", "None", "Center"))
+		newCell(row, "", newStyle("Default", "None", "None", "Center"))
 		for _, rs := range resultsets {
 			if !empty[rs.ID] {
 				grd, _ := historical[rs.ID][s.UPN]
-				newCell(row, grd, center)
+				newCell(row, grd, newStyle("Default", "None", "None", "Center"))
 			}
 		}
 

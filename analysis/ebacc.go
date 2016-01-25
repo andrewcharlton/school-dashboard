@@ -21,6 +21,11 @@ func (s Student) EBacc() EBaccResult {
 	points := map[string][]int{}
 	results := map[string]Result{}
 
+	// Initialise lists
+	for _, key := range []string{"En", "El", "M", "S", "H", "L"} {
+		points[key] = []int{0, 0}
+	}
+
 	for _, c := range s.Courses {
 		entered[c.EBacc] += 1
 		points[c.EBacc] = append(points[c.EBacc], c.Pts)
@@ -31,7 +36,6 @@ func (s Student) EBacc() EBaccResult {
 
 	// Sort points lists
 	for _, pts := range points {
-		pts = append(pts, 0) // Ensure that there are some values
 		sort.Sort(sort.Reverse(sort.IntSlice(pts)))
 	}
 

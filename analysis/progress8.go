@@ -121,9 +121,10 @@ func (s Student) Basket() Basket {
 	return b
 }
 
-// Progress 8 calculates a progress 8 score for the student,
-// compared to the national data provided.
-func (b Basket) Progress8(nat national.Progress8) Result {
+// Attainment 8 calculates the overall attainment 8 score
+// for a student.  This is calculated as part of progress 8,
+// but this is useful if there is no KS2 data.
+func (b Basket) Attainment8() Result {
 
 	actual := 0.0
 	entries := 0
@@ -133,8 +134,16 @@ func (b Basket) Progress8(nat national.Progress8) Result {
 			entries++
 		}
 	}
+	return Result{Ach: actual, EntN: entries}
+}
 
-	return Result{Ach: actual, Exp: nat.Att8, Pts: (actual - nat.Att8) / 10, EntN: entries}
+// Progress 8 calculates a progress 8 score for the student,
+// compared to the national data provided.
+func (b Basket) Progress8(nat national.Progress8) Result {
+
+	att := b.Attainment8()
+
+	return Result{Ach: att.Ach, Exp: nat.Att8, Pts: (att.Ach - nat.Att8) / 10, EntN: att.EntN}
 }
 
 // English calculates the progress 8 scores for the English

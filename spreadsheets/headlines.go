@@ -1,29 +1,47 @@
 package spreadsheets
 
 import (
+	"fmt"
 	"io"
 	"sort"
 
 	"github.com/andrewcharlton/school-dashboard/analysis"
 	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/national"
 	"github.com/tealeg/xlsx"
 )
 
-func Headlines(e database.Env, f database.Filter, w io.Writer) error {
+var ebaccColours = map[string]string{
+	"En": "LightBlue",
+	"El": "LightBlue",
+	"M":  "DarkBlue",
+	"S":  "Green",
+	"H":  "Green",
+	"L":  "Green",
+	"":   "Yellow",
+}
 
-	file := xlsx.NewFile()
+func Headlines(e database.Env, f database.Filter, w io.Writer) error {
 
 	g, err := e.DB.GroupByFilter(f)
 	if err != nil {
 		return err
 	}
+
+	nat, exists := e.Nationals[f.NatYear]
+	if !exists {
+		return fmt.Errorf("National year not found: %v", f.NatYear)
+	}
+
+	file := xlsx.NewFile()
+
 	sheet, err := file.AddSheet("Broadsheet")
 	if err != nil {
 		return err
 	}
-	headlineBroadsheet(sheet, g)
+	broadsheet(sheet, g, nat)
 
-	sheet, err = file.AddSheet("Summary")
+	sheet, err = file.AddSheet("Export Details")
 	if err != nil {
 		return err
 	}
@@ -33,6 +51,25 @@ func Headlines(e database.Env, f database.Filter, w io.Writer) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+// Produces the broadsheet page
+func broadsheet(sheet *xlsx.Sheet, g analysis.Group, nat national.National) error {
+
+	subjects := broadsheetSubjects(g)
+
+	// Create header rows
+	err := broadsheetHeaders(sheet, subjects)
+	if err != nil {
+		return err
+	}
+
+	for _, s := range g.Students {
+		row := sheet.AddRow()
+		broadsheetStudent(row, s, subjects, nat)
+	}
+
 	return nil
 }
 
@@ -69,9 +106,10 @@ func (s subjList) Less(i, j int) bool {
 	}
 }
 
-func headlineBroadsheet(sheet *xlsx.Sheet, g analysis.Group) error {
+// List all subjects studied by the students.
+func broadsheetSubjects(g analysis.Group) subjList {
 
-	// Subject mapped by ebacc
+	// Use a map to create a set of subjects
 	subjMap := map[subject]struct{}{}
 	for _, s := range g.Students {
 		for _, c := range s.Courses {
@@ -80,46 +118,115 @@ func headlineBroadsheet(sheet *xlsx.Sheet, g analysis.Group) error {
 		}
 	}
 
+	// Extract them into a list
 	subjects := subjList{}
 	for s, _ := range subjMap {
 		subjects = append(subjects, s)
 	}
 
+	// Sort and return
 	sort.Sort(subjects)
+	return subjects
+}
 
-	colours := map[string]string{
-		"En": "FF8DB4E2",
-		"El": "FF8DB4E2",
-		"M":  "FF0066CC",
-		"S":  "FF73FF47",
-		"H":  "FF73FF47",
-		"L":  "FF73FF47",
-		"":   "FFFFCC00",
-	}
+func broadsheetHeaders(sheet *xlsx.Sheet, subjects subjList) error {
 
 	row := sheet.AddRow()
+
+	// Add Name & usual student filters
 	row.SetHeightCM(4.5)
-	cell := row.AddCell()
-	cell.Value = "Name"
+	newCell(row, "UPN", newStyle("Bold", "LightGrey", "Bottom", "Left"))
+	newCell(row, "Name", newStyle("Bold", "LightGrey", "Bottom", "Left"))
+	for _, f := range studentFilters {
+		newCell(row, f, newStyle("Bold", "LightGrey", "Bottom", "Vertical"))
+	}
+	newCell(row, "", newStyle("Default", "None", "Bottom", "None"))
+
 	for _, s := range subjects {
-		cell := row.AddCell()
-		cell.Value = s.Name
-		style := xlsx.NewStyle()
-		style.Font = defaultFont
-		style.Fill.PatternType = "solid"
-		style.Fill.FgColor = colours[s.EBacc]
-		style.ApplyFill = true
-		style.Alignment.TextRotation = 90
-		style.Alignment.Horizontal = "center"
-		style.ApplyAlignment = true
-		cell.SetStyle(style)
+		newCell(row, s.Name, newStyle("Bold", ebaccColours[s.EBacc], "Bottom", "Vertical"))
+	}
+	newCell(row, "", newStyle("Default", "None", "Bottom", "None"))
+
+	newCell(row, "Attainment 8", newStyle("Bold", "Orange", "Bottom", "Vertical"))
+	newCell(row, "Progress 8", newStyle("Bold", "Orange", "Bottom", "Vertical"))
+	newCell(row, "English", newStyle("Bold", ebaccColours["En"], "Bottom", "Vertical"))
+	newCell(row, "Mathematics", newStyle("Bold", ebaccColours["M"], "Bottom", "Vertical"))
+	newCell(row, "EBacc", newStyle("Bold", ebaccColours["S"], "Bottom", "Vertical"))
+	newCell(row, "Open", newStyle("Bold", ebaccColours[""], "Bottom", "Vertical"))
+	newCell(row, "", newStyle("Default", "None", "Bottom", "None"))
+
+	newCell(row, "English & Maths", newStyle("Bold", "Purple", "Bottom", "Vertical"))
+	newCell(row, "EBacc: Entered", newStyle("Bold", "Purple", "Bottom", "Vertical"))
+	newCell(row, "EBacc: Achieved", newStyle("Bold", "Purple", "Bottom", "Vertical"))
+	newCell(row, "", newStyle("Default", "None", "Bottom", "None"))
+
+	newCell(row, "Attendance", newStyle("Bold", "Red", "Bottom", "Vertical"))
+
+	// Hide UPN
+	col := sheet.Cols[0]
+	col.Hidden = true
+
+	// Make name column wide
+	err := sheet.SetColWidth(1, 1, 20.0)
+	if err != nil {
+		return err
 	}
 
-	firstCol := 1
-	err := sheet.SetColWidth(firstCol, firstCol+len(subjects), 2.6)
+	// Shrink all columns
+	err = sheet.SetColWidth(2, sheet.MaxCol, 2.6)
+	if err != nil {
+		return err
+	}
+	// Then make Float columns wider
+	startCell := len(subjects) + len(studentFilters) + 4
+	err = sheet.SetColWidth(startCell, startCell+5, 5.0)
+	if err != nil {
+		return err
+	}
+	err = sheet.SetColWidth(startCell+11, startCell+11, 5.0)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func broadsheetStudent(row *xlsx.Row, s analysis.Student, subjects subjList, nat national.National) {
+
+	studentDetails(row, s)
+	blankCell(row)
+
+	for _, subj := range subjects {
+		c, exists := s.Courses[subj.Name]
+		if exists {
+			newCell(row, c.Grd, center)
+		} else {
+			blankCell(row)
+		}
+	}
+	blankCell(row)
+
+	b := s.Basket()
+	newFloat(row, b.Attainment8().Ach, "0.0", center)
+
+	exp, err := nat.Progress8(s.KS2.APS)
+	if err == nil {
+		newFloat(row, b.Progress8(exp).Pts, "+0.0;-0.0;0.0", center)
+		newFloat(row, b.English(exp).Pts, "+0.0;-0.0;0.0", center)
+		newFloat(row, b.Mathematics(exp).Pts, "+0.0;-0.0;0.0", center)
+		newFloat(row, b.EBacc(exp).Pts, "+0.0;-0.0;0.0", center)
+		newFloat(row, b.Other(exp).Pts, "+0.0;-0.0;0.0", center)
+	} else {
+		for i := 0; i < 5; i++ {
+			blankCell(row)
+		}
+	}
+	blankCell(row)
+
+	newBool(row, s.Basics().AchB, center)
+	newBool(row, s.EBacc().Results["All"].EntB, center)
+	newBool(row, s.EBacc().Results["All"].AchB, center)
+	blankCell(row)
+
+	newFloat(row, s.Attendance.Latest(), "0.0", center)
 }
