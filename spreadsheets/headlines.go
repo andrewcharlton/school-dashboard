@@ -148,6 +148,7 @@ func broadsheetHeaders(sheet *xlsx.Sheet, subjects subjList) error {
 	newCell(row, "", newStyle("Default", "None", "Bottom", "None"))
 
 	newCell(row, "Attainment 8", newStyle("Bold", "Orange", "Bottom", "Vertical"))
+	newCell(row, "Entries", newStyle("Bold", "Orange", "Bottom", "Vertical"))
 	newCell(row, "Progress 8", newStyle("Bold", "Orange", "Bottom", "Vertical"))
 	newCell(row, "English", newStyle("Bold", ebaccColours["En"], "Bottom", "Vertical"))
 	newCell(row, "Mathematics", newStyle("Bold", ebaccColours["M"], "Bottom", "Vertical"))
@@ -179,11 +180,11 @@ func broadsheetHeaders(sheet *xlsx.Sheet, subjects subjList) error {
 	}
 	// Then make Float columns wider
 	startCell := len(subjects) + len(studentFilters) + 4
-	err = sheet.SetColWidth(startCell, startCell+5, 5.0)
+	err = sheet.SetColWidth(startCell, startCell+6, 5.0)
 	if err != nil {
 		return err
 	}
-	err = sheet.SetColWidth(startCell+11, startCell+11, 5.0)
+	err = sheet.SetColWidth(startCell+12, startCell+12, 5.0)
 	if err != nil {
 		return err
 	}
@@ -208,6 +209,7 @@ func broadsheetStudent(row *xlsx.Row, s analysis.Student, subjects subjList, nat
 
 	b := s.Basket()
 	newFloat(row, b.Attainment8().Ach, "0.0", center)
+	newInt(row, b.Attainment8().EntN, center)
 
 	exp, err := nat.Progress8(s.KS2.APS)
 	if err == nil {
