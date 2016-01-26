@@ -1,6 +1,6 @@
 package groups
 
-import "github.com/andrewcharlton/school-dashboard/analysis"
+import "github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 
 // A GroupSummary provides a summary of the group and the average for each
 // measure.
@@ -18,7 +18,7 @@ type Summary struct {
 
 // Summarise finds the average score for each subgroup of students (as defined by the
 // group definitions), for each measure defined by the ScoreFuncs.
-func Summarise(stdnts []analysis.Student, grps []GroupDef, funcs []ScoreFunc) Summary {
+func Summarise(stdnts []stdnt.Student, grps []GroupDef, funcs []ScoreFunc) Summary {
 
 	summary := Summary{Headers: []string{}, Groups: []GroupSummary{}}
 	for _, f := range funcs {

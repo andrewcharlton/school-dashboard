@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 	"github.com/andrewcharlton/school-dashboard/database"
 	"github.com/andrewcharlton/school-dashboard/national"
 )
@@ -47,7 +47,7 @@ func Student(e database.Env) http.HandlerFunc {
 		p8, err := nat.Progress8(s.KS2.APS)
 
 		data := struct {
-			Student analysis.Student
+			Student stdnt.Student
 			Nat     national.Progress8
 			HasNat  bool
 		}{

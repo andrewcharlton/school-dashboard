@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 	"github.com/andrewcharlton/school-dashboard/database"
 )
 
@@ -48,7 +48,7 @@ func SubjectOverview(e database.Env) http.HandlerFunc {
 }
 
 type subjData struct {
-	Subject *analysis.Subject
+	Subject *stdnt.Subject
 	Cohort  int
 	KS2     []float64
 	PP      []float64
@@ -57,7 +57,7 @@ type subjData struct {
 }
 
 type subjSummary struct {
-	Subject *analysis.Subject
+	Subject *stdnt.Subject
 	Cohort  int
 	HasKS2  bool
 	KS2     float64

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 	"github.com/andrewcharlton/school-dashboard/database"
 	"github.com/andrewcharlton/school-dashboard/national"
 )
@@ -106,7 +106,7 @@ type pgGrid struct {
 	TMExists bool
 }
 
-func pgGridAnalysis(subject *analysis.Subject, students []analysis.Student, nat national.National) pgGrid {
+func pgGridAnalysis(subject *stdnt.Subject, students []stdnt.Student, nat national.National) pgGrid {
 
 	ks2grades := []string{"None", "1", "2", "3C", "3B", "3A", "4C", "4B", "4A", "5C", "5B", "5A", "6"}
 	grades := subject.Level.SortedGrades()
@@ -190,7 +190,7 @@ func pgGridAnalysis(subject *analysis.Subject, students []analysis.Student, nat 
 }
 
 type pgStudent struct {
-	analysis.Student
+	stdnt.Student
 	Class      string
 	KS2        string
 	Grade      string
@@ -200,7 +200,7 @@ type pgStudent struct {
 	Attendance float64
 }
 
-func pgStudentList(subject *analysis.Subject, students []analysis.Student, nat national.National) []pgStudent {
+func pgStudentList(subject *stdnt.Subject, students []stdnt.Student, nat national.National) []pgStudent {
 
 	stdnts := []pgStudent{}
 	for _, s := range students {

@@ -3,20 +3,20 @@ package groups
 import (
 	"fmt"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 )
 
 // A ScoreFunc produces a score from a student.
 // The name is used as a header when producing summary tables
 type ScoreFunc struct {
 	Name string
-	Func func(analysis.Student) Score
+	Func func(stdnt.Student) Score
 }
 
 // AttendancePct returns the % Attendance recorded for the year.
 var AttendancePct = ScoreFunc{
 	Name: "% Att",
-	Func: func(s analysis.Student) Score {
+	Func: func(s stdnt.Student) Score {
 		return Score{s.Attendance.Latest(), false}
 	},
 }
@@ -27,7 +27,7 @@ var AttendancePct = ScoreFunc{
 func AttendanceUnder(att float64) ScoreFunc {
 	return ScoreFunc{
 		Name: fmt.Sprintf("Att Under %.0f%%", att),
-		Func: func(s analysis.Student) Score {
+		Func: func(s stdnt.Student) Score {
 			if s.Attendance.Latest() < att {
 				return Score{100.0, false}
 			}

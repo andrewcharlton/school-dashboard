@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 	"github.com/andrewcharlton/school-dashboard/database"
 )
 
@@ -29,7 +29,7 @@ func EnglishAndMaths(e database.Env) http.HandlerFunc {
 		nat := e.Nationals[f.NatYear]
 
 		type student struct {
-			analysis.Student
+			stdnt.Student
 			EnGrd  string
 			EnEff  int
 			MaGrd  string

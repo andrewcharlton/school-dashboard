@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 	"github.com/andrewcharlton/school-dashboard/database"
 	"github.com/andrewcharlton/school-dashboard/national"
 )
@@ -21,7 +21,7 @@ type p8Slot struct {
 }
 
 type p8Student struct {
-	analysis.Student
+	stdnt.Student
 	Slots [5]p8Slot
 	Att   float64
 }
@@ -136,7 +136,7 @@ func Progress8(e database.Env) http.HandlerFunc {
 	}
 }
 
-func p8StudentData(s analysis.Student, nat national.National) ([5]p8Slot, error) {
+func p8StudentData(s stdnt.Student, nat national.National) ([5]p8Slot, error) {
 
 	exp, err := nat.Progress8(s.KS2.APS)
 	if err != nil {
@@ -165,7 +165,7 @@ func p8StudentData(s analysis.Student, nat national.National) ([5]p8Slot, error)
 	return slots, nil
 }
 
-func p8Text(slots []analysis.Slot) string {
+func p8Text(slots []stdnt.Slot) string {
 
 	text := ""
 	for _, s := range slots {
