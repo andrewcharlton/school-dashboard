@@ -1,10 +1,10 @@
-package analysis
+package stdnt
 
 import (
 	"errors"
 	"fmt"
 
-	"github.com/andrewcharlton/school-dashboard/national"
+	"github.com/andrewcharlton/school-dashboard/analysis/national"
 )
 
 // TM retrieves the transition matrix for a particular subject.

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 	"github.com/andrewcharlton/school-dashboard/database"
 )
 
@@ -64,7 +64,7 @@ func classStudentList(e database.Env, w http.ResponseWriter, r *http.Request) {
 		SubjID   string
 		Class    string
 		Query    template.URL
-		Students []analysis.Student
+		Students []stdnt.Student
 	}{
 		subject.Subj,
 		subject.Lvl,

@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
-	"github.com/andrewcharlton/school-dashboard/level"
-	"github.com/andrewcharlton/school-dashboard/national"
+	"github.com/andrewcharlton/school-dashboard/analysis/lvl"
+	"github.com/andrewcharlton/school-dashboard/analysis/national"
 	_ "github.com/mattn/go-sqlite3" // SQL Driver
 )
 
@@ -18,8 +17,8 @@ type sqliteDB struct {
 	stmts map[string]*sql.Stmt // Prepared statements for quicker queries
 
 	// Cached objects
-	subjects map[int]*analysis.Subject
-	levels   map[int]*level.Level
+	subjects map[int]*stdnt.Subject
+	levels   map[int]*lvl.Level
 	years    map[string]int // Map of dates to school_years
 }
 
@@ -160,10 +159,10 @@ func (db *sqliteDB) loadLevels() error {
 	}
 	defer rows.Close()
 
-	db.levels = map[int]*level.Level{}
+	db.levels = map[int]*lvl.Level{}
 	for rows.Next() {
 		var id int
-		var l level.Level
+		var l lvl.Level
 		err := rows.Scan(&id, &l.Lvl, &l.IsGCSE)
 		if err != nil {
 			return err
@@ -182,22 +181,22 @@ func (db *sqliteDB) loadLevels() error {
 }
 
 // loadGrades pulls in the list of grades at a particular level
-func (db *sqliteDB) loadGrades(lvl int) (map[string]*level.Grade, error) {
+func (db *sqliteDB) loadGrades(lvl int) (map[string]*lvl.Grade, error) {
 
 	rows, err := db.conn.Query(`SELECT grade, points, att8, l1_pass, l2_pass
 								FROM grades
 								WHERE level_id=?`, lvl)
 	if err != nil {
-		return map[string]*level.Grade{}, err
+		return map[string]*lvl.Grade{}, err
 	}
 	defer rows.Close()
 
-	grades := map[string]*level.Grade{}
+	grades := map[string]*lvl.Grade{}
 	for rows.Next() {
-		var g level.Grade
+		var g lvl.Grade
 		err := rows.Scan(&g.Grd, &g.Pts, &g.Att8, &g.L1Pass, &g.L2Pass)
 		if err != nil {
-			return map[string]*level.Grade{}, err
+			return map[string]*lvl.Grade{}, err
 		}
 		grades[g.Grd] = &g
 	}
@@ -345,7 +344,7 @@ func (db sqliteDB) Subjects() map[int]*analysis.Subject {
 }
 
 // Level returns the named level
-func (db sqliteDB) Level(name string) *level.Level {
+func (db sqliteDB) Level(name string) *lvl.Level {
 
 	for _, l := range db.levels {
 		if l.Lvl == name {

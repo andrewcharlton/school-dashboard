@@ -1,6 +1,6 @@
 // Package level extracts the level struct so it
 // can be used in both analysis and national packages.
-package level
+package lvl
 
 import "sort"
 

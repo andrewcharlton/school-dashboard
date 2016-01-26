@@ -8,9 +8,10 @@
 package database
 
 import (
-	"github.com/andrewcharlton/school-dashboard/analysis"
-	"github.com/andrewcharlton/school-dashboard/level"
-	"github.com/andrewcharlton/school-dashboard/national"
+	"github.com/andrewcharlton/school-dashboard/analysis/grp"
+	"github.com/andrewcharlton/school-dashboard/analysis/lvl"
+	"github.com/andrewcharlton/school-dashboard/analysis/national"
+	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 )
 
 // A Database provides a wrapper to the database
@@ -41,30 +42,30 @@ type Database interface {
 
 	// Student returns a student object with details relevant
 	// to the given filter.
-	Student(f StudentFilter) (analysis.Student, error)
+	Student(f StudentFilter) (stdnt.Student, error)
 
 	// GroupByFilter returns a list of students who satisfy the
 	// criteria specified in the filter
-	GroupByFilter(f Filter) (analysis.Group, error)
+	GroupByFilter(f Filter) (grp.Group, error)
 
 	// GroupByClass returns a group of students who are present
 	// in the subject/class at the date specified in the filter.
-	GroupByClass(subj_id, class string, f Filter) (analysis.Group, error)
+	GroupByClass(subj_id, class string, f Filter) (grp.Group, error)
 
 	// GroupByFilteredClass returns a group of students who meet
 	// the filter criteria and are also present in the subject/
 	// class combination.  If class="", the group will include
 	// all students who study that subject.
-	GroupByFilteredClass(subj_id, class string, f Filter) (analysis.Group, error)
+	GroupByFilteredClass(subj_id, class string, f Filter) (grp.Group, error)
 
 	// Search returns a list of students from a search query.
 	Search(name, date string) ([]StudentLookup, error)
 
 	// Subjects returns a list of all subjects available.
-	Subjects() map[int]*analysis.Subject
+	Subjects() map[int]*stdnt.Subject
 
 	// Levels returns a list of all levels available.
-	Level(name string) *level.Level
+	Level(name string) *lvl.Level
 
 	// Classes returns a list of classes that exist for a subject,
 	// at a particular date (date_id should be provided).

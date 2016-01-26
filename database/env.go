@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/andrewcharlton/school-dashboard/national"
+	"github.com/andrewcharlton/school-dashboard/analysis/national"
 	"github.com/andrewcharlton/school-dashboard/templates"
 )
 

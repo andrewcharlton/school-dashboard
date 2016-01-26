@@ -1,6 +1,6 @@
-package analysis
+package stdnt
 
-import "github.com/andrewcharlton/school-dashboard/level"
+import "github.com/andrewcharlton/school-dashboard/analysis/lvl"
 
 // A Subject contains subject details.
 type Subject struct {
@@ -12,7 +12,7 @@ type Subject struct {
 	SubjID int
 
 	// The Level of the subject
-	*level.Level
+	*lvl.Level
 
 	// Which EBacc Basket the Subject falls in:
 	// M: Maths
@@ -35,7 +35,7 @@ type Subject struct {
 // achieved in that subject.
 type Course struct {
 	*Subject
-	*level.Grade
+	*lvl.Grade
 	Effort  int
 	Class   string
 	Teacher string

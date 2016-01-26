@@ -3,7 +3,7 @@ package national
 import (
 	"errors"
 
-	"github.com/andrewcharlton/school-dashboard/level"
+	"github.com/andrewcharlton/school-dashboard/analysis/lvl"
 )
 
 // A TMRow holds the probabilities of achieving
@@ -16,7 +16,7 @@ type TMRow map[string]float64
 // scores etc. for each grade.
 type TransitionMatrix struct {
 	Rows  map[string]TMRow
-	Level *level.Level
+	Level *lvl.Level
 }
 
 // Expected calculates the expected Attainment 8 points

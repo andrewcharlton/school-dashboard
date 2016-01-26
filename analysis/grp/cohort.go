@@ -1,6 +1,4 @@
-// Analysis of cohort characteristics.
-
-package analysis
+package grp
 
 import "errors"
 

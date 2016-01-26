@@ -1,4 +1,4 @@
-package analysis
+package stdnt
 
 // A Student holds the relevant data for a single
 // student, at a single point in time.  It holds
@@ -51,9 +51,4 @@ type KS2Info struct {
 	Re     string
 	Wr     string
 	GPS    string
-}
-
-// A Group contains a list of students
-type Group struct {
-	Students []Student
 }
