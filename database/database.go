@@ -8,75 +8,20 @@
 package database
 
 import (
-	"github.com/andrewcharlton/school-dashboard/analysis/grp"
-	"github.com/andrewcharlton/school-dashboard/analysis/lvl"
-	"github.com/andrewcharlton/school-dashboard/analysis/national"
-	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
+	"database/sql"
+
+	"github.com/andrewcharlton/school-dashboard/analysis/subject"
 )
 
-// A Database provides a wrapper to the database
-// connection and provides methods to query it.
-type Database interface {
+type Database struct {
 
-	// Close the database connection
-	Close() error
+	// Database connection
+	conn  *sql.DB
+	stmts map[string]*sql.Stmt
 
-	// Config returns a populated config object from the
-	// database.
-	Config() (Config, error)
-
-	// Dates returns a sorted list of all effective dates
-	// in the database that are marked to be listed.
-	Dates() ([]Lookup, error)
-
-	// Ethnicities returns a list of all the distinct
-	// ethnicities present in the database, and the frequency
-	// that each appears with.  Only students who are present
-	// in listed dates are counted.  List should be sorted
-	// with largest groups first.
-	Ethnicities() ([]Ethnicity, error)
-
-	// Resultsets returns a sorted list of all resultsets
-	// in the database.
-	Resultsets() ([]Lookup, error)
-
-	// Student returns a student object with details relevant
-	// to the given filter.
-	Student(f StudentFilter) (stdnt.Student, error)
-
-	// GroupByFilter returns a list of students who satisfy the
-	// criteria specified in the filter
-	GroupByFilter(f Filter) (grp.Group, error)
-
-	// GroupByClass returns a group of students who are present
-	// in the subject/class at the date specified in the filter.
-	GroupByClass(subj_id, class string, f Filter) (grp.Group, error)
-
-	// GroupByFilteredClass returns a group of students who meet
-	// the filter criteria and are also present in the subject/
-	// class combination.  If class="", the group will include
-	// all students who study that subject.
-	GroupByFilteredClass(subj_id, class string, f Filter) (grp.Group, error)
-
-	// Search returns a list of students from a search query.
-	Search(name, date string) ([]StudentLookup, error)
-
-	// Subjects returns a list of all subjects available.
-	Subjects() map[int]*stdnt.Subject
-
-	// Levels returns a list of all levels available.
-	Level(name string) *lvl.Level
-
-	// Classes returns a list of classes that exist for a subject,
-	// at a particular date (date_id should be provided).
-	Classes(subj_id, date string) ([]string, error)
-
-	// NationalYears returns a sorted list of all years
-	// for which national data is available
-	NationalYears() ([]Lookup, error)
-
-	// National returns a set of national data for the given year.
-	National(yearID string) (national.National, error)
+	// Cached object
+	subjects map[int]subject.Subject
+	levels   map[int]subject.Level
 }
 
 // A Lookup holds an ID/Name pair for an item in the database.

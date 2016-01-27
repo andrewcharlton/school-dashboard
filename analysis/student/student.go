@@ -1,5 +1,7 @@
 package student
 
+import "github.com/andrewcharlton/school-dashboard/analysis/subject"
+
 // A Student holds the relevant data for a single
 // student, at a single point in time.  It holds
 // all of their personal data, as well as the details
@@ -17,7 +19,7 @@ type Student struct {
 	Ethnicity  string
 	SEN        SENInfo
 	KS2        KS2Info
-	Courses    map[string]Course
+	Courses    map[string]subject.Course
 	Attendance AttendanceInfo
 }
 
