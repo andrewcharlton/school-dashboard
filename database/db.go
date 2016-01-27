@@ -64,7 +64,7 @@ func (db Database) Close() error {
 }
 
 // loadLevels pulls in all of the levels for caching
-func (db *sqliteDB) loadLevels() error {
+func (db *Database) loadLevels() error {
 
 	rows, err := db.conn.Query("SELECT id, level, is_gcse FROM levels")
 	if err != nil {
@@ -93,31 +93,30 @@ func (db *sqliteDB) loadLevels() error {
 }
 
 // loadGrades pulls in the list of grades at a particular level
-func (db *sqliteDB) loadGrades(lvl int) (map[string]*lvl.Grade, error) {
+func (db *Database) loadGrades(lvl int) (map[string]lvl.Grade, error) {
 
 	rows, err := db.conn.Query(`SELECT grade, points, att8, l1_pass, l2_pass
 								FROM grades
 								WHERE level_id=?`, lvl)
 	if err != nil {
-		return map[string]*lvl.Grade{}, err
+		return map[string]lvl.Grade{}, err
 	}
 	defer rows.Close()
 
-	grades := map[string]*lvl.Grade{}
+	grades := map[string]lvl.Grade{}
 	for rows.Next() {
 		var g lvl.Grade
 		err := rows.Scan(&g.Grd, &g.Pts, &g.Att8, &g.L1Pass, &g.L2Pass)
 		if err != nil {
-			return map[string]*lvl.Grade{}, err
+			return map[string]lvl.Grade{}, err
 		}
-		grades[g.Grd] = &g
+		grades[g.Grd] = g
 	}
-
 	return grades, nil
 }
 
 // loadSubjects pulls in the subject list for caching
-func (db *sqliteDB) loadSubjects() error {
+func (db *Database) loadSubjects() error {
 
 	rows, err := db.conn.Query(`SELECT id, subject, level_id, ebacc, tm, ks2_prior
 								FROM subjects`)
@@ -137,6 +136,5 @@ func (db *sqliteDB) loadSubjects() error {
 		s.Level = db.levels[lvl]
 		db.subjects[s.SubjID] = &s
 	}
-
 	return nil
 }

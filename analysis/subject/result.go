@@ -1,9 +1,9 @@
 package subject
 
-// A Course brings together a subject and the grade achieved
+// A Result brings together a subject and the grade achieved
 // in that subject.
-type Course struct {
-	Subject
+type Result struct {
+	*Subject
 	Grade
 	TM      TransitionMatrix
 	Effort  int

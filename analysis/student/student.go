@@ -19,7 +19,7 @@ type Student struct {
 	Ethnicity  string
 	SEN        SENInfo
 	KS2        KS2Info
-	Courses    map[string]subject.Course
+	Results    map[string]subject.Result
 	Attendance AttendanceInfo
 }
 

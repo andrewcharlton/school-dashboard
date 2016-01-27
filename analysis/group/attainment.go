@@ -1,4 +1,4 @@
-package grp
+package group
 
 // A Result has
 type Result struct {
