@@ -1,7 +1,33 @@
 package database
 
+import "database/sql"
+
+// prepareStatements prepares a query statement for each sql string
+// in stmts
+func (db *sqliteDB) prepareStatements() error {
+
+	// Close any existing statements
+	for _, s := range db.stmts {
+		err := s.Close()
+		if err != nil {
+			return err
+		}
+	}
+
+	// Prepare statements
+	db.stmts = map[string]*sql.Stmt{}
+	for key, sql := range stmts {
+		s, err := db.conn.Prepare(sql)
+		if err != nil {
+			return err
+		}
+		db.stmts[key] = stmt
+	}
+	return nil
+}
+
 // Query strings for prepared statements
-var stmnts = map[string]string{
+var stmts = map[string]string{
 
 	"student": `SELECT upn, surname, forename, year, form,
 				pp, eal, gender, ethnicity, sen_status,
