@@ -1,4 +1,4 @@
-package stdnt
+package student
 
 // A Student holds the relevant data for a single
 // student, at a single point in time.  It holds

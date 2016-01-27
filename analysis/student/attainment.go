@@ -1,4 +1,4 @@
-package stdnt
+package student
 
 // Basics measures whether a student has achieved a level 2 pass
 // in both English and Maths.

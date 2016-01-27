@@ -1,4 +1,4 @@
-package stdnt
+package student
 
 import "errors"
 

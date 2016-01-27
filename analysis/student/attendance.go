@@ -1,4 +1,4 @@
-package stdnt
+package student
 
 // AttendanceInfo collects a student's latest attendance
 // data together
