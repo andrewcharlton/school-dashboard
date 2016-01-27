@@ -132,8 +132,8 @@ func (e *Env) LoadFilterItems() error {
 		} else {
 			e.OtherEths[eth.Name] = true
 		}
-		e.Ethnicities = append(e.Ethnicities, "Other")
 	}
+	e.Ethnicities = append(e.Ethnicities, "Other")
 
 	return nil
 }

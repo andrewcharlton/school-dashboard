@@ -379,7 +379,6 @@ var Templates = map[string]string{
 			<label class="checkbox-inline"><input type="checkbox" name="ethnicity" value="{{.}}"{{if index $E .}} checked="yes"{{end}}>{{.}}</input></label>
 			{{end}}
 			{{end}}
-			<label class="checkbox-inline"><input type="checkbox" name="ethnicity" value="Other"{{if index $E "Other"}} checked="yes"{{end}}>Other</input></label>
 		  </div>
 		</div>
 	  </div>

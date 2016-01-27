@@ -125,6 +125,7 @@ func Progress8(e database.Env) http.HandlerFunc {
 
 		for i := 0; i < 5; i++ {
 			data.Slots[i].Att8 = data.Slots[i].Att8 / float64(totalN)
+			data.Slots[i].Att8PerSlot = data.Slots[i].Att8PerSlot / float64(totalN)
 			data.Slots[i].Entries = data.Slots[i].Entries / float64(totalN)
 			data.Slots[i].Prog8 = data.Slots[i].Prog8 / float64(totalN)
 		}
