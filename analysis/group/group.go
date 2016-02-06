@@ -1,3 +1,5 @@
+// Package group provides the tools for analysing a group
+// of students.
 package group
 
 import (

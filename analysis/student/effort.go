@@ -12,8 +12,8 @@ type EffortAv struct {
 func (s Student) Effort() EffortAv {
 
 	total, num := 0, 0
-	for _, c := range s.Courses {
-		total += c.Effort
+	for _, r := range s.Results {
+		total += r.Effort
 		num += 1
 	}
 

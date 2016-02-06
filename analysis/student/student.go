@@ -21,6 +21,10 @@ type Student struct {
 	KS2        KS2Info
 	Results    map[string]subject.Result
 	Attendance AttendanceInfo
+
+	basket  *Basket     // cached Progress8 basket
+	natAtt8 Attainment8 // National Attainment8 scores
+
 }
 
 // Name returns the student's name, formatted as

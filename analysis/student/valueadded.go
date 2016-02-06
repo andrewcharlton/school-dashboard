@@ -3,14 +3,12 @@ package student
 import (
 	"errors"
 	"fmt"
-
-	"github.com/andrewcharlton/school-dashboard/analysis/national"
 )
 
 // TM retrieves the transition matrix for a particular subject.
 func (s Student) TM(subject string, nat national.National) (national.TransitionMatrix, error) {
 
-	c, exists := s.Courses[subject]
+	r, exists := s.Results[subject]
 	if !exists {
 		return national.TransitionMatrix{},
 			fmt.Errorf("Course not recognised. UPN: %s, Subject: %v", s.UPN, subject)

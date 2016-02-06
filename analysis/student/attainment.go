@@ -2,27 +2,22 @@ package student
 
 // Basics measures whether a student has achieved a level 2 pass
 // in both English and Maths.
-func (s Student) Basics() (bool, bool) {
+func (s Student) Basics() bool {
 
 	eng, maths := false, false
-	for _, c := range s.Courses {
-		switch c.EBacc {
-		case "En":
-			if c.L2Pass {
-				eng = true
-			}
-		case "El":
-			if c.L2Pass {
+	for _, r := range s.Results {
+		switch r.EBacc {
+		case "En", "El", "E":
+			if r.L2Pass {
 				eng = true
 			}
 		case "M":
-			if c.L2Pass {
+			if r.L2Pass {
 				maths = true
 			}
 		}
 	}
-
-	return true, eng && maths
+	return eng && maths
 }
 
 func (s Student) EBacc() (bool, bool) {
@@ -44,22 +39,22 @@ func (s Student) EBaccEng() (bool, bool) {
 
 	entLang, entLit := false, false
 	achLang, achLit := false, false
-	for _, c := range s.Courses {
-		switch c.EBacc {
+	for _, r := range s.Results {
+		switch r.EBacc {
 		case "E":
 			entLang, entLit = true, true
-			if c.L2Pass {
+			if r.L2Pass {
 				achLang = true
 				achLit = true
 			}
 		case "En":
 			entLang = true
-			if c.L2Pass {
+			if r.L2Pass {
 				achLang = true
 			}
 		case "El":
 			entLit = true
-			if c.L2Pass {
+			if r.L2Pass {
 				achLit = true
 			}
 		}
@@ -72,10 +67,10 @@ func (s Student) EBaccEng() (bool, bool) {
 func (s Student) EBaccSci() (bool, bool) {
 
 	entries, passes := 0, 0
-	for _, c := range s.Courses {
-		if c.EBacc == "S" {
+	for _, r := range s.Results {
+		if r.EBacc == "S" {
 			entries++
-			if c.L2Pass {
+			if r.L2Pass {
 				passes++
 			}
 		}
@@ -105,11 +100,11 @@ func (s Student) EBaccHum() (bool, bool) {
 func (s Student) ebaccArea(area string) (bool, bool) {
 
 	ent, ach := false, false
-	for _, c := range s.Courses {
-		switch c.EBacc {
+	for _, r := range s.Results {
+		switch r.EBacc {
 		case area:
 			ent = true
-			if c.L2Pass {
+			if r.L2Pass {
 				ach = true
 			}
 		}
