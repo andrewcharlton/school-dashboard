@@ -1,8 +1,6 @@
 // Package subject pulls together all of the
 package subject
 
-import "fmt"
-
 // A Subject contains subject details.
 type Subject struct {
 
@@ -29,16 +27,5 @@ type Subject struct {
 	KS2Prior string
 
 	// tms for the subject
-	tms map[string]TransitionMatrix
-}
-
-// TM returns the transition matrix for the subject,
-// from the relevant year.
-func (s Subject) TM(year string) (TransitionMatrix, error) {
-
-	tm, exists := s.tms[year]
-	if !exists {
-		return TransitionMatrix{}, fmt.Errorf("No TM for %v at %v", s.Subj, year)
-	}
-	return tm, nil
+	TMs map[string]TransitionMatrix
 }

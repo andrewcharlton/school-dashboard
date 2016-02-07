@@ -13,7 +13,7 @@ type Level struct {
 	IsGCSE bool
 
 	// Possible grades achievable at that level
-	Gradeset map[string]*Grade
+	Gradeset map[string]Grade
 }
 
 type grdPt struct {
