@@ -25,10 +25,10 @@ var (
 	NonPP = func(s student.Student) bool { return !s.PP }
 
 	// Male students
-	Boys = func(s student.Student) bool { return s.Gender == "Male" }
+	Boys = func(s student.Student) bool { return s.Gender == 1 }
 
 	// Female students
-	Girls = func(s student.Student) bool { return s.Gender == "Female" }
+	Girls = func(s student.Student) bool { return s.Gender == 0 }
 
 	// High attaining students at KS2
 	High = func(s student.Student) bool { return s.KS2.Band == "High" }
@@ -52,7 +52,7 @@ func (g Group) SubGroup(filters ...func(s student.Student) bool) Group {
 
 	students := []student.Student{}
 	for _, s := range g.Students {
-		include = true
+		include := true
 		for _, f := range filters {
 			if !f(s) {
 				include = false

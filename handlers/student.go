@@ -5,9 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 	"github.com/andrewcharlton/school-dashboard/database"
-	"github.com/andrewcharlton/school-dashboard/national"
 )
 
 func Student(e database.Env) http.HandlerFunc {

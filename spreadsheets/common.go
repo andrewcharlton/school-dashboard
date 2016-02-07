@@ -18,12 +18,12 @@ type exportInfo struct {
 }
 
 // Produces a sheet with all of the export i.nformation held on it.
-func exportInfoSheet(sheet *xlsx.Sheet, e database.Env, f database.Filter) {
+func exportInfoSheet(sheet *xlsx.Sheet, db database.Database, f database.Filter) {
 
 	d, m, y := time.Now().Date()
-	date, _ := e.LookupDate(f.Date)
-	rs, _ := e.LookupResultset(f.Resultset)
-	nat, _ := e.LookupNatYear(f.NatYear)
+	date, _ := db.LookupDate(f.Date)
+	rs, _ := db.LookupResultset(f.Resultset)
+	nat, _ := db.LookupNatYear(f.NatYear)
 
 	info := []exportInfo{{"Export Date: ", fmt.Sprintf("%02d-%02d-%d", d, m, y)},
 		{"Effective Date:", date},

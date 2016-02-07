@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
+	"github.com/andrewcharlton/school-dashboard/analysis/student"
 	"github.com/andrewcharlton/school-dashboard/database"
 )
 
-func ClassList(e database.Env) http.HandlerFunc {
+func ClassList(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		path := strings.Split(r.URL.Path, "/")
@@ -29,7 +29,7 @@ func ClassList(e database.Env) http.HandlerFunc {
 }
 
 // Class list for the students
-func classStudentList(e database.Env, w http.ResponseWriter, r *http.Request) {
+func classStudentList(db database.Database, w http.ResponseWriter, r *http.Request) {
 
 	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
 		return
@@ -64,7 +64,7 @@ func classStudentList(e database.Env, w http.ResponseWriter, r *http.Request) {
 		SubjID   string
 		Class    string
 		Query    template.URL
-		Students []stdnt.Student
+		Students []student.Student
 	}{
 		subject.Subj,
 		subject.Lvl,

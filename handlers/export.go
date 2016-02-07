@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/env"
 	"github.com/andrewcharlton/school-dashboard/spreadsheets"
 )
 
-func ExportHeadlines(e database.Env) http.HandlerFunc {
+func ExportHeadlines(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// Produce summary with only year group info

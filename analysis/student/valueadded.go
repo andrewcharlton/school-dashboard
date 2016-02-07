@@ -1,58 +1,41 @@
 package student
 
-import (
-	"errors"
-	"fmt"
-)
+import "fmt"
 
-// TM retrieves the transition matrix for a particular subject.
-func (s Student) TM(subject string, nat national.National) (national.TransitionMatrix, error) {
+type VAScore struct {
+	Expected float64
+	Achieved float64
+	Err      error
+}
+
+// Score calculates the actual VA score
+func (va VAScore) Score() float64 {
+	return va.Achieved - va.Expected
+}
+
+// SubjectVa calculates the Value Added score for a student in a particular subject.
+// VA is expredded
+func (s Student) SubjectVA(subject string) VAScore {
 
 	r, exists := s.Results[subject]
 	if !exists {
-		return national.TransitionMatrix{},
-			fmt.Errorf("Course not recognised. UPN: %s, Subject: %v", s.UPN, subject)
+		return VAScore{Err: fmt.Errorf("No Result for %v in %v found", s.Name(), subject)}
 	}
 
-	tm, exists := nat.TMs[c.TM]
+	ks2 := s.KS2.Score(r.KS2Prior)
+	if ks2 == "" {
+		return VAScore{Err: fmt.Errorf("No %v KS2 score for %v", r.KS2Prior, s.Name())}
+	}
+
+	tm, exists := r.Subject.TMs[s.natYear]
 	if !exists {
-		return national.TransitionMatrix{}, fmt.Errorf("TM not found: %v", c.TM)
+		return VAScore{Err: fmt.Errorf("No TM for %v in %v", subject, s.natYear)}
 	}
 
-	return tm, nil
-}
-
-// SubjectVA calculates the value added score for a student in a particular
-// subject.
-func (s Student) SubjectVA(subject string, nat national.National) Result {
-
-	c, exists := s.Courses[subject]
-	if !exists {
-		return Result{Error: errors.New("No results for subject found")}
-	}
-
-	if c.Grd == "" {
-		return Result{Error: errors.New("No grade found")}
-	}
-
-	tm, exists := nat.TMs[c.TM]
-	if !exists {
-		return Result{Error: errors.New("No recognised TM")}
-	}
-
-	var exp float64
-	var err error
-	switch c.KS2Prior {
-	case "En":
-		exp, err = tm.Expected(s.KS2.En)
-	case "Ma":
-		exp, err = tm.Expected(s.KS2.Ma)
-	default:
-		exp, err = tm.Expected(s.KS2.Av)
-	}
+	exp, err := tm.Expected(ks2)
 	if err != nil {
-		return Result{Error: err}
+		return VAScore{Err: err}
 	}
 
-	return Result{Pts: c.Att8 - exp, Exp: exp}
+	return VAScore{Expected: exp, Achieved: r.Att8}
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/analysis/groups"
 	"github.com/andrewcharlton/school-dashboard/database"
 )
 
@@ -29,7 +28,7 @@ func (a attData) PctAttendance() float64 {
 	return 100.0 - 100.0*float64(a.Absences)/float64(a.Possible)
 }
 
-func Attendance(e database.Env) http.HandlerFunc {
+func Attendance(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {

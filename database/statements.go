@@ -1,33 +1,7 @@
 package database
 
-import "database/sql"
-
-// prepareStatements prepares a query statement for each sql string
-// in stmts
-func (db *sqliteDB) prepareStatements() error {
-
-	// Close any existing statements
-	for _, s := range db.stmts {
-		err := s.Close()
-		if err != nil {
-			return err
-		}
-	}
-
-	// Prepare statements
-	db.stmts = map[string]*sql.Stmt{}
-	for key, sql := range stmts {
-		s, err := db.conn.Prepare(sql)
-		if err != nil {
-			return err
-		}
-		db.stmts[key] = stmt
-	}
-	return nil
-}
-
 // Query strings for prepared statements
-var stmts = map[string]string{
+var sqlStatements = map[string]string{
 
 	"student": `SELECT upn, surname, forename, year, form,
 				pp, eal, gender, ethnicity, sen_status,
@@ -40,13 +14,11 @@ var stmts = map[string]string{
 	"results": `SELECT subject_id, subject, grade, effort FROM results
 				WHERE upn=? AND resultset=?`,
 
-	"classes": `SELECT subject_id, class, teacher FROM classes
-				WHERE upn=? AND date_id=?
-				ORDER BY class`,
+	"classes": `SELECT subject, class, teacher FROM classes
+				WHERE upn=? AND date_id=?`,
 
-	"inClass": `SELECT upn FROM classes
-				WHERE date_id=? AND subject_id=? AND class=?
-				ORDER BY name`,
+	"inClass": `SELECT upn FROM classlist
+				WHERE date_id=? AND subject_id=? AND class=?`,
 
 	"subjects": `SELECT subjects.id as id
 				FROM subjects

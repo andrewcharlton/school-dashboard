@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
 	"github.com/andrewcharlton/school-dashboard/database"
 )
 

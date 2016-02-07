@@ -5,11 +5,11 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/analysis/student"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func EnglishAndMaths(e database.Env) http.HandlerFunc {
+func EnglishAndMaths(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
@@ -28,8 +28,8 @@ func EnglishAndMaths(e database.Env) http.HandlerFunc {
 		}
 		nat := e.Nationals[f.NatYear]
 
-		type student struct {
-			stdnt.Student
+		type stdnt struct {
+			student.Student
 			EnGrd  string
 			EnEff  int
 			MaGrd  string
@@ -41,7 +41,7 @@ func EnglishAndMaths(e database.Env) http.HandlerFunc {
 		}
 
 		data := struct {
-			Students    []student
+			Students    []stdnt
 			Query       template.URL
 			Cohort      int
 			EnPass      int
@@ -89,7 +89,7 @@ func EnglishAndMaths(e database.Env) http.HandlerFunc {
 				p8 = s.Basket().Progress8(natP8).Pts
 			}
 
-			data.Students = append(data.Students, student{s,
+			data.Students = append(data.Students, stdnt{s,
 				enGrd,
 				enEff,
 				maGrd,

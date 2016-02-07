@@ -7,9 +7,8 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
-	"github.com/andrewcharlton/school-dashboard/database"
-	"github.com/andrewcharlton/school-dashboard/national"
+	"github.com/andrewcharlton/school-dashboard/analysis/student"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
 type p8Slot struct {
@@ -21,7 +20,7 @@ type p8Slot struct {
 }
 
 type p8Student struct {
-	stdnt.Student
+	student.Student
 	Slots [5]p8Slot
 	Att   float64
 }
@@ -32,7 +31,7 @@ type p8Graph struct {
 	Text []string
 }
 
-func Progress8(e database.Env) http.HandlerFunc {
+func Progress8(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
@@ -136,7 +135,7 @@ func Progress8(e database.Env) http.HandlerFunc {
 	}
 }
 
-func p8StudentData(s stdnt.Student, nat national.National) ([5]p8Slot, error) {
+func p8StudentData(s student.Student) ([5]p8Slot, error) {
 
 	exp, err := nat.Progress8(s.KS2.APS)
 	if err != nil {
@@ -165,7 +164,7 @@ func p8StudentData(s stdnt.Student, nat national.National) ([5]p8Slot, error) {
 	return slots, nil
 }
 
-func p8Text(slots []stdnt.Slot) string {
+func p8Text(slots []student.Slot) string {
 
 	text := ""
 	for _, s := range slots {

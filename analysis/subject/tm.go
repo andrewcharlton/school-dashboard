@@ -1,6 +1,6 @@
 package subject
 
-import "errors"
+import "fmt"
 
 // A TransitionMatrix contains the probabilities of achieving
 // each grade, at each KS2 starting point.
@@ -23,16 +23,33 @@ func (tm TransitionMatrix) Expected(ks2 string) (float64, error) {
 
 	row, exists := tm.Rows[ks2]
 	if !exists {
-		return 0.0, errors.New("KS2 score not recognised")
+		return 0.0, fmt.Errorf("KS2 score not recognised")
 	}
 
 	total := 0.0
 	for grade, prob := range row {
 		grd, exists := tm.lvl.Gradeset[grade]
 		if !exists {
-			return 0.0, errors.New("Grade not recognised in TM: " + grade)
+			return 0.0, fmt.Errorf("Grade not recognised in TM: %v", grade)
 		}
 		total += grd.Att8 * prob
 	}
 	return total, nil
+}
+
+// ValueAdded calculates the value added score for an individual
+// student, based on their KS2 and Grade achieved.
+func (tm TransitionMatrix) ValueAdded(ks2, grade string) (float64, error) {
+
+	exp, err := tm.Expected(ks2)
+	if err != nil {
+		return 0.0, err
+	}
+
+	actual, exists := tm.lvl.Gradeset[grade]
+	if !exists {
+		return 0.0, fmt.Errorf("Grade not recognised in Level %v - %v", tm.lvl, grade)
+	}
+
+	return actual.Att8 - exp, nil
 }

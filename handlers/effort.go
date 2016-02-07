@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
 type effort struct {
@@ -16,7 +16,7 @@ type effort struct {
 	Prog8   float64
 }
 
-func Effort(e database.Env) http.HandlerFunc {
+func Effort(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {

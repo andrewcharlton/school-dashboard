@@ -11,29 +11,26 @@ type Config struct {
 	LEA string
 
 	// Default filter options
-	date      string
-	resultset string
-	natYear   string
-	year      string
+	options map[string]string
 }
 
 // DefaultFilter produces a Filter object with the
 // default values specified in the database.
 func (cfg Config) DefaultFilter() Filter {
 
-	return Filter{Date: cfg.date,
-		Resultset: cfg.resultset,
-		NatYear:   cfg.natYear,
-		Year:      cfg.year,
+	return Filter{Date: cfg.options["Date"],
+		Resultset: cfg.options["Resultset"],
+		NatYear:   cfg.options["NatYear"],
+		Year:      cfg.options["Year"],
 	}
 }
 
 // config retrieves the config values from the database
-func (db Database) config() (Config, error) {
+func (db *Database) loadConfig() error {
 
 	rows, err := db.conn.Query("SELECT key, value FROM config")
 	if err != nil {
-		return Config{}, err
+		return err
 	}
 	defer rows.Close()
 
@@ -42,7 +39,7 @@ func (db Database) config() (Config, error) {
 		var key, value string
 		err := rows.Scan(&key, &value)
 		if err != nil {
-			return Config{}, err
+			return err
 		}
 		switch key {
 		case "School":
@@ -51,15 +48,11 @@ func (db Database) config() (Config, error) {
 			cfg.URN = value
 		case "LEA":
 			cfg.LEA = value
-		case "Date":
-			cfg.Date = value
-		case "Resultset":
-			cfg.Resultset = value
-		case "NatYear":
-			cfg.NatYear = value
-		case "Year":
-			cfg.Year = value
+		default:
+			cfg.options[key] = value
 		}
 	}
-	return cfg, nil
+
+	db.Config = cfg
+	return nil
 }

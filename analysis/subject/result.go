@@ -5,7 +5,6 @@ package subject
 type Result struct {
 	*Subject
 	Grade
-	TM      TransitionMatrix
 	Effort  int
 	Class   string
 	Teacher string

@@ -1,28 +1,25 @@
 package group
 
-import "errors"
-
 // KS2APS calculates the average points score for
 // a group of students.
-func (g Group) KS2APS() Result {
+func (g Group) KS2APS() float64 {
 
-	total, num := float64(0), 0
+	total, num := 0.0, 0
 	for _, s := range g.Students {
-		if s.KS2.APS != 0 {
+		if s.KS2.APS != 0.0 {
 			total += s.KS2.APS
-			num += 1
+			num++
 		}
 	}
 
 	if num == 0 {
-		return Result{Pts: 0, Error: errors.New("No KS2 Data available")}
+		return 0.0
 	}
-	return Result{Pts: total / float64(num), Error: nil}
+	return total / float64(num)
 }
 
 // KS2Bands returns the number of students in each band
-// and what percentage of students is in each.
-func (g Group) KS2Bands() map[string]Result {
+func (g Group) KS2Bands() map[string]int {
 
 	count := map[string]int{}
 	total := 0
@@ -31,12 +28,5 @@ func (g Group) KS2Bands() map[string]Result {
 		total += 1
 	}
 
-	bands := map[string]Result{"High": Result{}, "Middle": Result{},
-		"Low": Result{}, "None": Result{}}
-	for key, n := range count {
-		bands[key] = Result{EntN: n,
-			EntP: float64(n) / float64(total)}
-	}
-
-	return bands
+	return count
 }

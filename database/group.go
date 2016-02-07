@@ -16,10 +16,10 @@ func (db Database) GroupByFilter(f Filter) (group.Group, error) {
 
 	upns, err := db.getUPNs(query)
 	if err != nil {
-		return analysis.Group{}, err
+		return group.Group{}, err
 	}
 
-	return db.group(upns, f.StudentFilter())
+	return db.group(upns, f)
 }
 
 // GroupByClass returns a group of students who are present in the
@@ -28,7 +28,7 @@ func (db Database) GroupByClass(subjID, class string, f Filter) (group.Group, er
 
 	rows, err := db.stmts["inClass"].Query(f.Date, subjID, class)
 	if err != nil {
-		return analysis.Group{}, err
+		return group.Group{}, err
 	}
 	defer rows.Close()
 
@@ -41,7 +41,7 @@ func (db Database) GroupByClass(subjID, class string, f Filter) (group.Group, er
 		upns = append(upns, upn)
 	}
 
-	return db.group(upns, f.StudentFilter())
+	return db.group(upns, f)
 }
 
 // GroupByFilteredClass returns a group of students who meet the filter criteria
@@ -64,18 +64,17 @@ func (db Database) GroupByFilteredClass(subjID, class string, f Filter) (group.G
 		return group.Group{}, err
 	}
 
-	return db.group(upns, f.StudentFilter())
+	return db.group(upns, f)
 }
 
 // group returns a list of students loaded based upon the supplied
 // filters.
-func (db Database) group(upns []string, f StudentFilter) (group.Group, error) {
+func (db Database) group(upns []string, f Filter) (group.Group, error) {
 
 	students := []student.Student{}
 
 	for _, upn := range upns {
-		f.UPN = upn
-		student, err := db.Student(f)
+		student, err := db.Student(upn, f)
 		if err != nil {
 			return group.Group{}, err
 		}

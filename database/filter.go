@@ -33,12 +33,6 @@ type Filter struct {
 	KS2Bands []string
 }
 
-// StudentFilter created from the filter object.  UPN is left blank.
-func (f Filter) StudentFilter() StudentFilter {
-
-	return StudentFilter{"", f.Date, f.Resultset, f.NatYear}
-}
-
 // sql generates a query string from the filter, used to select
 // student upns.
 func (f Filter) sql(table string) string {

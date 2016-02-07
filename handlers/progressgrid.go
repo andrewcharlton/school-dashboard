@@ -7,12 +7,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/analysis/stdnt"
-	"github.com/andrewcharlton/school-dashboard/database"
-	"github.com/andrewcharlton/school-dashboard/national"
+	"github.com/andrewcharlton/school-dashboard/analysis/student"
+	"github.com/andrewcharlton/school-dashboard/analysis/subject"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func ProgressGrid(e database.Env) http.HandlerFunc {
+func ProgressGrid(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		path := strings.Split(r.URL.Path, "/")
@@ -30,7 +30,7 @@ func ProgressGrid(e database.Env) http.HandlerFunc {
 }
 
 // Performs analysis of the results
-func pgAnalysis(e database.Env, w http.ResponseWriter, r *http.Request) {
+func pgAnalysis(e env.Env, w http.ResponseWriter, r *http.Request) {
 
 	if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
 		return
@@ -106,7 +106,7 @@ type pgGrid struct {
 	TMExists bool
 }
 
-func pgGridAnalysis(subject *stdnt.Subject, students []stdnt.Student, nat national.National) pgGrid {
+func pgGridAnalysis(subject *subject.Subject, students []student.Student) pgGrid {
 
 	ks2grades := []string{"None", "1", "2", "3C", "3B", "3A", "4C", "4B", "4A", "5C", "5B", "5A", "6"}
 	grades := subject.Level.SortedGrades()
@@ -190,7 +190,7 @@ func pgGridAnalysis(subject *stdnt.Subject, students []stdnt.Student, nat nation
 }
 
 type pgStudent struct {
-	stdnt.Student
+	student.Student
 	Class      string
 	KS2        string
 	Grade      string
@@ -200,7 +200,7 @@ type pgStudent struct {
 	Attendance float64
 }
 
-func pgStudentList(subject *stdnt.Subject, students []stdnt.Student, nat national.National) []pgStudent {
+func pgStudentList(subject *subject.Subject, students []student.Student) []pgStudent {
 
 	stdnts := []pgStudent{}
 	for _, s := range students {

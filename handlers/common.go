@@ -11,10 +11,11 @@ import (
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
 // Redirect routes back to the homepage.
-func Redirect(e database.Env) http.HandlerFunc {
+func Redirect(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		url := "/index/?" + r.URL.RawQuery
@@ -24,7 +25,7 @@ func Redirect(e database.Env) http.HandlerFunc {
 }
 
 // Header writes the common html page header and menu bars
-func Header(e database.Env, w http.ResponseWriter, r *http.Request) {
+func Header(e env.Env, w http.ResponseWriter, r *http.Request) {
 
 	f := GetFilter(e, r)
 	data := struct {
@@ -44,7 +45,7 @@ func Header(e database.Env, w http.ResponseWriter, r *http.Request) {
 }
 
 // Footer writes the common html page header and menu bars
-func Footer(e database.Env, w http.ResponseWriter, r *http.Request) {
+func Footer(e env.Env, w http.ResponseWriter, r *http.Request) {
 
 	err := e.Templates.ExecuteTemplate(w, "footer.tmpl", e)
 	if err != nil {
@@ -54,7 +55,7 @@ func Footer(e database.Env, w http.ResponseWriter, r *http.Request) {
 
 // GetFilter produces a Filter object from the query string
 // provided in the http Request
-func GetFilter(e database.Env, r *http.Request) database.Filter {
+func GetFilter(e env.Env, r *http.Request) database.Filter {
 
 	query := r.URL.Query()
 	if len(query) == 0 {
@@ -93,7 +94,7 @@ func GetFilter(e database.Env, r *http.Request) database.Filter {
 }
 
 // FilterPage writes the contents of the filter template to w.
-func FilterPage(e database.Env, w http.ResponseWriter, r *http.Request, short bool) {
+func FilterPage(e env.Env, w http.ResponseWriter, r *http.Request, short bool) {
 
 	f := GetFilter(e, r)
 
@@ -148,7 +149,7 @@ type label struct {
 }
 
 // FilterLabels generates the labels for the filter page
-func FilterLabels(e database.Env, f database.Filter, short bool) []label {
+func FilterLabels(e env.Env, f database.Filter, short bool) []label {
 
 	labels := []label{}
 

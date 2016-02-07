@@ -4,16 +4,16 @@ import (
 	"io"
 	"sort"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
+	"github.com/andrewcharlton/school-dashboard/analysis/group"
 	"github.com/andrewcharlton/school-dashboard/database"
 	"github.com/tealeg/xlsx"
 )
 
-func Headlines(e database.Env, f database.Filter, w io.Writer) error {
+func Headlines(db database.Database, f database.Filter, w io.Writer) error {
 
 	file := xlsx.NewFile()
 
-	g, err := e.DB.GroupByFilter(f)
+	g, err := db.GroupByFilter(f)
 	if err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func Headlines(e database.Env, f database.Filter, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	exportInfoSheet(sheet, e, f)
+	exportInfoSheet(sheet, db, f)
 
 	err = file.Write(w)
 	if err != nil {
@@ -69,13 +69,13 @@ func (s subjList) Less(i, j int) bool {
 	}
 }
 
-func headlineBroadsheet(sheet *xlsx.Sheet, g analysis.Group) error {
+func headlineBroadsheet(sheet *xlsx.Sheet, g group.Group) error {
 
 	// Subject mapped by ebacc
 	subjMap := map[subject]struct{}{}
 	for _, s := range g.Students {
-		for _, c := range s.Courses {
-			header := subject{c.Subj, c.EBacc}
+		for _, r := range s.Results {
+			header := subject{r.Subj, r.EBacc}
 			subjMap[header] = struct{}{}
 		}
 	}

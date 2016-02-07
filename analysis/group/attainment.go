@@ -13,11 +13,8 @@ func (g Group) Basics() Result {
 
 	passes, entered := 0, 0
 	for _, s := range g.Students {
-		ent, ach := s.Basics()
-		if ent {
-			entered++
-		}
-		if ach {
+		entered++
+		if s.Basics() {
 			passes++
 		}
 	}
