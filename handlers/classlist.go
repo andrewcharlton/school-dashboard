@@ -8,10 +8,10 @@ import (
 	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/analysis/student"
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func ClassList(db database.Database) http.HandlerFunc {
+func ClassList(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		path := strings.Split(r.URL.Path, "/")
@@ -29,7 +29,7 @@ func ClassList(db database.Database) http.HandlerFunc {
 }
 
 // Class list for the students
-func classStudentList(db database.Database, w http.ResponseWriter, r *http.Request) {
+func classStudentList(e env.Env, w http.ResponseWriter, r *http.Request) {
 
 	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
 		return
@@ -45,14 +45,14 @@ func classStudentList(db database.Database, w http.ResponseWriter, r *http.Reque
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-	subject := e.DB.Subjects()[subjID]
+	subject := e.Subjects[subjID]
 	class := path[4]
 	if strings.HasPrefix(class, "All") {
 		class = ""
 	}
 
 	f := GetFilter(e, r)
-	g, err := e.DB.GroupByClass(path[3], class, f)
+	g, err := e.GroupByClass(path[3], class, f)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return

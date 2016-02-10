@@ -21,12 +21,11 @@ func EnglishAndMaths(e env.Env) http.HandlerFunc {
 		defer Footer(e, w, r)
 
 		f := GetFilter(e, r)
-		g, err := e.DB.GroupByFilter(f)
+		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
 		}
-		nat := e.Nationals[f.NatYear]
 
 		type stdnt struct {
 			student.Student

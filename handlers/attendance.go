@@ -4,31 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/analysis/group"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-// TODO: Attendance Explorer
-// Historical browser
-// week browser
-
-type attData struct {
-	Cohort       int
-	Possible     int
-	Absences     int
-	Unauthorised int
-	Under85      int
-	Under90      int
-}
-
-func (a attData) PctAttendance() float64 {
-
-	if a.Possible == 0 {
-		return 0.0
-	}
-	return 100.0 - 100.0*float64(a.Absences)/float64(a.Possible)
-}
-
-func Attendance(db database.Database) http.HandlerFunc {
+// Attendance summary pages
+func Attendance(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
@@ -40,44 +21,47 @@ func Attendance(db database.Database) http.HandlerFunc {
 		defer Footer(e, w, r)
 
 		f := GetFilter(e, r)
-		g, err := e.DB.GroupByFilter(f)
+		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
 		}
 
-		attGroups := map[string]attData{}
-		headers := []string{}
-		for _, grp := range groups.YearGroups {
-			headers = append(headers, grp.Name)
+		type SubGroup struct {
+			Name       string
+			Attendance group.AttendanceSummary
 		}
 
-		for _, s := range g.Students {
-			for _, grp := range groups.YearGroups {
-				if grp.Contains(s) {
-					a := attGroups[grp.Name]
-					a.Cohort++
-					a.Possible += s.Attendance.Possible
-					a.Absences += s.Attendance.Absences
-					a.Unauthorised += s.Attendance.Unauthorised
-					switch {
-					case s.Attendance.Latest() < 85.0:
-						a.Under85++
-						a.Under90++
-					case s.Attendance.Latest() < 90.0:
-						a.Under90++
-					}
-					attGroups[grp.Name] = a
-				}
-			}
+		type YearGroup struct {
+			Year   int
+			Groups []SubGroup
 		}
 
 		data := struct {
-			Headers   []string
-			AttGroups map[string]attData
+			All        group.AttendanceSummary
+			YearGroups []YearGroup
 		}{
-			headers,
-			attGroups,
+			g.Attendance(),
+			[]YearGroup{},
+		}
+
+		for year := 7; y < 15; y++ {
+			y := g.SubGroup(group.Year(year))
+			if len(y.Students) == 0 {
+				break
+			}
+			yeargroup := YearGroup{year, []SubGroup{
+				{"All", y.Attendance()},
+				{"Male", y.SubGroup(group.Male).Attendance()},
+				{"Female", y.SubGroup(group.Female).Attendance()},
+				{"Disadvantaged", y.SubGroup(group.PP).Attendance()},
+				{"Non-Disadvantaged", y.SubGroup(group.NonPP).Attendance()},
+				{"High", y.SubGroup(group.High).Attendance()},
+				{"Middle", y.SubGroup(group.Middle).Attendance()},
+				{"Low", y.SubGroup(group.Low).Attendance()},
+			},
+			}
+			data.YearGroups = append(data.YearGroups, yeargroup)
 		}
 
 		err = e.Templates.ExecuteTemplate(w, "attendance.tmpl", data)

@@ -14,7 +14,7 @@ import (
 
 // Environment variables
 type Env struct {
-	DB        database.Database
+	database.Database
 	Templates *template.Template
 }
 
@@ -24,7 +24,7 @@ func Connect(filename string) (Env, error) {
 	e := Env{}
 	var err error
 
-	e.DB, err = database.Connect(filename)
+	e.Database, err = database.Connect(filename)
 	if err != nil {
 		return Env{}, err
 	}

@@ -10,7 +10,7 @@ func Parse() (*template.Template, error) {
 		var tmpl *template.Template
 
 		if t == nil {
-			t = template.New(name)
+			t = template.New(name).Funcs(funcMap)
 		}
 
 		if name == t.Name() {

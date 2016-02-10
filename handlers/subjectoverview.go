@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/analysis/subject"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func SubjectOverview(e database.Env) http.HandlerFunc {
+func SubjectOverview(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
@@ -47,7 +48,7 @@ func SubjectOverview(e database.Env) http.HandlerFunc {
 }
 
 type subjData struct {
-	Subject *stdnt.Subject
+	Subject *subject.Subject
 	Cohort  int
 	KS2     []float64
 	PP      []float64
@@ -56,7 +57,7 @@ type subjData struct {
 }
 
 type subjSummary struct {
-	Subject *stdnt.Subject
+	Subject *subject.Subject
 	Cohort  int
 	HasKS2  bool
 	KS2     float64
@@ -67,7 +68,7 @@ type subjSummary struct {
 	AvGrade string
 }
 
-func subjOverviewData(e database.Env, r *http.Request) ([]subjSummary, error) {
+func subjOverviewData(e env.Env, r *http.Request) ([]subjSummary, error) {
 
 	f := GetFilter(e, r)
 	g, err := e.DB.GroupByFilter(f)

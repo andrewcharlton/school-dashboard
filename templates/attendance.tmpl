@@ -4,6 +4,8 @@
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
+
+	<h3>All Students</h3>
 	<table class="table table-condensed table-hover">
 	  <thead>
 		<th>Group</th>
@@ -12,27 +14,50 @@
 		<th style="text-align:center;">Absences</th>
 		<th style="text-align:center;">Unauthorised</th>
 		<th style="text-align:center;">Attendance %</th>
-		<th style="text-align:center;">Under 85%</th>
-		<th style="text-align:center;">Under 90%</th>
+		<th style="text-align:center;">% PA</th>
 	  </thead>
 	  <tbody>
-		{{ $data := .AttGroups }}
-		{{ range .Headers }}
 		<tr>
-		  <td>{{ . }}</td>
-		  {{ with index $data . }}
+		  <td>All<td>
 		  <td style="text-align:center;">{{ .Cohort }}</td>
 		  <td style="text-align:center;">{{ .Possible }}</td>
 		  <td style="text-align:center;">{{ .Absences }}</td>
 		  <td style="text-align:center;">{{ .Unauthorised }}</td>
-		  <td style="text-align:center;">{{ printf "%.1f" .PctAttendance }}</td>
-		  <td style="text-align:center;">{{ .Under85 }}</td>
-		  <td style="text-align:center;">{{ .Under90 }}</td>
+		  <td style="text-align:center;">{{ Percentage .PercentAttendance 1}}</td>
+		  <td style="text-align:center;">{{ Percentage .PercentPA 1}}</td>
+		</tr>
+	  </tbody>
+	</table>
+	
+	{{ range .YearGroups }}
+	<h3>Year {{.Year}}</h3>
+	<table class="table table-condensed table-hover">
+	  <thead>
+		<th>Group</th>
+		<th style="text-align:center;">Cohort</th>
+		<th style="text-align:center;">Possible</th>
+		<th style="text-align:center;">Absences</th>
+		<th style="text-align:center;">Unauthorised</th>
+		<th style="text-align:center;">Attendance %</th>
+		<th style="text-align:center;">% PA</th>
+	  </thead>
+	  <tbody>
+		{{ range .Groups }} 
+		<tr>
+		  <td>{{ .Name }}</td>
+		  {{ with .Attendance }}
+		  <td style="text-align:center;">{{ .Cohort }}</td>
+		  <td style="text-align:center;">{{ .Possible }}</td>
+		  <td style="text-align:center;">{{ .Absences }}</td>
+		  <td style="text-align:center;">{{ .Unauthorised }}</td>
+		  <td style="text-align:center;">{{ Percentage .PercentAttendance 1}}</td>
+		  <td style="text-align:center;">{{ Percentage .PercentPA 1}}</td>
 		  {{ end }}
 		</tr>
 		{{ end }}
 	  </tbody>
 	</table>
+	{{ end }}
   </div>
   <div class="col-sm-1"></div>
 </div>

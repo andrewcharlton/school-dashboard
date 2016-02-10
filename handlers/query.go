@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
 // queryOpts details what is needed in the query string
@@ -18,7 +18,7 @@ type queryOpts struct {
 // the correct elements.  If not, it will shorten/lengthen
 // as necessary and redirect.  Returns true if redirect was
 // necessary.
-func checkRedirect(e database.Env, opts queryOpts, w http.ResponseWriter, r *http.Request) bool {
+func checkRedirect(e env.Env, opts queryOpts, w http.ResponseWriter, r *http.Request) bool {
 
 	query := r.URL.Query()
 	redirect := false

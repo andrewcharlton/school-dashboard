@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
 // These functions provide pages to select a subject/class for analysis etc.
@@ -16,7 +16,7 @@ import (
 // /basepath/*subject name*/*subject id*/*class name*/?*query*
 
 // Produce page to pick a subject from
-func selectSubject(e database.Env, w http.ResponseWriter, r *http.Request, heading string) {
+func selectSubject(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
 	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
 		return
@@ -68,7 +68,7 @@ func (s subjLevels) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s subjLevels) Less(i, j int) bool { return s[i].Level < s[j].Level }
 
 // Produce page to pick a level from
-func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading string) {
+func selectLevel(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
 	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
 		return
@@ -120,7 +120,7 @@ func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading
 }
 
 // Produce page to pick a class from
-func selectClass(e database.Env, w http.ResponseWriter, r *http.Request, heading string) {
+func selectClass(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
 	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
 		return

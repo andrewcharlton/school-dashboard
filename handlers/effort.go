@@ -28,12 +28,10 @@ func Effort(e env.Env) http.HandlerFunc {
 		defer Footer(e, w, r)
 
 		f := GetFilter(e, r)
-		g, err := e.DB.GroupByFilter(f)
+		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 		}
-
-		nat := e.Nationals[f.NatYear]
 
 		efforts := []effort{}
 		for _, s := range g.Students {

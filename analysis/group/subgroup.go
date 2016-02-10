@@ -3,21 +3,6 @@ package group
 import "github.com/andrewcharlton/school-dashboard/analysis/student"
 
 var (
-	// Year 7 students
-	Year7 = func(s student.Student) bool { return s.Year == 7 }
-
-	// Year 8 students
-	Year8 = func(s student.Student) bool { return s.Year == 8 }
-
-	// Year 9 students
-	Year9 = func(s student.Student) bool { return s.Year == 9 }
-
-	// Year 10 students
-	Year10 = func(s student.Student) bool { return s.Year == 10 }
-
-	// Year 11 students
-	Year11 = func(s student.Student) bool { return s.Year == 11 }
-
 	// Disadvantaged students
 	PP = func(s student.Student) bool { return s.PP }
 
@@ -25,10 +10,10 @@ var (
 	NonPP = func(s student.Student) bool { return !s.PP }
 
 	// Male students
-	Boys = func(s student.Student) bool { return s.Gender == 1 }
+	Male = func(s student.Student) bool { return s.Gender == 1 }
 
 	// Female students
-	Girls = func(s student.Student) bool { return s.Gender == 0 }
+	Female = func(s student.Student) bool { return s.Gender == 0 }
 
 	// High attaining students at KS2
 	High = func(s student.Student) bool { return s.KS2.Band == "High" }
@@ -45,6 +30,13 @@ var (
 	// Students with greater than 90% attendance
 	NonPA = func(s student.Student) bool { return s.Attendance.Latest() >= 0.9 }
 )
+
+// Year returns a subgroup filter for a certain yeargroup
+func Year(year int) func(s student.Student) bool {
+
+	return func(s student.Student) bool { return s.Year == year }
+
+}
 
 // SubGroup produces a Group with a subset of the original students, as
 // determined by the filter functions.
