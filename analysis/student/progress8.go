@@ -1,6 +1,7 @@
 package student
 
 import (
+	"fmt"
 	"sort"
 )
 
@@ -127,11 +128,13 @@ func (s Student) ebaccBasket() [3]Slot {
 // A Progress8Score contains the Attainment and Progress 8 score
 // for the student
 type Progress8Score struct {
-	Entries      int
-	Attainment   float64
-	HasProgress8 bool
-	Expected     float64
-	Progress8    float64
+	Entries           int
+	Attainment        float64
+	AttainmentPerSlot float64
+	HasProgress8      bool
+	Expected          float64
+	Progress8         float64
+	Subjects          []string
 }
 
 // Basket calculates the Progress 8 score for a particular section
@@ -140,14 +143,24 @@ func (b Basket) section(start, end int, exp float64) Progress8Score {
 
 	ent := 0
 	pts := 0.0
+	subjects := []string{}
 	for _, s := range b.Slots[start : end+1] {
+		if s.Subject != "" {
+			subjects = append(subjects, fmt.Sprintf("%v - %v", s.Subject, s.Grade))
+		}
 		if s.Points > 0.1 { // 0.1 rather than 0.0 to prevent floating point errors
 			ent++
 			pts += s.Points
 		}
 	}
 
-	p8 := Progress8Score{Entries: ent, Attainment: pts, Expected: exp}
+	p8 := Progress8Score{
+		Entries:           ent,
+		Attainment:        pts,
+		AttainmentPerSlot: pts / float64(end+1-start),
+		Expected:          exp,
+		Subjects:          subjects,
+	}
 	if exp > 0.1 {
 		p8.HasProgress8 = true
 		p8.Progress8 = (pts - exp) / float64(end+1-start)

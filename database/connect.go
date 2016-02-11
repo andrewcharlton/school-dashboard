@@ -179,7 +179,7 @@ func (db *Database) loadLevels() error {
 	}
 	defer rows.Close()
 
-	db.levels = map[int]subject.Level{}
+	db.Levels = map[int]subject.Level{}
 	for rows.Next() {
 		var id int
 		var l subject.Level
@@ -194,7 +194,7 @@ func (db *Database) loadLevels() error {
 		}
 		l.Gradeset = grades
 
-		db.levels[id] = l
+		db.Levels[id] = l
 	}
 	return nil
 }
@@ -289,7 +289,7 @@ func (db *Database) loadSubjects() error {
 	}
 	defer rows.Close()
 
-	db.subjects = map[int]*subject.Subject{}
+	db.Subjects = map[int]*subject.Subject{}
 	for rows.Next() {
 		var lvl int
 		var tm string
@@ -298,13 +298,13 @@ func (db *Database) loadSubjects() error {
 		if err != nil {
 			return err
 		}
-		s.Level = db.levels[lvl]
+		s.Level = db.Levels[lvl]
 
 		err = db.tms(&s, tm)
 		if err != nil {
 			return err
 		}
-		db.subjects[s.SubjID] = &s
+		db.Subjects[s.SubjID] = &s
 	}
 	return nil
 }

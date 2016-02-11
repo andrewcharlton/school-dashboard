@@ -24,7 +24,7 @@ func (a AttendanceSummary) PercentPA() float64 {
 	if a.Cohort == 0 {
 		return 0.0
 	}
-	return float64(PAs) / float64(Cohort)
+	return float64(a.PAs) / float64(a.Cohort)
 }
 
 // Attendance calculates the summary attendance figures for the group.

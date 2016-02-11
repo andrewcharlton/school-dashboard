@@ -31,6 +31,13 @@ type Database struct {
 	// Config Options
 	Config Config
 
+	// Cached items
+	Levels   map[int]subject.Level
+	Subjects map[int]*subject.Subject
+
+	// National data
+	Attainment8 map[string](map[string]student.Attainment8)
+
 	// Cached items for menu lookups
 	Dates       []Lookup
 	Resultsets  []Lookup
@@ -48,11 +55,4 @@ type Database struct {
 
 	// Prepared statements
 	stmts map[string]*sql.Stmt
-
-	// Cached items
-	levels   map[int]subject.Level
-	subjects map[int]*subject.Subject
-
-	// National data
-	Attainment8 map[string](map[string]student.Attainment8)
 }

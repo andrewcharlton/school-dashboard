@@ -13,10 +13,12 @@
 
 <br>
 
+
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
 
+	{{ with .Summary }}
 	<table class="table">
 	  <thead>
 		<th width="25%">&nbsp;</th>
@@ -29,26 +31,26 @@
 	  <tbody>
 		<tr>
 		  <td>Attainment 8</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%.2f" .Att8 }}</td>
+		  {{ range .Attainment }}
+		  <td style="text-align:center;">{{printf "%.2f" . }}</td>
 		  {{ end }}
 		</tr>
 		<tr>
 		  <td>Points per Slot</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%.2f" .Att8PerSlot }}</td>
+		  {{ range .AttainmentPerSlot }}
+		  <td style="text-align:center;">{{printf "%.2f" . }}</td>
 		  {{ end }}
 		</tr>
 		<tr>
 		  <td>Entries</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%.2f" .Entries }}</td>
+		  {{ range .Entries }}
+		  <td style="text-align:center;">{{printf "%.2f" . }}</td>
 		  {{ end }}
 		</tr>
 		<tr>
 		  <td>Progress 8</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%+.2f" .Prog8 }}</td>
+		  {{ range .Progress }}
+		  <td style="text-align:center;">{{printf "%+.2f" . }}</td>
 		  {{ end }}
 		</tr>
 	  </tbody>
@@ -80,15 +82,24 @@
 			{{end}}
 		  </td>
 
-		  {{ range .Slots }}
+		  {{ define "P8Block" }}
 		  <td style="text-align:center;"
-		data-container="body"
-  data-toggle="popover"
-  data-placement="right"
-  data-html="true"
-  data-trigger="hover"
-  data-content="{{ .Text }}"> {{printf "%+.2f" .Prog8 }}
+			data-container="body"
+			data-toggle="popover"
+			data-placement="right"
+			data-html="true"
+			data-trigger="hover"
+			data-content="{{ range .Subjects }} {{.}}<br> {{ end }}">
+			{{printf "%+.2f" .Progress8 }}
 		  </td>
+		  {{ end }}
+
+		  {{ with .Basket }}
+		  {{ template "P8Block" .English }}
+		  {{ template "P8Block" .Maths }}
+		  {{ template "P8Block" .EBacc }}
+		  {{ template "P8Block" .Other }}
+		  {{ template "P8Block" .Overall }}
 		  {{ end }}
 
 		  <td style="text-align:center;">{{printf "%.1f"  .Attendance.Latest }}</td>
@@ -111,8 +122,8 @@ $(function () {
 
 <script>
 var national = {
-  x: [{{ range .GraphNat.X }}{{.}}, {{end}}], 
-  y: [{{ range .GraphNat.Y }}{{.}}, {{end}}], 
+  x: [{{ range .NatLine }}{{ .X }}, {{ end }}],
+  y: [{{ range .NatLine }}{{ .Y }}, {{ end }}].
   mode: 'lines',
   name: 'National',
   line: {shape: 'spline'},
@@ -120,14 +131,16 @@ var national = {
   hoverinfo: 'none',
 };
 
-{{ with index .GraphPupils 0 }}
+{{ $PD := .PupilData }}
+{{ define "GraphGroup" }}
+{{ with index $PD . }}
 var male_pp = {
-  x: [{{ range .X }}{{ . }}, {{ end }}],
-  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  x: [{{ range . }}{{ .X }}, {{ end }}],
+  y: [{{ range . }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
-  name: 'Male - Disadvantaged',
-  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  name: '{{ . }}',
+  text: [{{ range . }}"{{.Name}}<br>", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };

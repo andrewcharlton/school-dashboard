@@ -45,7 +45,7 @@ func Attendance(e env.Env) http.HandlerFunc {
 			[]YearGroup{},
 		}
 
-		for year := 7; y < 15; y++ {
+		for year := 7; year < 15; year++ {
 			y := g.SubGroup(group.Year(year))
 			if len(y.Students) == 0 {
 				break

@@ -29,8 +29,8 @@ func (db Database) Student(upn string, f Filter) (student.Student, error) {
 	s.SEN = sen
 	s.KS2 = ks2
 
-	// Set National data
-	att8, exists := db.Attainment8[f.NatYear][s.KS2.Av]
+	// Set Attainment 8 data - based on KS2.APS
+	att8, exists := db.Attainment8[f.NatYear][selectProgress8(s.KS2.APS)]
 	s.SetNationals(f.NatYear, att8, exists)
 
 	err = db.loadStudentResults(&s, f)
@@ -87,7 +87,7 @@ func (db Database) loadStudentResults(s *student.Student, f Filter) error {
 			continue
 		}
 
-		subj := db.subjects[subjID]
+		subj := db.Subjects[subjID]
 		r := subject.Result{subj, subj.Gradeset[grade], effort, "", ""}
 		s.Results[subjName] = r
 	}
@@ -144,4 +144,25 @@ func (db Database) loadStudentAttendance(s *student.Student, f Filter) error {
 	}
 
 	return nil
+}
+
+// Select the correct progress 8 set of national data to use for a student.
+func selectProgress8(aps float64) string {
+
+	switch {
+	case aps < 0.5:
+		return ""
+	case aps < 1.55*6:
+		return "1.5"
+	case aps < 2.05*6:
+		return "2.0"
+	case aps < 2.55*6:
+		return "2.5"
+	case aps < 2.85*6:
+		return "2.8"
+	case aps >= 5.75*6:
+		return "5.8"
+	default:
+		return fmt.Sprintf("%1.1f", aps/6)
+	}
 }
