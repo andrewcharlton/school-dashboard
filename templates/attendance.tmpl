@@ -23,8 +23,8 @@
 		  <td style="text-align:center;">{{ .Possible }}</td>
 		  <td style="text-align:center;">{{ .Absences }}</td>
 		  <td style="text-align:center;">{{ .Unauthorised }}</td>
-		  <td style="text-align:center;">{{ Percentage .PercentAttendance 1}}</td>
-		  <td style="text-align:center;">{{ Percentage .PercentPA 1}}</td>
+		  <td style="text-align:center;">{{ Percent .PercentAttendance 1}}</td>
+		  <td style="text-align:center;">{{ Percent .PercentPA 1}}</td>
 		</tr>
 	  </tbody>
 	</table>
@@ -50,8 +50,8 @@
 		  <td style="text-align:center;">{{ .Possible }}</td>
 		  <td style="text-align:center;">{{ .Absences }}</td>
 		  <td style="text-align:center;">{{ .Unauthorised }}</td>
-		  <td style="text-align:center;">{{ Percentage .PercentAttendance 1}}</td>
-		  <td style="text-align:center;">{{ Percentage .PercentPA 1}}</td>
+		  <td style="text-align:center;">{{ Percent .PercentAttendance 1}}</td>
+		  td style="text-align:center;">{{ Percent .PercentPA 1}}</td>
 		  {{ end }}
 		</tr>
 		{{ end }}

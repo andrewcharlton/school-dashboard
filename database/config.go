@@ -11,17 +11,17 @@ type Config struct {
 	LEA string
 
 	// Default filter options
-	options map[string]string
+	Options map[string]string
 }
 
 // DefaultFilter produces a Filter object with the
 // default values specified in the database.
 func (cfg Config) DefaultFilter() Filter {
 
-	return Filter{Date: cfg.options["Date"],
-		Resultset: cfg.options["Resultset"],
-		NatYear:   cfg.options["NatYear"],
-		Year:      cfg.options["Year"],
+	return Filter{Date: cfg.Options["Date"],
+		Resultset: cfg.Options["Resultset"],
+		NatYear:   cfg.Options["NatYear"],
+		Year:      cfg.Options["Year"],
 	}
 }
 
@@ -34,7 +34,7 @@ func (db *Database) loadConfig() error {
 	}
 	defer rows.Close()
 
-	cfg := Config{}
+	cfg := Config{Options: map[string]string{}}
 	for rows.Next() {
 		var key, value string
 		err := rows.Scan(&key, &value)
@@ -49,7 +49,7 @@ func (db *Database) loadConfig() error {
 		case "LEA":
 			cfg.LEA = value
 		default:
-			cfg.options[key] = value
+			cfg.Options[key] = value
 		}
 	}
 

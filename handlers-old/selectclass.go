@@ -26,7 +26,7 @@ func selectSubject(e env.Env, w http.ResponseWriter, r *http.Request, heading st
 	FilterPage(e, w, r, true)
 	defer Footer(e, w, r)
 
-	subjects := e.DB.Subjects()
+	subjects := e.Subjects()
 
 	distinct := map[string]struct{}{}
 	for _, subj := range subjects {

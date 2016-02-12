@@ -12,8 +12,6 @@ import (
 func (db Database) GroupByFilter(f Filter) (group.Group, error) {
 
 	query := f.sql("students")
-	query += ` ORDER BY (surname || " " || forename)`
-
 	upns, err := db.getUPNs(query)
 	if err != nil {
 		return group.Group{}, err

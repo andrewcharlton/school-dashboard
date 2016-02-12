@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/andrewcharlton/school-dashboard/analysis/student"
 	"github.com/andrewcharlton/school-dashboard/analysis/subject"
 )

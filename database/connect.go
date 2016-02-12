@@ -3,6 +3,8 @@ package database
 import (
 	"database/sql"
 
+	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/andrewcharlton/school-dashboard/analysis/student"
 	"github.com/andrewcharlton/school-dashboard/analysis/subject"
 )
@@ -97,6 +99,7 @@ func (db *Database) loadDates() error {
 	}
 	defer rows.Close()
 
+	db.dateMap = map[string]string{}
 	for rows.Next() {
 		var l Lookup
 		err := rows.Scan(&l.ID, &l.Name)
@@ -134,6 +137,7 @@ func (db *Database) loadEthnicities() error {
 		eth = append(eth, name)
 	}
 
+	db.OtherEths = map[string]bool{}
 	for n, e := range eth {
 		switch {
 		case n < 8:
@@ -208,6 +212,7 @@ func (db *Database) loadNatYears() error {
 	}
 	defer rows.Close()
 
+	db.natYearMap = map[string]string{}
 	for rows.Next() {
 		var l Lookup
 		err := rows.Scan(&l.ID, &l.Name)
@@ -224,9 +229,8 @@ func (db *Database) loadNatYears() error {
 // progress8 scores for each year
 func (db *Database) loadAttainment8() error {
 
-	rows, err := db.conn.Query(`SELECT year, ks2, att8, english, maths, ebacc, other
-								FROM nat_progress8
-								INNER JOIN ON year_id = nat_years.id`)
+	rows, err := db.conn.Query(`SELECT year_id, ks2, att8, english, maths, ebacc, other
+								FROM nat_progress8`)
 	if err != nil {
 		return err
 	}
@@ -266,6 +270,7 @@ func (db *Database) loadResultsets() error {
 	}
 	defer rows.Close()
 
+	db.resultsetMap = map[string]string{}
 	for rows.Next() {
 		var l Lookup
 		err := rows.Scan(&l.ID, &l.Name)
@@ -319,6 +324,7 @@ func (db Database) tms(subj *subject.Subject, tmName string) error {
 	}
 	defer rows.Close()
 
+	subj.TMs = map[string]subject.TransitionMatrix{}
 	for rows.Next() {
 		var year, ks2, grade string
 		var prob float64

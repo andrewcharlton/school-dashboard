@@ -1,17 +1,16 @@
-// Package templates contains all of the templates needed for the dashboard.
-// This is automatically generated from the .tmpl files using the "embed-template"
-// script.
 package templates
 
 var allTemplates = map[string]string{
 
-	"attendance.tmpl": `
+"attendance.tmpl" : `
 <h3>Attendance</h3>
 <br>
 
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
+
+	<h3>All Students</h3>
 	<table class="table table-condensed table-hover">
 	  <thead>
 		<th>Group</th>
@@ -20,27 +19,50 @@ var allTemplates = map[string]string{
 		<th style="text-align:center;">Absences</th>
 		<th style="text-align:center;">Unauthorised</th>
 		<th style="text-align:center;">Attendance %</th>
-		<th style="text-align:center;">Under 85%</th>
-		<th style="text-align:center;">Under 90%</th>
+		<th style="text-align:center;">% PA</th>
 	  </thead>
 	  <tbody>
-		{{ $data := .AttGroups }}
-		{{ range .Headers }}
 		<tr>
-		  <td>{{ . }}</td>
-		  {{ with index $data . }}
+		  <td>All<td>
 		  <td style="text-align:center;">{{ .Cohort }}</td>
 		  <td style="text-align:center;">{{ .Possible }}</td>
 		  <td style="text-align:center;">{{ .Absences }}</td>
 		  <td style="text-align:center;">{{ .Unauthorised }}</td>
-		  <td style="text-align:center;">{{ printf "%.1f" .PctAttendance }}</td>
-		  <td style="text-align:center;">{{ .Under85 }}</td>
-		  <td style="text-align:center;">{{ .Under90 }}</td>
+		  <td style="text-align:center;">{{ Percent .PercentAttendance 1}}</td>
+		  <td style="text-align:center;">{{ Percent .PercentPA 1}}</td>
+		</tr>
+	  </tbody>
+	</table>
+	
+	{{ range .YearGroups }}
+	<h3>Year {{.Year}}</h3>
+	<table class="table table-condensed table-hover">
+	  <thead>
+		<th>Group</th>
+		<th style="text-align:center;">Cohort</th>
+		<th style="text-align:center;">Possible</th>
+		<th style="text-align:center;">Absences</th>
+		<th style="text-align:center;">Unauthorised</th>
+		<th style="text-align:center;">Attendance %</th>
+		<th style="text-align:center;">% PA</th>
+	  </thead>
+	  <tbody>
+		{{ range .Groups }} 
+		<tr>
+		  <td>{{ .Name }}</td>
+		  {{ with .Attendance }}
+		  <td style="text-align:center;">{{ .Cohort }}</td>
+		  <td style="text-align:center;">{{ .Possible }}</td>
+		  <td style="text-align:center;">{{ .Absences }}</td>
+		  <td style="text-align:center;">{{ .Unauthorised }}</td>
+		  <td style="text-align:center;">{{ Percent .PercentAttendance 1}}</td>
+		  td style="text-align:center;">{{ Percent .PercentPA 1}}</td>
 		  {{ end }}
 		</tr>
 		{{ end }}
 	  </tbody>
 	</table>
+	{{ end }}
   </div>
   <div class="col-sm-1"></div>
 </div>
@@ -48,7 +70,7 @@ var allTemplates = map[string]string{
 
 `,
 
-	"classlist.tmpl": `
+"classlist.tmpl" : `
 <h2>Class Lists</h2>
 
 <ul class="breadcrumb">
@@ -108,7 +130,7 @@ var allTemplates = map[string]string{
 </div>
 `,
 
-	"effort.tmpl": `
+"effort.tmpl" : `
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
@@ -144,7 +166,7 @@ var allTemplates = map[string]string{
 </div>
 `,
 
-	"em.tmpl": `
+"em.tmpl" : `
 <h3>English and Maths</h3>
 <br>
 
@@ -226,7 +248,7 @@ var allTemplates = map[string]string{
 
 `,
 
-	"filter.tmpl": `
+"filter.tmpl" : `
 <div class="row" id="filter_bar" style="display: block;">
   <div class="col-sm-10">
 	{{range .Labels}}
@@ -416,13 +438,13 @@ var allTemplates = map[string]string{
 <hr>
 `,
 
-	"footer.tmpl": `
+"footer.tmpl" : `
 </div>
 </body>
 </html>
 `,
 
-	"group.tmpl": `
+"group.tmpl" : `
 <h3>{{.Title}}</h3>
 <br>
 
@@ -463,7 +485,7 @@ var allTemplates = map[string]string{
 
 `,
 
-	"header.tmpl": `
+"header.tmpl" : `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -536,7 +558,19 @@ var allTemplates = map[string]string{
 	<div class="container">
 `,
 
-	"progress8.tmpl": `
+"progress8.tmpl" : `
+{{ define "P8Block" }}
+  <td style="text-align:center;"
+	data-container="body"
+	data-toggle="popover"
+	data-placement="right"
+	data-html="true"
+	data-trigger="hover"
+	data-content="{{ range .Subjects }} {{.}}<br> {{ end }}">
+	{{printf "%+.2f" .Progress8 }}
+  </td>
+{{ end }}
+
 <div class="row">
   <div class="col-sm-10">
 	<h3>Progress 8</h3>
@@ -552,10 +586,12 @@ var allTemplates = map[string]string{
 
 <br>
 
+
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
 
+	{{ with .Group.Progress8 }}
 	<table class="table">
 	  <thead>
 		<th width="25%">&nbsp;</th>
@@ -568,30 +604,31 @@ var allTemplates = map[string]string{
 	  <tbody>
 		<tr>
 		  <td>Attainment 8</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%.2f" .Att8 }}</td>
+		  {{ range .Attainment }}
+		  <td style="text-align:center;">{{printf "%.2f" . }}</td>
 		  {{ end }}
 		</tr>
 		<tr>
 		  <td>Points per Slot</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%.2f" .Att8PerSlot }}</td>
+		  {{ range .AttainmentPerSlot }}
+		  <td style="text-align:center;">{{printf "%.2f" . }}</td>
 		  {{ end }}
 		</tr>
 		<tr>
 		  <td>Entries</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%.2f" .Entries }}</td>
+		  {{ range .Entries }}
+		  <td style="text-align:center;">{{printf "%.2f" . }}</td>
 		  {{ end }}
 		</tr>
 		<tr>
 		  <td>Progress 8</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%+.2f" .Prog8 }}</td>
+		  {{ range .Progress }}
+		  <td style="text-align:center;">{{printf "%+.2f" . }}</td>
 		  {{ end }}
 		</tr>
 	  </tbody>
 	</table>
+	{{ end }}
 
 	<br>
 
@@ -600,6 +637,8 @@ var allTemplates = map[string]string{
 		<th>Name</th>
 		<th style="text-align:center;">KS2</th>
 		<th style="text-align:center;">PP</th>
+		<th style="text-align:center;">Entries</th>
+		<th style="text-align:center;">Attainment 8</th>
 		<th style="text-align:center;">English</th>
 		<th style="text-align:center;">Maths</th>
 		<th style="text-align:center;">EBacc</th>
@@ -609,7 +648,7 @@ var allTemplates = map[string]string{
 	  </thead>
 	  <tbody>
 		{{ $q := .Query }}
-		{{ range .Students }}
+		{{ range .Group.Students }}
 		<tr>
 		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
 		  <td style="text-align:center;">{{ .KS2.Av }}</td>
@@ -619,15 +658,16 @@ var allTemplates = map[string]string{
 			{{end}}
 		  </td>
 
-		  {{ range .Slots }}
-		  <td style="text-align:center;"
-		data-container="body"
-  data-toggle="popover"
-  data-placement="right"
-  data-html="true"
-  data-trigger="hover"
-  data-content="{{ .Text }}"> {{printf "%+.2f" .Prog8 }}
-		  </td>
+		  {{ with .Basket }}
+		  {{ with .Overall }}
+		  <td style="text-align:center;">{{printf "%v"  .Entries }}</td>
+		  <td style="text-align:center;">{{printf "%.1f"  .Attainment }}</td>
+		  {{ end }}
+		  {{ template "P8Block" .English }}
+		  {{ template "P8Block" .Maths }}
+		  {{ template "P8Block" .EBacc }}
+		  {{ template "P8Block" .Other }}
+		  {{ template "P8Block" .Overall }}
 		  {{ end }}
 
 		  <td style="text-align:center;">{{printf "%.1f"  .Attendance.Latest }}</td>
@@ -650,8 +690,8 @@ $(function () {
 
 <script>
 var national = {
-  x: [{{ range .GraphNat.X }}{{.}}, {{end}}], 
-  y: [{{ range .GraphNat.Y }}{{.}}, {{end}}], 
+  x: [{{ range .NatLine }}{{ .X }}, {{ end }}],
+  y: [{{ range .NatLine }}{{ .Y }}, {{ end }}],
   mode: 'lines',
   name: 'National',
   line: {shape: 'spline'},
@@ -659,53 +699,53 @@ var national = {
   hoverinfo: 'none',
 };
 
-{{ with index .GraphPupils 0 }}
+{{ with index .PupilData 0 }}
 var male_pp = {
-  x: [{{ range .X }}{{ . }}, {{ end }}],
-  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  x: [{{ range . }}{{ .X }}, {{ end }}],
+  y: [{{ range . }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
-  name: 'Male - Disadvantaged',
-  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  name: 'Male: Disadvantaged',
+  text: [{{ range . }}"{{.Name}}<hr>{{ range .P8.Subjects }}{{.}}<br>{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
 {{ end }}
 
-{{ with index .GraphPupils 1 }}
+{{ with index .PupilData 1 }}
 var male_non = {
-  x: [{{ range .X }}{{ . }}, {{ end }}],
-  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  x: [{{ range . }}{{ .X }}, {{ end }}],
+  y: [{{ range . }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
-  name: 'Male - Non-Disadvantaged',
-  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  name: 'Male: Non-Disadvantaged',
+  text: [{{ range . }}"{{.Name}}<hr>{{ range .P8.Subjects }}{{.}}<br>{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
 {{ end }}
 
-{{ with index .GraphPupils 2 }}
+{{ with index .PupilData 2 }}
 var female_pp = {
-  x: [{{ range .X }}{{ . }}, {{ end }}],
-  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  x: [{{ range . }}{{ .X }}, {{ end }}],
+  y: [{{ range . }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
-  name: 'Female - Disadvantaged',
-  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  name: 'Female: Disadvantaged',
+  text: [{{ range . }}"{{.Name}}<hr>{{ range .P8.Subjects }}{{.}}<br>{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
 {{ end }}
 
-{{ with index .GraphPupils 3 }}
+{{ with index .PupilData 3 }}
 var female_non = {
-  x: [{{ range .X }}{{ . }}, {{ end }}],
-  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  x: [{{ range . }}{{ .X }}, {{ end }}],
+  y: [{{ range . }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
-  name: 'Female - Non-Disadvantaged',
-  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  name: 'Female: Non-Disadvantaged',
+  text: [{{ range . }}"{{.Name}}<hr>{{ range .P8.Subjects }}{{.}}<br>{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
@@ -742,7 +782,7 @@ Plotly.newPlot('chart', data, layout);
 
 `,
 
-	"progressgrid.tmpl": `
+"progressgrid.tmpl" : `
 <h2>Progress Grid</h2>
 
 <ul class="breadcrumb">
@@ -848,7 +888,7 @@ $(function () {
 </table>
 `,
 
-	"select-class.tmpl": `
+"select-class.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -880,7 +920,7 @@ $(function () {
 
 `,
 
-	"select-level.tmpl": `
+"select-level.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -903,7 +943,7 @@ $(function () {
 </div>
 `,
 
-	"select-subject.tmpl": `
+"select-subject.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -925,7 +965,7 @@ $(function () {
 </div>
 `,
 
-	"student.tmpl": `
+"student.tmpl" : `
 {{ $nat := .Nat }}
 {{ with .Student }}
 <div class="row">
@@ -1289,7 +1329,7 @@ $(function () {
 
 `,
 
-	"studentsearch.tmpl": `
+"studentsearch.tmpl" : `
 <h2>Student Search Results</h2>
 
 <p>Searching for: <b>{{.Name}}</b></p>
@@ -1318,7 +1358,7 @@ If you're unsure of the spelling, a '*' can be used to replace
 one or more characters.</p>
 `,
 
-	"subject-overview.tmpl": `
+"subject-overview.tmpl" : `
 <h3>Subject Summaries</h3>
 <br>
 <div class="row">
@@ -1353,4 +1393,5 @@ one or more characters.</p>
   <div class="col-sm-1"></div>
 </div>
 `,
+
 }

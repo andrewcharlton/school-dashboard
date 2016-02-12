@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/andrewcharlton/school-dashboard/analysis/group"
@@ -37,60 +38,59 @@ func Progress8(e env.Env) http.HandlerFunc {
 		defer Footer(e, w, r)
 
 		f := GetFilter(e, r)
-		g, err := e.DB.GroupByFilter(f)
+		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
 		}
 
-		nat, exists := e.DB.Attainment8[f.NatYear]
+		nat, exists := e.Attainment8[f.NatYear]
 		if !exists {
 			fmt.Fprintf(w, "Error: %v", err)
 		}
 
 		natLine := points{}
-		for ks2, pts := range nat {
+		for ks2, att8 := range nat {
 			n, err := strconv.ParseFloat(ks2, 64)
 			if err != nil {
 				fmt.Fprintf(w, "Error: %v", err)
 			}
-			natLine = append(natLine, point{X: n, Y: pts})
+			natLine = append(natLine, point{X: n, Y: att8.Overall})
 		}
+		sort.Sort(natLine)
 
-		pupilData := map[string]points{}
+		pupilData := [4]points{}
 		for _, s := range g.Students {
 
 			p8 := s.Basket().Overall()
+			var key int
 			switch {
-			case s.PP && s.Gender == "Male":
-				key = "Male - Disadvantaged"
-			case s.Gender == "Male":
-				key = "Male - Non-Disadvantaged"
-			case s.PP && s.Gender == "Female":
-				key = "Female - Disadvantaged"
-			case s.Gender == "Female":
-				key = "Female - Non-Disadvantaged"
+			case s.PP && s.Gender == 1:
+				key = 0
+			case s.Gender == 1:
+				key = 1
+			case s.PP && s.Gender == 0:
+				key = 2
+			case s.Gender == 0:
+				key = 3
 			}
-			pts := pupilData[int]
-			pts = append(pts, point{X: s.KS2.APS / 6,
+
+			pupilData[key] = append(pupilData[key], point{X: s.KS2.APS / 6,
 				Y:    p8.Attainment,
 				Name: s.Name(),
 				P8:   p8})
-			pupilData[int] = pts
 		}
 
 		data := struct {
-			Filter    template.URL
+			Query     template.URL
 			Group     group.Group
 			NatLine   points
-			PupilData map[string]points
-			Summary   group.Progress8Summary
+			PupilData [4]points
 		}{
 			template.URL(r.URL.RawQuery),
 			g,
 			natLine,
 			pupilData,
-			g.Progress8(),
 		}
 
 		err = e.Templates.ExecuteTemplate(w, "progress8.tmpl", data)

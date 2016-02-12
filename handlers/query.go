@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/andrewcharlton/school-dashboard/env"
 )
@@ -23,25 +24,17 @@ func checkRedirect(e env.Env, opts queryOpts, w http.ResponseWriter, r *http.Req
 	query := r.URL.Query()
 	redirect := false
 
-	if _, exists := query["date"]; !exists {
-		query.Add("date", e.Config.Date)
-		redirect = true
-	}
-
-	if _, exists := query["resultset"]; !exists {
-		query.Add("resultset", e.Config.Resultset)
-		redirect = true
-	}
-
-	if _, exists := query["natyear"]; !exists {
-		query.Add("natyear", e.Config.NatYear)
-		redirect = true
+	for _, key := range []string{"Date", "Resultset", "NatYear"} {
+		if _, exists := query[strings.ToLower(key)]; !exists {
+			query.Add(strings.ToLower(key), e.Config.Options[key])
+			redirect = true
+		}
 	}
 
 	y, exists := query["year"]
 	if opts.Year && (!exists || y[0] == "") {
 		query.Del("year")
-		query.Add("year", e.Config.Year)
+		query.Add("year", e.Config.Options["Year"])
 		redirect = true
 	}
 	if !opts.Year && exists {

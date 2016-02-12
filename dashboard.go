@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/andrewcharlton/school-dashboard/env"
 	"github.com/andrewcharlton/school-dashboard/handlers"
 )
 
@@ -19,7 +20,7 @@ func main() {
 	}
 
 	// Connect to database
-	env, err := Connect(filename)
+	env, err := env.Connect(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,17 +35,17 @@ func main() {
 	clientMux.Handle("/images/", http.StripPrefix("/images/", images))
 	clientMux.HandleFunc("/", handlers.Index(env))
 	clientMux.HandleFunc("/attendance/", handlers.Attendance(env))
-	clientMux.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
-	clientMux.HandleFunc("/headlines/", handlers.Headlines(env))
+	//	clientMux.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
+	//clientMux.HandleFunc("/headlines/", handlers.Headlines(env))
 	clientMux.HandleFunc("/progress8/", handlers.Progress8(env))
-	clientMux.HandleFunc("/effort/", handlers.Effort(env))
-	clientMux.HandleFunc("/export/headlines/", handlers.ExportHeadlines(env))
-	clientMux.HandleFunc("/subjects/", handlers.SubjectOverview(env))
-	clientMux.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
-	clientMux.HandleFunc("/classlist/", handlers.ClassList(env))
-	clientMux.HandleFunc("/students/", handlers.Student(env))
-	clientMux.HandleFunc("/studentsearch/", handlers.SearchRedirect(env))
-	clientMux.HandleFunc("/search/", handlers.Search(env))
+	//clientMux.HandleFunc("/effort/", handlers.Effort(env))
+	//clientMux.HandleFunc("/export/headlines/", handlers.ExportHeadlines(env))
+	//clientMux.HandleFunc("/subjects/", handlers.SubjectOverview(env))
+	//clientMux.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
+	//clientMux.HandleFunc("/classlist/", handlers.ClassList(env))
+	//clientMux.HandleFunc("/students/", handlers.Student(env))
+	//clientMux.HandleFunc("/studentsearch/", handlers.SearchRedirect(env))
+	//clientMux.HandleFunc("/search/", handlers.Search(env))
 	go func() {
 		http.ListenAndServe(":8080", clientMux)
 	}()
