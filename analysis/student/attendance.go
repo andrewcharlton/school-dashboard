@@ -6,6 +6,7 @@ type AttendanceInfo struct {
 	Possible     int
 	Absences     int
 	Unauthorised int
+	Week         float64
 	Sessions     [10]int
 }
 
@@ -17,7 +18,7 @@ func (att AttendanceInfo) Latest() float64 {
 		return float64(0)
 	}
 
-	return float64(100) * float64(att.Possible-att.Absences) / float64(att.Possible)
+	return float64(att.Possible-att.Absences) / float64(att.Possible)
 }
 
 var AttendanceSessions = map[int]string{

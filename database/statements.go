@@ -48,11 +48,15 @@ var sqlStatements = map[string]string{
 				OR ((surname || ", " || forename) LIKE ?))
 				ORDER BY (surname || " " || forename);`,
 
-	"attendance": `SELECT poss_year, absence_year, unauth_year, mon_am,
-					mon_pm, tue_am, tue_pm, wed_am, wed_pm, thu_am,
-					thu_pm, fri_am, fri_pm
+	"attendance": `SELECT att_week, poss_year, absence_year, unauth_year,
+					mon_am,	mon_pm, tue_am, tue_pm, wed_am, wed_pm, 
+					thu_am,	thu_pm, fri_am, fri_pm
 					FROM attendance
 					WHERE upn=? AND year_id=?
+					ORDER BY week_start DESC
+					LIMIT 1`,
+
+	"currentWeek": `SELECT week_start FROM attendance_weeks
 					ORDER BY week_start DESC
 					LIMIT 1`,
 }

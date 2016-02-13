@@ -1,6 +1,28 @@
 package database
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
+
+// CurrentWeek looks up the name of the latest week, as used
+// for attendance.
+func (db Database) CurrentWeek() (string, error) {
+
+	var week string
+	row := db.stmts["currentWeek"].QueryRow()
+	err := row.Scan(&week)
+	if err != nil {
+		return "", err
+	}
+
+	digits := strings.Split(week, "-")
+	if len(digits) < 3 {
+		return "", fmt.Errorf("Attendance week data not in correct form: %v", week)
+	}
+
+	return fmt.Sprintf("%v/%v/%v", digits[2], digits[1], digits[0]), nil
+}
 
 // LookupDate lookups the id number of the date, and returns its name
 func (db Database) LookupDate(id string) (string, error) {

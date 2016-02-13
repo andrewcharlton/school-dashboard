@@ -131,11 +131,11 @@ func (db Database) loadStudentAttendance(s *student.Student, f Filter) error {
 
 	row := db.stmts["attendance"].QueryRow(s.UPN, f.Date)
 	att := student.AttendanceInfo{}
-	err := row.Scan(&att.Possible, &att.Absences, &att.Unauthorised,
-		&att.Sessions[0], &att.Sessions[1], &att.Sessions[2],
-		&att.Sessions[3], &att.Sessions[4], &att.Sessions[5],
-		&att.Sessions[6], &att.Sessions[7], &att.Sessions[8],
-		&att.Sessions[9])
+	err := row.Scan(&att.Week, &att.Possible, &att.Absences,
+		&att.Unauthorised, &att.Sessions[0], &att.Sessions[1],
+		&att.Sessions[2], &att.Sessions[3], &att.Sessions[4],
+		&att.Sessions[5], &att.Sessions[6], &att.Sessions[7],
+		&att.Sessions[8], &att.Sessions[9])
 
 	switch {
 	case err == sql.ErrNoRows || err == nil:

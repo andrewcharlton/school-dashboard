@@ -3,65 +3,80 @@ package templates
 var allTemplates = map[string]string{
 
 "attendance.tmpl" : `
-<h3>Attendance</h3>
+{{ define "AttendanceRow" }}
+<td style="text-align:center;">{{ .Cohort }}</td>
+<td style="text-align:center;">{{ Percent .Week 1}}</td>
+<td style="text-align:center;">{{ .Possible }}</td>
+<td style="text-align:center;">{{ Percent .PercentAttendance 1}}</td>
+<td style="text-align:center;">{{ Percent .PercentAuthorised 1}}</td>
+<td style="text-align:center;">{{ Percent .PercentUnauthorised 1}}</td>
+<td style="text-align:center;">{{ Percent .PercentPA 1}}</td>
+{{ end }}
+
+<h2>Attendance</h2>
+<h4>Week Beginning {{ .Week }}</h4>
 <br>
 
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
 
-	<h3>All Students</h3>
-	<table class="table table-condensed table-hover">
+	<h3>Summary</h3>
+	<table class="table table-condensed table-striped table-hover">
 	  <thead>
 		<th>Group</th>
 		<th style="text-align:center;">Cohort</th>
+		<th style="text-align:center;">This Week</th>
 		<th style="text-align:center;">Possible</th>
-		<th style="text-align:center;">Absences</th>
-		<th style="text-align:center;">Unauthorised</th>
 		<th style="text-align:center;">Attendance %</th>
+		<th style="text-align:center;">Authorised %</th>
+		<th style="text-align:center;">Unauthorised %</th>
 		<th style="text-align:center;">% PA</th>
 	  </thead>
 	  <tbody>
+		{{ range .YearGroups }}
 		<tr>
-		  <td>All<td>
-		  <td style="text-align:center;">{{ .Cohort }}</td>
-		  <td style="text-align:center;">{{ .Possible }}</td>
-		  <td style="text-align:center;">{{ .Absences }}</td>
-		  <td style="text-align:center;">{{ .Unauthorised }}</td>
-		  <td style="text-align:center;">{{ Percent .PercentAttendance 1}}</td>
-		  <td style="text-align:center;">{{ Percent .PercentPA 1}}</td>
-		</tr>
-	  </tbody>
-	</table>
-	
-	{{ range .YearGroups }}
-	<h3>Year {{.Year}}</h3>
-	<table class="table table-condensed table-hover">
-	  <thead>
-		<th>Group</th>
-		<th style="text-align:center;">Cohort</th>
-		<th style="text-align:center;">Possible</th>
-		<th style="text-align:center;">Absences</th>
-		<th style="text-align:center;">Unauthorised</th>
-		<th style="text-align:center;">Attendance %</th>
-		<th style="text-align:center;">% PA</th>
-	  </thead>
-	  <tbody>
-		{{ range .Groups }} 
-		<tr>
-		  <td>{{ .Name }}</td>
-		  {{ with .Attendance }}
-		  <td style="text-align:center;">{{ .Cohort }}</td>
-		  <td style="text-align:center;">{{ .Possible }}</td>
-		  <td style="text-align:center;">{{ .Absences }}</td>
-		  <td style="text-align:center;">{{ .Unauthorised }}</td>
-		  <td style="text-align:center;">{{ Percent .PercentAttendance 1}}</td>
-		  td style="text-align:center;">{{ Percent .PercentPA 1}}</td>
+		  <td><a href="#{{ .Name }}">{{ .Name }}</a></td>
+		  {{ with index .Groups 0 }}
+		  {{ template "AttendanceRow" .Attendance }}
 		  {{ end }}
 		</tr>
 		{{ end }}
 	  </tbody>
 	</table>
+	<br>
+	
+	{{ $q := .Query }}
+	{{ range .YearGroups }}
+	<h3><a name="{{ .Name }}"></a>{{ .Name }}</h3>
+	<table class="table table-condensed table-hover sortable">
+	  <thead>
+		<th>Group</th>
+		<th style="text-align:center;">Cohort</th>
+		<th style="text-align:center;">This Week</th>
+		<th style="text-align:center;">Possible</th>
+		<th style="text-align:center;">Attendance %</th>
+		<th style="text-align:center;">Authorised %</th>
+		<th style="text-align:center;">Unauthorised %</th>
+		<th style="text-align:center;">% PA</th>
+	  </thead>
+	  <tbody>
+		{{ $yq := .Query }}
+		{{ range .Groups }} 
+		{{ with .Attendance }}
+		{{ if ge .PercentAttendance 0.975 }}<tr class="success">
+		{{ else if ge .PercentAttendance 0.95 }}<tr class="warning">
+		{{ else if eq .Possible 0 }}<tr>
+		{{ else }}<tr class="danger">
+		{{ end }}
+		{{ end }}
+		<td><a href="/attendance/?{{ $q }}{{ $yq }}{{ .Query }}">{{ .Name }}</a></td>
+		  {{ template "AttendanceRow" .Attendance }}
+		</tr>
+		{{ end }}
+	  </tbody>
+	</table>
+	<br>
 	{{ end }}
   </div>
   <div class="col-sm-1"></div>
