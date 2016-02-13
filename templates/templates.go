@@ -24,7 +24,7 @@ var allTemplates = map[string]string{
 {{ end }}
 
 {{ define "AttendanceSessionTable" }}
-<table class="table">
+<table class="table table-condensed table-hover">
   <thead>
 	<th>Session</th>
 	<th style='text-align:center;vertical-align:middle'>Monday</th>
@@ -34,7 +34,7 @@ var allTemplates = map[string]string{
 	<th style='text-align:center;vertical-align:middle'>Friday</th>
   </thead>
   <tbody>
-	<tr>
+	<tr class="active">
 	  <td>Morning</td>
 	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 0}}</td>
 	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 2}}</td>
@@ -42,7 +42,7 @@ var allTemplates = map[string]string{
 	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 6}}</td>
 	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 8}}</td>
 	</tr>
-	<tr>
+	<tr class="active">
 	  <td>Afternoon</td>
 	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 1}}</td>
 	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 3}}</td>
@@ -65,7 +65,7 @@ var allTemplates = map[string]string{
 	{{ $q := .Query }}
 	{{ with .Group }}
 	<h3>Summary</h3>
-	<table class="table table-condensed table-hover">
+	<table class="table table-condensed table-striped table-hover">
 	  <thead>
 		{{ template "AttendanceHeader" }}
 	  </thead>
@@ -85,6 +85,7 @@ var allTemplates = map[string]string{
 	<table class="table table-condensed table-striped table-hover">
 	  <thead>
 		<th>Name</th>
+		<th style="text-align:center;">Year</th>
 		<th style="text-align:center;">Gender</th>
 		<th style="text-align:center;">PP</th>
 		<th style="text-align:center;">KS2</th>
@@ -104,6 +105,7 @@ var allTemplates = map[string]string{
 		{{ end }}
 		{{ end }}
 		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+		  <td style="text-align:center;">{{ .Year }}</td>
 		  <td style="text-align:center;">{{ .Gender }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .PP }}</td>
 		  <td style="text-align:center;">{{ .KS2.Av }}</td>
