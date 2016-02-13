@@ -3,6 +3,16 @@ package templates
 var allTemplates = map[string]string{
 
 "attendance.tmpl" : `
+{{ define "AttendanceHeader" }}
+<th style="text-align:center;">Cohort</th>
+<th style="text-align:center;">This Week</th>
+<th style="text-align:center;">Possible</th>
+<th style="text-align:center;">Attendance %</th>
+<th style="text-align:center;">Authorised %</th>
+<th style="text-align:center;">Unauthorised %</th>
+<th style="text-align:center;">% PA</th>
+{{ end }}
+
 {{ define "AttendanceRow" }}
 <td style="text-align:center;">{{ .Cohort }}</td>
 <td style="text-align:center;">{{ Percent .Week 1}}</td>
@@ -13,6 +23,109 @@ var allTemplates = map[string]string{
 <td style="text-align:center;">{{ Percent .PercentPA 1}}</td>
 {{ end }}
 
+{{ define "AttendanceSessionTable" }}
+<table class="table">
+  <thead>
+	<th>Session</th>
+	<th style='text-align:center;vertical-align:middle'>Monday</th>
+	<th style='text-align:center;vertical-align:middle'>Tuesday</th>
+	<th style='text-align:center;vertical-align:middle'>Wednesday</th>
+	<th style='text-align:center;vertical-align:middle'>Thursday</th>
+	<th style='text-align:center;vertical-align:middle'>Friday</th>
+  </thead>
+  <tbody>
+	<tr>
+	  <td>Morning</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 0}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 2}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 4}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 6}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 8}}</td>
+	</tr>
+	<tr>
+	  <td>Afternoon</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 1}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 3}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 5}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 7}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 9}}</td>
+	</tr>
+  </tbody>
+</table>
+{{ end }}
+
+<h2>Attendance Summary</h2>
+<h4>Week Beginning {{ .Week }}</h4>
+<br>
+
+<div class="row">
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
+
+	{{ $q := .Query }}
+	{{ with .Group }}
+	<h3>Summary</h3>
+	<table class="table table-condensed table-hover">
+	  <thead>
+		{{ template "AttendanceHeader" }}
+	  </thead>
+	  <tbody>
+		<tr>
+		  {{ template "AttendanceRow" .Attendance }}
+		</tr>
+	  </tbody>
+	</table>
+	<br>
+
+	<h3>Absence Patterns</h3>
+	{{ template "AttendanceSessionTable" .Attendance }}
+	<br>
+
+	<h3>Students</h3>
+	<table class="table table-condensed table-striped table-hover">
+	  <thead>
+		<th>Name</th>
+		<th style="text-align:center;">Gender</th>
+		<th style="text-align:center;">PP</th>
+		<th style="text-align:center;">KS2</th>
+		<th style="text-align:center;">Possible</th>
+		<th style="text-align:center;">Absences</th>
+		<th style="text-align:center;">Unauthorised</th>
+		<th style="text-align:center;">Attendance %</th>
+		<th style="text-align:center;">Week %</th>
+	  </thead>
+	  <tbody>
+	  {{ range .Students }}
+		{{ with .Attendance }}
+		{{ if ge .Latest 0.95 }}<tr class="success">
+		{{ else if ge .Latest 0.90 }}<tr class="warning">
+		{{ else if eq .Possible 0 }}<tr>
+		{{ else }}<tr class="danger">
+		{{ end }}
+		{{ end }}
+		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+		  <td style="text-align:center;">{{ .Gender }}</td>
+		  <td style="text-align:center;">{{ template "TickCross" .PP }}</td>
+		  <td style="text-align:center;">{{ .KS2.Av }}</td>
+		  {{ with .Attendance }}
+		  <td style="text-align:center;">{{ .Possible }}</td>
+		  <td style="text-align:center;">{{ .Absences }}</td>
+		  <td style="text-align:center;">{{ .Unauthorised }}</td>
+		  <td style="text-align:center;">{{ Percent .Latest 1}}</td>
+		  <td style="text-align:center;">{{ Percent .Week 1 }}</td>
+		  {{ end }}
+		</tr>
+	  {{ end }}
+	  </tbody>
+	</table>
+
+	{{ end }}
+  </div>
+  <div class="col-sm-1"></div>
+</div>
+`,
+
+"attendancegroups.tmpl" : `
 <h2>Attendance</h2>
 <h4>Week Beginning {{ .Week }}</h4>
 <br>
@@ -25,13 +138,7 @@ var allTemplates = map[string]string{
 	<table class="table table-condensed table-striped table-hover">
 	  <thead>
 		<th>Group</th>
-		<th style="text-align:center;">Cohort</th>
-		<th style="text-align:center;">This Week</th>
-		<th style="text-align:center;">Possible</th>
-		<th style="text-align:center;">Attendance %</th>
-		<th style="text-align:center;">Authorised %</th>
-		<th style="text-align:center;">Unauthorised %</th>
-		<th style="text-align:center;">% PA</th>
+		{{ template "AttendanceHeader" }}
 	  </thead>
 	  <tbody>
 		{{ range .YearGroups }}
@@ -52,13 +159,7 @@ var allTemplates = map[string]string{
 	<table class="table table-condensed table-hover sortable">
 	  <thead>
 		<th>Group</th>
-		<th style="text-align:center;">Cohort</th>
-		<th style="text-align:center;">This Week</th>
-		<th style="text-align:center;">Possible</th>
-		<th style="text-align:center;">Attendance %</th>
-		<th style="text-align:center;">Authorised %</th>
-		<th style="text-align:center;">Unauthorised %</th>
-		<th style="text-align:center;">% PA</th>
+		{{ template "AttendanceHeader" }}
 	  </thead>
 	  <tbody>
 		{{ $yq := .Query }}
@@ -76,7 +177,6 @@ var allTemplates = map[string]string{
 		{{ end }}
 	  </tbody>
 	</table>
-	<br>
 	{{ end }}
   </div>
   <div class="col-sm-1"></div>
@@ -143,6 +243,15 @@ var allTemplates = map[string]string{
   </div>
   <div class="col-sm-1"></div>
 </div>
+`,
+
+"common.tmpl" : `
+{{ define "TickCross" }}
+{{if .}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
+{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
+{{end}}
+{{ end }}
+
 `,
 
 "effort.tmpl" : `

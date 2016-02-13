@@ -105,14 +105,21 @@ func AttendanceExplorer(e env.Env) http.HandlerFunc {
 			return
 		}
 
+		week, _ := e.CurrentWeek()
+
 		data := struct {
 			Query template.URL
+			Week  string
 			Group group.Group
 		}{
 			template.URL(r.URL.RawQuery),
+			week,
 			g,
 		}
 
-		fmt.Fprintln(w, len(data.Group.Students))
+		err = e.Templates.ExecuteTemplate(w, "attendance.tmpl", data)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+		}
 	}
 }

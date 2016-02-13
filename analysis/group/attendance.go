@@ -8,6 +8,7 @@ type AttendanceSummary struct {
 	Absences     int
 	Unauthorised int
 	PAs          int
+	Sessions     [10]int
 }
 
 // PercentAttendance calculates the overall percentage attendance for the group.
@@ -60,6 +61,9 @@ func (g Group) Attendance() AttendanceSummary {
 		att.Possible += s.Attendance.Possible
 		if s.Attendance.Latest() < 0.9 {
 			att.PAs++
+		}
+		for n, x := range s.Attendance.Sessions {
+			att.Sessions[n] += x
 		}
 	}
 	att.Week /= float64(att.Cohort)
