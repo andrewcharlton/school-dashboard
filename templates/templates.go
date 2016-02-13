@@ -54,7 +54,7 @@ var allTemplates = map[string]string{
 </table>
 {{ end }}
 
-<h2>Attendance Summary</h2>
+<h2>Attendance Explorer</h2>
 <h4>Week Beginning {{ .Week }}</h4>
 <br>
 
@@ -126,7 +126,7 @@ var allTemplates = map[string]string{
 `,
 
 "attendancegroups.tmpl" : `
-<h2>Attendance</h2>
+<h2>Attendance Group Summary</h2>
 <h4>Week Beginning {{ .Week }}</h4>
 <br>
 
@@ -652,11 +652,10 @@ var allTemplates = map[string]string{
 		  <li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Departments <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu">
-			  <li><a href="/subjects/?{{.Query}}">Summary</a></li>
+			  <li><a href="/subjects/?{{.Query}}">Summary List</a></li>
 			  <li class="divider"></li>
 			  <li><a href="/progressgrid/?{{.Query}}">Progress Grid</a></li>
-			  <li class="divider"></li>
-			  <li><a href="/classlist/?{{.Query}}">Class Lists</a></li>
+			  <li><a href="/subjectgroups/?{{.Query}}">Group Comparisons</a></li>
 			</ul>
 		  </li>
 		</ul>
@@ -670,9 +669,12 @@ var allTemplates = map[string]string{
 			  <li><a href="/progress8/?{{.Query}}">Progress 8</a></li>
 			  <li><a href="/basics/?{{.Query}}">English and Maths</a></li>
 			  <li class="disabled"><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
+			  <li class="disabled"><a href="/progress8groups/?{{.Query}}">Progress 8 Groups</a></li>
 			  <li class="divider"></li>
+			  <li><a href="/attendancegroups/?{{.Query}}">Attendance Summary</a></li>
+			  <li><a href="/attendance/?{{.Query}}">Attendance Explorer</a></li>
+			  <li class="divider"></li> 
 			  <li><a href="/effort/?{{.Query}}">Effort</a></li>
-			  <li><a href="/attendance/?{{.Query}}">Attendance</a></li>
 			</ul>
 		  </li>
 		</ul>
