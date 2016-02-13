@@ -145,7 +145,10 @@ func (b Basket) section(start, end int, exp float64) Progress8Score {
 	pts := 0.0
 	subjects := []string{}
 	for _, s := range b.Slots[start : end+1] {
-		if s.Subject != "" {
+		switch s.Subject {
+		case "":
+			subjects = append(subjects, "-")
+		default:
 			subjects = append(subjects, fmt.Sprintf("%v - %v", s.Subject, s.Grade))
 		}
 		if s.Points > 0.1 { // 0.1 rather than 0.0 to prevent floating point errors
