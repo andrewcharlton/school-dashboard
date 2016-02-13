@@ -54,9 +54,9 @@ type Gender int
 func (g Gender) String() string {
 
 	if g == 1 {
-		return "Male"
+		return "M"
 	}
-	return "Female"
+	return "F"
 }
 
 // SENInfo collects all of a student's SEN details

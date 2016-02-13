@@ -19,7 +19,7 @@
 {{ end }}
 
 {{ define "AttendanceSessionTable" }}
-<table class="table">
+<table class="table table-condensed table-striped table-hover">
   <thead>
 	<th>Session</th>
 	<th style='text-align:center;vertical-align:middle'>Monday</th>
@@ -60,7 +60,7 @@
 	{{ $q := .Query }}
 	{{ with .Group }}
 	<h3>Summary</h3>
-	<table class="table table-condensed table-hover">
+	<table class="table table-condensed table-striped table-hover">
 	  <thead>
 		{{ template "AttendanceHeader" }}
 	  </thead>
@@ -80,6 +80,7 @@
 	<table class="table table-condensed table-striped table-hover">
 	  <thead>
 		<th>Name</th>
+		<th style="text-align:center;">Year</th>
 		<th style="text-align:center;">Gender</th>
 		<th style="text-align:center;">PP</th>
 		<th style="text-align:center;">KS2</th>
@@ -99,6 +100,7 @@
 		{{ end }}
 		{{ end }}
 		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+		  <td style="text-align:center;">{{ .Year }}</td>
 		  <td style="text-align:center;">{{ .Gender }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .PP }}</td>
 		  <td style="text-align:center;">{{ .KS2.Av }}</td>
