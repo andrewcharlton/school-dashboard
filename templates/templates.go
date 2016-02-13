@@ -630,6 +630,9 @@ var allTemplates = map[string]string{
 	<!-- Bootstrap -->
 	<link href="/static/css/bootstrap-spacelab.min.css" rel="stylesheet">
 
+	<!-- CSS Overrides -->
+	<link href="/static/css/custom.css" rel="stylesheet">
+
   </head>
   <body>
 
@@ -671,7 +674,7 @@ var allTemplates = map[string]string{
 			  <li><a href="/progress8/?{{.Query}}">Progress 8</a></li>
 			  <li><a href="/basics/?{{.Query}}">English and Maths</a></li>
 			  <li class="disabled"><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
-			  <li class="disabled"><a href="/progress8groups/?{{.Query}}">Progress 8 Groups</a></li>
+			  <li><a href="/progress8groups/?{{.Query}}">Progress 8 Groups</a></li>
 			  <li class="divider"></li>
 			  <li><a href="/attendancegroups/?{{.Query}}">Attendance Summary</a></li>
 			  <li><a href="/attendance/?{{.Query}}">Attendance Explorer</a></li>
@@ -907,6 +910,61 @@ var layout = {
 
 Plotly.newPlot('chart', data, layout);
 </script>
+
+`,
+
+"progress8groups.tmpl" : `
+<h2>Progress 8 Group Summary</h2>
+<br>
+
+{{ $q := .Query }}
+<div class="row">
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
+
+	<table class="table table-condensed table-hover">
+	  <thead>
+		<th>Group</th>
+		<th style="text-align:center;">Cohort</th>
+		<th style="text-align:center;">KS2 APS</th>
+		<th style="text-align:center;">Entries</th>
+		<th style="text-align:center;">Attainment 8</th>
+		<th style="text-align:center;">English</th>
+		<th style="text-align:center;">Mathematics</th>
+		<th style="text-align:center;">EBacc</th>
+		<th style="text-align:center;">Other</th>
+		<th style="text-align:center;">Progress 8</th>
+		<th style="text-align:center;">Attendance</th>
+	  </thead>
+	  <tbody>
+		{{ range .Groups }}
+		{{ with index .Group.Progress8.Progress 4 }}
+		{{ if gt . 0.2 }}<tr class="success">
+		{{ else if lt . -0.2 }}<tr class="danger">
+		{{ else }}<tr class="warning">
+		{{ end }}
+		{{ end }}
+		  <td><a href="/progress8/?{{ $q }}{{ .Query }}">{{ .Name }}</a></td>
+		  {{ with .Group }}
+		  <td style="text-align:center;">{{ .Cohort }}</td>
+		  <td style="text-align:center;">{{ printf "%.1f" .KS2APS }}</td>
+		  {{ with .Progress8 }}
+		  <td style="text-align:center;">{{ index .Entries 4 | printf "%.1f"  }}</td>
+		  <td style="text-align:center;">{{ index .Attainment 4 | printf "%.1f"  }}</td>
+		  {{ range .Progress }}
+		  <td style="text-align:center;">{{ printf "%.2f" . }}</td>
+		  {{ end }}
+		  {{ end }}
+		  <td style="text-align:center;">{{ Percent .Attendance.PercentAttendance 1 }}</td>
+		  {{ end }}
+		</tr>
+		{{ end }}
+	  </tbody>
+	<table>
+  
+  </div>
+  <div class="col-sm-1"></div>
+</div>
 
 `,
 

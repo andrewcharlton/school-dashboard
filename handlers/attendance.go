@@ -31,7 +31,7 @@ func AttendanceGroups(e env.Env) http.HandlerFunc {
 		type YearGroup struct {
 			Name   string
 			Query  template.URL
-			Groups []attendanceSubGroup
+			Groups []subGroup
 		}
 
 		// Ignore error - will appear as blank string anyway
@@ -44,7 +44,7 @@ func AttendanceGroups(e env.Env) http.HandlerFunc {
 		}{
 			week,
 			template.URL(r.URL.RawQuery),
-			[]YearGroup{{"All Years", template.URL(""), attendanceSubGroups(g)}},
+			[]YearGroup{{"All Years", template.URL(""), subGroups(g)}},
 		}
 
 		for year := 7; year < 15; year++ {
@@ -54,7 +54,7 @@ func AttendanceGroups(e env.Env) http.HandlerFunc {
 			}
 			yeargroup := YearGroup{fmt.Sprintf("Year %v", year),
 				template.URL(fmt.Sprintf("&year=%v", year)),
-				attendanceSubGroups(y)}
+				subGroups(y)}
 			data.YearGroups = append(data.YearGroups, yeargroup)
 		}
 
@@ -62,26 +62,6 @@ func AttendanceGroups(e env.Env) http.HandlerFunc {
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 		}
-	}
-}
-
-type attendanceSubGroup struct {
-	Name       string
-	Query      template.URL
-	Attendance group.AttendanceSummary
-}
-
-func attendanceSubGroups(g group.Group) []attendanceSubGroup {
-
-	return []attendanceSubGroup{
-		{"All", template.URL(""), g.Attendance()},
-		{"Male", template.URL("&gender=1"), g.SubGroup(group.Male).Attendance()},
-		{"Female", template.URL("&gender=0"), g.SubGroup(group.Female).Attendance()},
-		{"Disadvantaged", template.URL("&pp=1"), g.SubGroup(group.PP).Attendance()},
-		{"Non-Disadvantaged", template.URL("&pp=0"), g.SubGroup(group.NonPP).Attendance()},
-		{"High", template.URL("&ks2band=High"), g.SubGroup(group.High).Attendance()},
-		{"Middle", template.URL("&ks2band=Middle"), g.SubGroup(group.Middle).Attendance()},
-		{"Low", template.URL("&ks2band=Low"), g.SubGroup(group.Low).Attendance()},
 	}
 }
 

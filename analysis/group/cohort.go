@@ -1,5 +1,10 @@
 package group
 
+// Cohort returns the size of the cohort
+func (g Group) Cohort() int {
+	return len(g.Students)
+}
+
 // KS2APS calculates the average points score for
 // a group of students.
 func (g Group) KS2APS() float64 {

@@ -20,6 +20,8 @@ func (s Student) Basics() bool {
 	return eng && maths
 }
 
+// EBacc calculates whether a student is eligible for the EBacc
+// and whether or not they have achieved it.
 func (s Student) EBacc() (bool, bool) {
 
 	eEng, aEng := s.EBaccEng()

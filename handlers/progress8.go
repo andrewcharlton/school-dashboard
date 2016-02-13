@@ -99,3 +99,37 @@ func Progress8(e env.Env) http.HandlerFunc {
 		}
 	}
 }
+
+// Progress8Groups calculates the progress 8 scores for each group of students
+func Progress8Groups(e env.Env) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		if redir := checkRedirect(e, queryOpts{true, false}, w, r); redir {
+			return
+		}
+
+		Header(e, w, r)
+		FilterPage(e, w, r, false)
+		defer Footer(e, w, r)
+
+		f := GetFilter(e, r)
+		g, err := e.GroupByFilter(f)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+			return
+		}
+
+		data := struct {
+			Query  template.URL
+			Groups []subGroup
+		}{
+			template.URL(r.URL.RawQuery),
+			subGroups(g),
+		}
+
+		err = e.Templates.ExecuteTemplate(w, "progress8groups.tmpl", data)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+		}
+	}
+}
