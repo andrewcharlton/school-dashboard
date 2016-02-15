@@ -13,11 +13,10 @@ import (
 func AttendanceGroups(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if redir := checkRedirect(e, w, r, 1); redir {
+		if redir := checkRedirect(e, w, r, 0); redir {
 			return
 		}
-
-		header(e, w, r, 1)
+		header(e, w, r, 0)
 		defer footer(e, w, r)
 
 		f := getFilter(e, r)

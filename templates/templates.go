@@ -147,7 +147,7 @@ var allTemplates = map[string]string{
 		<tr>
 		  <td><a href="#{{ .Name }}">{{ .Name }}</a></td>
 		  {{ with index .Groups 0 }}
-		  {{ template "AttendanceRow" .Attendance }}
+		  {{ template "AttendanceRow" .Group.Attendance }}
 		  {{ end }}
 		</tr>
 		{{ end }}
@@ -166,7 +166,7 @@ var allTemplates = map[string]string{
 	  <tbody>
 		{{ $yq := .Query }}
 		{{ range .Groups }} 
-		{{ with .Attendance }}
+		{{ with .Group.Attendance }}
 		{{ if ge .PercentAttendance 0.975 }}<tr class="success">
 		{{ else if ge .PercentAttendance 0.95 }}<tr class="warning">
 		{{ else if eq .Possible 0 }}<tr>
@@ -174,7 +174,7 @@ var allTemplates = map[string]string{
 		{{ end }}
 		{{ end }}
 		<td><a href="/attendance/?{{ $q }}{{ $yq }}{{ .Query }}">{{ .Name }}</a></td>
-		  {{ template "AttendanceRow" .Attendance }}
+		  {{ template "AttendanceRow" .Group.Attendance }}
 		</tr>
 		{{ end }}
 	  </tbody>
