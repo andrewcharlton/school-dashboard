@@ -10,6 +10,9 @@ type VAScore struct {
 
 // Score calculates the actual VA score
 func (va VAScore) Score() float64 {
+	if va.Err != nil {
+		return 0.0
+	}
 	return va.Achieved - va.Expected
 }
 

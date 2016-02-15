@@ -37,7 +37,7 @@ func Year(year int) func(s student.Student) bool {
 }
 
 // Form returns a subgroup filter for a certain form group
-func Form(tutor string) func(s student.Student) bool {
+func Form(form string) func(s student.Student) bool {
 	return func(s student.Student) bool { return s.Form == form }
 }
 
