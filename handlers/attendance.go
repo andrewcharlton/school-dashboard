@@ -13,15 +13,14 @@ import (
 func AttendanceGroups(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+		if redir := checkRedirect(e, w, r, 1); redir {
 			return
 		}
 
-		Header(e, w, r)
-		FilterPage(e, w, r, true)
-		defer Footer(e, w, r)
+		header(e, w, r, 1)
+		defer footer(e, w, r)
 
-		f := GetFilter(e, r)
+		f := getFilter(e, r)
 		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
@@ -70,15 +69,14 @@ func AttendanceGroups(e env.Env) http.HandlerFunc {
 func AttendanceExplorer(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
+		if redir := checkRedirect(e, w, r, 2); redir {
 			return
 		}
 
-		Header(e, w, r)
-		FilterPage(e, w, r, false)
-		defer Footer(e, w, r)
+		header(e, w, r, 2)
+		defer footer(e, w, r)
 
-		f := GetFilter(e, r)
+		f := getFilter(e, r)
 		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)

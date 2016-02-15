@@ -15,7 +15,7 @@ import (
 )
 
 // Redirect routes back to the homepage.
-func Redirect(e env.Env) http.HandlerFunc {
+func redirect(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		url := "/index/?" + r.URL.RawQuery
@@ -25,9 +25,9 @@ func Redirect(e env.Env) http.HandlerFunc {
 }
 
 // Header writes the common html page header and menu bars
-func Header(e env.Env, w http.ResponseWriter, r *http.Request) {
+func header(e env.Env, w http.ResponseWriter, r *http.Request, detail int) {
 
-	f := GetFilter(e, r)
+	f := getFilter(e, r)
 	data := struct {
 		School string
 		F      database.Filter
@@ -42,10 +42,12 @@ func Header(e env.Env, w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	filterPage(e, w, r, detail)
 }
 
 // Footer writes the common html page header and menu bars
-func Footer(e env.Env, w http.ResponseWriter, r *http.Request) {
+func footer(e env.Env, w http.ResponseWriter, r *http.Request) {
 
 	err := e.Templates.ExecuteTemplate(w, "footer.tmpl", e)
 	if err != nil {
@@ -55,7 +57,7 @@ func Footer(e env.Env, w http.ResponseWriter, r *http.Request) {
 
 // GetFilter produces a Filter object from the query string
 // provided in the http Request
-func GetFilter(e env.Env, r *http.Request) database.Filter {
+func getFilter(e env.Env, r *http.Request) database.Filter {
 
 	query := r.URL.Query()
 	if len(query) == 0 {
@@ -94,9 +96,14 @@ func GetFilter(e env.Env, r *http.Request) database.Filter {
 }
 
 // FilterPage writes the contents of the filter template to w.
-func FilterPage(e env.Env, w http.ResponseWriter, r *http.Request, short bool) {
+// Detail describes the level to which the date should be allowed to be
+// filtered:
+// 0.  Not at all - National / Resultset / Date only
+// 1.  Filter by year
+// 2.  Filter by all categories
+func filterPage(e env.Env, w http.ResponseWriter, r *http.Request, detail int) {
 
-	f := GetFilter(e, r)
+	f := getFilter(e, r)
 
 	data := struct {
 		database.Filter
@@ -109,7 +116,7 @@ func FilterPage(e env.Env, w http.ResponseWriter, r *http.Request, short bool) {
 		O           map[string]bool //Ethnicities in the "Other" category
 		S           map[string]bool //SEN ticked
 		Labels      []label
-		Short       bool
+		Detail      int
 	}{
 		f,
 		e.Dates,
@@ -120,8 +127,8 @@ func FilterPage(e env.Env, w http.ResponseWriter, r *http.Request, short bool) {
 		map[string]bool{},
 		e.OtherEths,
 		map[string]bool{},
-		FilterLabels(e, f, short),
-		short,
+		filterLabels(e, f),
+		detail,
 	}
 
 	for _, b := range f.KS2Bands {
@@ -149,7 +156,7 @@ type label struct {
 }
 
 // FilterLabels generates the labels for the filter page
-func FilterLabels(e env.Env, f database.Filter, short bool) []label {
+func filterLabels(e env.Env, f database.Filter) []label {
 
 	labels := []label{}
 
@@ -162,10 +169,6 @@ func FilterLabels(e env.Env, f database.Filter, short bool) []label {
 	labels = append(labels, label{nat, "default"})
 	labels = append(labels, label{date, "primary"})
 	labels = append(labels, label{rs, "primary"})
-
-	if short {
-		return labels
-	}
 
 	if f.Year != "" {
 		labels = append(labels, label{"Yeargroup: " + f.Year, "success"})
@@ -214,7 +217,7 @@ func FilterLabels(e env.Env, f database.Filter, short bool) []label {
 }
 
 // ChangeYear changes the yeargroup filtered by the query
-func ChangeYear(query url.Values, year string) string {
+func changeYear(query url.Values, year string) string {
 
 	if _, exists := query["year"]; exists {
 		query.Del("year")

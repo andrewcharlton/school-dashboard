@@ -29,15 +29,14 @@ func (p points) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 func Progress8(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
+		if redir := checkRedirect(e, w, r, 2); redir {
 			return
 		}
 
-		Header(e, w, r)
-		FilterPage(e, w, r, false)
-		defer Footer(e, w, r)
+		header(e, w, r, 2)
+		defer footer(e, w, r)
 
-		f := GetFilter(e, r)
+		f := getFilter(e, r)
 		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
@@ -104,15 +103,14 @@ func Progress8(e env.Env) http.HandlerFunc {
 func Progress8Groups(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if redir := checkRedirect(e, queryOpts{true, false}, w, r); redir {
+		if redir := checkRedirect(e, w, r, 1); redir {
 			return
 		}
 
-		Header(e, w, r)
-		FilterPage(e, w, r, false)
-		defer Footer(e, w, r)
+		header(e, w, r, 1)
+		defer footer(e, w, r)
 
-		f := GetFilter(e, r)
+		f := getFilter(e, r)
 		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)

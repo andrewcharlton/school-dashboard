@@ -57,7 +57,7 @@
 		</div>
 	  </div>
 
-	  {{if not .Short}}
+	  {{ if ge .Detail 1 }}
 	  <div class="row" style="margin-top: -6px;">
 		<div class="form-group form-group-sm">
 		  <label for="f_yeargroup" class="control-label col-sm-2">Yeargroup</label>
@@ -73,7 +73,9 @@
 		  </div>
 		</div>
 	  </div>
+	  {{ end }}
 
+	  {{ if ge .Detail 2 }}
 	  <div class="row" style="margin-top: -6px;">
 		<div class="form-group form-group-sm">
 		  <label for="f_gender" class="control-label col-sm-2">Gender</label>
