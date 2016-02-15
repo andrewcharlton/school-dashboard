@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/andrewcharlton/school-dashboard/analysis/group"
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
@@ -22,21 +23,19 @@ func ProgressGrid(e env.Env) http.HandlerFunc {
 		case 5:
 			selectClass(e, w, r, "Progress Grid")
 		case 6:
-			pgAnalysis(e, w, r)
+			progressGridPage(e, w, r)
 		}
 	}
 }
 
 // Performs analysis of the results
-func pgAnalysis(e env.Env, w http.ResponseWriter, r *http.Request) {
+func progressGridPage(e env.Env, w http.ResponseWriter, r *http.Request) {
 
-	if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
+	if redir := checkRedirect(e, w, r, 2); redir {
 		return
 	}
-
-	Header(e, w, r)
-	FilterPage(e, w, r, false)
-	defer Footer(e, w, r)
+	header(e, w, r, 2)
+	defer footer(e, w, r)
 
 	path := strings.Split(r.URL.Path, "/")
 	subjID, err := strconv.Atoi(path[3])
@@ -44,35 +43,35 @@ func pgAnalysis(e env.Env, w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-	subject := e.DB.Subjects()[subjID]
+	subject := e.Subjects[subjID]
 	class := path[4]
 	if strings.HasPrefix(path[4], "All") {
 		class = ""
 	}
 
-	f := GetFilter(e, r)
-	g, err := e.DB.GroupByFilteredClass(path[3], class, f)
+	f := getFilter(e, r)
+	g, err := e.GroupByFilteredClass(path[3], class, f)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 	}
 
-	nat := e.Nationals[f.NatYear]
-
 	data := struct {
-		Subject  string
-		Level    string
-		SubjID   string
-		Class    string
-		Students []pgStudent
-		Grid     pgGrid
-		Query    template.URL
+		Subject      string
+		Level        string
+		SubjID       string
+		Class        string
+		KS2Prior     string
+		Group        group.Group
+		ProgressGrid group.ProgressGrid
+		Query        template.URL
 	}{
 		subject.Subj,
 		subject.Lvl,
 		path[3],
 		path[4],
-		pgStudentList(subject, g.Students, nat),
-		pgGridAnalysis(subject, g.Students, nat),
+		subject.KS2Prior,
+		g,
+		g.ProgressGrid(subject, f.NatYear),
 		template.URL(r.URL.RawQuery),
 	}
 

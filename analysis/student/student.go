@@ -99,3 +99,14 @@ func (ks2 KS2Info) Score(area string) string {
 		return ks2.Av
 	}
 }
+
+// Class provides a wrapper to lookup the class a student is in for a
+// subject, to be used in templates.
+func (s Student) Class(subj string) string {
+
+	r, exists := s.Results[subj]
+	if !exists {
+		return ""
+	}
+	return r.Class
+}

@@ -317,7 +317,7 @@ func (db *Database) loadSubjects() error {
 // tms loads up the transition matrices for a particular subject
 func (db Database) tms(subj *subject.Subject, tmName string) error {
 
-	rows, err := db.conn.Query(`SELECT year, ks2, grade, probability FROM tms
+	rows, err := db.conn.Query(`SELECT year_id, ks2, grade, probability FROM tms
 								WHERE subject=?`, tmName)
 	if err != nil {
 		return err

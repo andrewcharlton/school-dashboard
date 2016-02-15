@@ -1,5 +1,16 @@
 package student
 
+// SubjectGrade provides a lookup for the grade in a particular subject.
+// Returns "" if no grade is found.
+func (s Student) SubjectGrade(subj string) string {
+
+	r, exists := s.Results[subj]
+	if !exists {
+		return ""
+	}
+	return r.Grd
+}
+
 // Basics measures whether a student has achieved a level 2 pass
 // in both English and Maths.
 func (s Student) Basics() bool {

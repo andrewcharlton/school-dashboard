@@ -18,18 +18,15 @@ import (
 // Produce page to pick a subject from
 func selectSubject(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
-	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+	if redir := checkRedirect(e, w, r, 0); redir {
 		return
 	}
 
-	Header(e, w, r)
-	FilterPage(e, w, r, true)
-	defer Footer(e, w, r)
-
-	subjects := e.Subjects()
+	header(e, w, r, 0)
+	defer footer(e, w, r)
 
 	distinct := map[string]struct{}{}
-	for _, subj := range subjects {
+	for _, subj := range e.Subjects {
 		distinct[subj.Subj] = struct{}{}
 	}
 
@@ -70,7 +67,7 @@ func (s subjLevels) Less(i, j int) bool { return s[i].Level < s[j].Level }
 // Produce page to pick a level from
 func selectLevel(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
-	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+	if redir := checkRedirect(e, w, r, 0); redir {
 		return
 	}
 
@@ -79,7 +76,7 @@ func selectLevel(e env.Env, w http.ResponseWriter, r *http.Request, heading stri
 	subject := path[2]
 
 	levels := subjLevels{}
-	for id, s := range e.DB.Subjects() {
+	for id, s := range e.Subjects {
 		if s.Subj == subject {
 			levels = append(levels, subjLevel{id, s.Lvl})
 		}
@@ -93,9 +90,8 @@ func selectLevel(e env.Env, w http.ResponseWriter, r *http.Request, heading stri
 		return
 	}
 
-	Header(e, w, r)
-	FilterPage(e, w, r, true)
-	defer Footer(e, w, r)
+	header(e, w, r, 0)
+	defer footer(e, w, r)
 
 	data := struct {
 		Heading  string
@@ -122,13 +118,11 @@ func selectLevel(e env.Env, w http.ResponseWriter, r *http.Request, heading stri
 // Produce page to pick a class from
 func selectClass(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
-	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+	if redir := checkRedirect(e, w, r, 0); redir {
 		return
 	}
-
-	Header(e, w, r)
-	FilterPage(e, w, r, true)
-	defer Footer(e, w, r)
+	header(e, w, r, 0)
+	defer footer(e, w, r)
 
 	// Assume subject name and subj_id are last two parts of the path
 	path := strings.Split(r.URL.Path, "/")
@@ -138,10 +132,10 @@ func selectClass(e env.Env, w http.ResponseWriter, r *http.Request, heading stri
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-	level := e.DB.Subjects()[subjID].Lvl
+	level := e.Subjects[subjID].Lvl
 
-	f := GetFilter(e, r)
-	classes, err := e.DB.Classes(path[3], f.Date)
+	f := getFilter(e, r)
+	classes, err := e.Classes(path[3], f.Date)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 	}
@@ -181,7 +175,7 @@ func selectClass(e env.Env, w http.ResponseWriter, r *http.Request, heading stri
 	for _, year := range []string{"7", "8", "9", "10", "11"} {
 		if years[year] {
 			data.Years = append(data.Years, year)
-			data.Queries[year] = template.URL(ChangeYear(r.URL.Query(), year))
+			data.Queries[year] = template.URL(changeYear(r.URL.Query(), year))
 		}
 	}
 

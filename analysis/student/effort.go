@@ -1,8 +1,8 @@
 package student
 
-import "errors"
+import "fmt"
 
-// EffortAv is a wrapper for average effort
+// Effort is a wrapper for average effort
 type EffortAv struct {
 	Effort float64
 	Err    error
@@ -18,7 +18,18 @@ func (s Student) Effort() EffortAv {
 	}
 
 	if num == 0 {
-		return EffortAv{Err: errors.New("No courses present")}
+		return EffortAv{0.0, fmt.Errorf("No courses present")}
 	}
 	return EffortAv{Effort: float64(total) / float64(num), Err: nil}
+}
+
+// SubjectEffort provides a wrapper to look up a student's effort
+// in a subject for use in templates.  Returns "" if no effort found.
+func (s Student) SubjectEffort(subj string) string {
+
+	r, exists := s.Results[subj]
+	if !exists {
+		return ""
+	}
+	return fmt.Sprintf("%v", r.Effort)
 }

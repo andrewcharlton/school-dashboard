@@ -32,7 +32,6 @@ func Progress8(e env.Env) http.HandlerFunc {
 		if redir := checkRedirect(e, w, r, 2); redir {
 			return
 		}
-
 		header(e, w, r, 2)
 		defer footer(e, w, r)
 

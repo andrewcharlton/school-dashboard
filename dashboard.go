@@ -43,7 +43,7 @@ func main() {
 	//clientMux.HandleFunc("/effort/", handlers.Effort(env))
 	//clientMux.HandleFunc("/export/headlines/", handlers.ExportHeadlines(env))
 	//clientMux.HandleFunc("/subjects/", handlers.SubjectOverview(env))
-	//clientMux.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
+	clientMux.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
 	//clientMux.HandleFunc("/classlist/", handlers.ClassList(env))
 	//clientMux.HandleFunc("/students/", handlers.Student(env))
 	//clientMux.HandleFunc("/studentsearch/", handlers.SearchRedirect(env))

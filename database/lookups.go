@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 )
@@ -22,6 +23,32 @@ func (db Database) CurrentWeek() (string, error) {
 	}
 
 	return fmt.Sprintf("%v/%v/%v", digits[2], digits[1], digits[0]), nil
+}
+
+// Classes returns a list of classes that exists for a subject,
+// at a particular date.
+func (db Database) Classes(subjID, dateID string) ([]string, error) {
+
+	rows, err := db.stmts["classlist"].Query(dateID, subjID)
+	if err == sql.ErrNoRows {
+		return []string{}, fmt.Errorf("No classes attached to this subject.")
+	}
+	if err != nil {
+		return []string{}, err
+	}
+	defer rows.Close()
+
+	classes := []string{}
+	for rows.Next() {
+		var class string
+		err := rows.Scan(&class)
+		if err != nil {
+			return []string{}, err
+		}
+		classes = append(classes, class)
+	}
+
+	return classes, nil
 }
 
 // LookupDate lookups the id number of the date, and returns its name
