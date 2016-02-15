@@ -33,9 +33,23 @@ var (
 
 // Year returns a subgroup filter for a certain yeargroup
 func Year(year int) func(s student.Student) bool {
-
 	return func(s student.Student) bool { return s.Year == year }
+}
 
+// Form returns a subgroup filter for a certain form group
+func Form(tutor string) func(s student.Student) bool {
+	return func(s student.Student) bool { return s.Form == form }
+}
+
+// Class returns a subgroup filter for a certain subject/class combination
+func Class(subject, class string) func(s student.Student) bool {
+	return func(s student.Student) bool {
+		r, exists := s.Results[subject]
+		if !exists {
+			return false
+		}
+		return r.Class == class
+	}
 }
 
 // SubGroup produces a Group with a subset of the original students, as
