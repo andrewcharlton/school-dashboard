@@ -41,8 +41,7 @@ var sqlStatements = map[string]string{
 				  WHERE upn=? AND is_exam=1
 				  ORDER BY date`,
 
-	"search": `SELECT upn, surname, forename, year, form
-			   FROM students
+	"search": `SELECT upn FROM students
 			   WHERE date_id=? AND
 			   (((forename || " " || surname) LIKE ?)
 				OR ((surname || ", " || forename) LIKE ?))

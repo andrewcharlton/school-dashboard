@@ -13,23 +13,10 @@ import (
 // Student loads the details of an individual student
 func (db Database) Student(upn string, f Filter) (student.Student, error) {
 
-	row := db.stmts["student"].QueryRow(upn, f.Date)
-
-	s := student.Student{}
-	sen := student.SENInfo{}
-	ks2 := student.KS2Info{}
-	err := row.Scan(&s.UPN, &s.Surname, &s.Forename, &s.Year, &s.Form,
-		&s.PP, &s.EAL, &s.Gender, &s.Ethnicity, &sen.Status, &sen.Need,
-		&sen.Info, &sen.Strategies, &sen.Access, &sen.IEP, &ks2.APS,
-		&ks2.Band, &ks2.En, &ks2.Ma, &ks2.Av, &ks2.Re, &ks2.Wr, &ks2.GPS)
-	switch {
-	case err == sql.ErrNoRows:
-		return student.Student{}, fmt.Errorf("Student not on roll at this time.")
-	case err != nil:
+	s, err := db.loadStudent(upn, f)
+	if err != nil {
 		return student.Student{}, err
 	}
-	s.SEN = sen
-	s.KS2 = ks2
 
 	// Set Attainment 8 data - based on KS2.APS
 	att8, exists := db.Attainment8[f.NatYear][selectProgress8(s.KS2.APS)]
@@ -49,6 +36,30 @@ func (db Database) Student(upn string, f Filter) (student.Student, error) {
 	if err != nil {
 		return student.Student{}, err
 	}
+
+	return s, nil
+}
+
+// loadStudent loads up the basic student details and creates a Student object from them
+func (db Database) loadStudent(upn string, f Filter) (student.Student, error) {
+
+	row := db.stmts["student"].QueryRow(upn, f.Date)
+
+	s := student.Student{}
+	sen := student.SENInfo{}
+	ks2 := student.KS2Info{}
+	err := row.Scan(&s.UPN, &s.Surname, &s.Forename, &s.Year, &s.Form,
+		&s.PP, &s.EAL, &s.Gender, &s.Ethnicity, &sen.Status, &sen.Need,
+		&sen.Info, &sen.Strategies, &sen.Access, &sen.IEP, &ks2.APS,
+		&ks2.Band, &ks2.En, &ks2.Ma, &ks2.Av, &ks2.Re, &ks2.Wr, &ks2.GPS)
+	switch {
+	case err == sql.ErrNoRows:
+		return student.Student{}, fmt.Errorf("Student not on roll at this time.")
+	case err != nil:
+		return student.Student{}, err
+	}
+	s.SEN = sen
+	s.KS2 = ks2
 
 	return s, nil
 }

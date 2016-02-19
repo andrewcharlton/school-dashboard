@@ -5,16 +5,12 @@
 <div class="row">
   <div class="col-sm-3"></div>
   <div class="col-sm-6">
-	{{if .Results}}
 	{{ $q := .Query }}
 	<ul class="list-group">
-	  {{range .Students}}
+	  {{ range .Group.Students }}
 	  <a class="list-group-item" href="/students/{{.UPN}}/?{{$q}}">{{.Name}}	 ({{.Year}} {{.Form}})</a>
 	  {{end}}
 	</ul>
-	{{else}}
-	<p class="text-info">No results found.</p>
-	{{end}}
   </div>
   <div class="col-sm-3"></div>
 </div>

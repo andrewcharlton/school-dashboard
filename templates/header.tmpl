@@ -28,8 +28,9 @@
 		  <a class="navbar-brand" href="/index/?{{.Query}}">{{.School}}</a>
 		</div>
 
-		<form class="navbar-form navbar-right form-horizontal" action="/studentsearch/" role="search">
+		<form class="navbar-form navbar-right form-horizontal" action="/search/" role="search">
 		  {{with .F}}
+		  <input type="text" name="natyear" value="{{.NatYear}}" style="display: none;">
 		  <input type="text" name="date" value="{{.Date}}" style="display: none;">
 		  <input type="text" name="resultset" value="{{.Resultset}}" style="display: none;">
 		  {{end}}

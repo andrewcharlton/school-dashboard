@@ -10,28 +10,15 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func SearchRedirect(e env.Env) http.HandlerFunc {
-
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		query := r.URL.Query()
-		name := query.Get("name")
-		url := "/search/" + name + "/?" + r.URL.RawQuery
-
-		http.Redirect(w, r, url, 301)
-	}
-}
-
+// Search returns a student search page
 func Search(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+		if redir := checkRedirect(e, w, r, 0); redir {
 			return
 		}
-
-		Header(e, w, r)
-		FilterPage(e, w, r, true)
-		defer Footer(e, w, r)
+		header(e, w, r, 0)
+		defer footer(e, w, r)
 
 		name := ""
 		path := strings.Split(r.URL.Path, "/")
@@ -43,7 +30,7 @@ func Search(e env.Env) http.HandlerFunc {
 		}
 
 		f := GetFilter(e, r)
-		list, err := e.DB.Search(name, f.Date)
+		list, err := e.Search(name, f.Date)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return

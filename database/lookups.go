@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
+	"github.com/andrewcharlton/school-dashboard/analysis/group"
 )
 
 // CurrentWeek looks up the name of the latest week, as used
@@ -81,4 +83,32 @@ func (db Database) LookupNatYear(id string) (string, error) {
 		return "", fmt.Errorf("National data not found with id: %v", id)
 	}
 	return ny, nil
+}
+
+// Search returns a list of students who's names match the search string
+func (db Database) Search(name string, f Filter) (group.Group, error) {
+
+	name = "%" + strings.Replace(name, "*", "%", -1) + "%"
+	rows, err := db.stmts["search"].Query(f.Date, name, name)
+	if err == sql.ErrNoRows {
+		return group.Group{}, fmt.Errorf("No students called %v found", name)
+	}
+	if err != nil {
+		return group.Group{}, err
+	}
+	defer rows.Close()
+
+	upns := []string{}
+	for rows.Next() {
+		var upn string
+		err := rows.Scan(&upn)
+		if err != nil {
+			return group.Group{}, err
+		}
+		upns = append(upns, upn)
+	}
+
+	fmt.Println(upns)
+
+	return db.basicGroup(upns, f)
 }

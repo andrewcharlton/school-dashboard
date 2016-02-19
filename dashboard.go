@@ -47,8 +47,7 @@ func main() {
 	clientMux.HandleFunc("/subjectgroups/", handlers.SubjectGroups(env))
 	//clientMux.HandleFunc("/classlist/", handlers.ClassList(env))
 	//clientMux.HandleFunc("/students/", handlers.Student(env))
-	//clientMux.HandleFunc("/studentsearch/", handlers.SearchRedirect(env))
-	//clientMux.HandleFunc("/search/", handlers.Search(env))
+	clientMux.HandleFunc("/search/", handlers.Search(env))
 	go func() {
 		http.ListenAndServe(":8080", clientMux)
 	}()

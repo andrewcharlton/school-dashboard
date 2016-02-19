@@ -657,8 +657,9 @@ var allTemplates = map[string]string{
 		  <a class="navbar-brand" href="/index/?{{.Query}}">{{.School}}</a>
 		</div>
 
-		<form class="navbar-form navbar-right form-horizontal" action="/studentsearch/" role="search">
+		<form class="navbar-form navbar-right form-horizontal" action="/search/" role="search">
 		  {{with .F}}
+		  <input type="text" name="natyear" value="{{.NatYear}}" style="display: none;">
 		  <input type="text" name="date" value="{{.Date}}" style="display: none;">
 		  <input type="text" name="resultset" value="{{.Resultset}}" style="display: none;">
 		  {{end}}
@@ -1573,16 +1574,12 @@ $(function () {
 <div class="row">
   <div class="col-sm-3"></div>
   <div class="col-sm-6">
-	{{if .Results}}
 	{{ $q := .Query }}
 	<ul class="list-group">
-	  {{range .Students}}
+	  {{ range .Group.Students }}
 	  <a class="list-group-item" href="/students/{{.UPN}}/?{{$q}}">{{.Name}}	 ({{.Year}} {{.Form}})</a>
 	  {{end}}
 	</ul>
-	{{else}}
-	<p class="text-info">No results found.</p>
-	{{end}}
   </div>
   <div class="col-sm-3"></div>
 </div>

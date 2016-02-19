@@ -82,6 +82,23 @@ func (db Database) group(upns []string, f Filter) (group.Group, error) {
 	return group.Group{students}, nil
 }
 
+// basicGroup returns a list of students based upon the supplied
+// filters. Only the basic student details are loaded - no results/classes etc.
+func (db Database) basicGroup(upns []string, f Filter) (group.Group, error) {
+
+	students := []student.Student{}
+
+	for _, upn := range upns {
+		student, err := db.loadStudent(upn, f)
+		if err != nil {
+			return group.Group{}, err
+		}
+		students = append(students, student)
+	}
+
+	return group.Group{students}, nil
+}
+
 // getUPNs queries the database and returns a list of UPNs from
 func (db Database) getUPNs(query string) ([]string, error) {
 

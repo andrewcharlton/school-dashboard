@@ -46,6 +46,11 @@ func checkRedirect(e env.Env, w http.ResponseWriter, r *http.Request, detail int
 			switch key {
 			case "natyear", "date", "resultset", "year":
 				continue
+			case "name":
+				if detail == 1 {
+					del = append(del, key)
+					redirect = true
+				}
 			default:
 				del = append(del, key)
 				redirect = true
