@@ -13,15 +13,13 @@ import (
 
 // These functions provide pages to select a subject/class for analysis etc.
 // Expects URL path in the form:
-// /basepath/*subject name*/*subject id*/*class name*/?*query*
-
+// /basepath/subjID/
 // Produce page to pick a subject from
 func selectSubject(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
 	if redir := checkRedirect(e, w, r, 0); redir {
 		return
 	}
-
 	header(e, w, r, 0)
 	defer footer(e, w, r)
 
@@ -180,6 +178,69 @@ func selectClass(e env.Env, w http.ResponseWriter, r *http.Request, heading stri
 	}
 
 	err = e.Templates.ExecuteTemplate(w, "select-class.tmpl", data)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+	}
+
+}
+
+// Produce page to pick a class from
+func selectYear(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
+
+	if redir := checkRedirect(e, w, r, 0); redir {
+		return
+	}
+	header(e, w, r, 0)
+	defer footer(e, w, r)
+
+	// Assume subject name and subj_id are last two parts of the path
+	path := strings.Split(r.URL.Path, "/")
+	subject := path[2]
+	subjID, err := strconv.Atoi(path[3])
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+	level := e.Subjects[subjID].Lvl
+
+	f := getFilter(e, r)
+	classes, err := e.Classes(path[3], f.Date)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+	}
+
+	data := struct {
+		Heading  string
+		Subject  string
+		Level    string
+		Years    []string
+		Queries  map[string]template.URL
+		BasePath template.URL
+		Path     template.URL
+		Query    template.URL
+	}{
+		heading,
+		subject,
+		level,
+		[]string{},
+		map[string]template.URL{},
+		template.URL("/" + path[1]),
+		template.URL(r.URL.Path),
+		template.URL(r.URL.RawQuery),
+	}
+
+	data.Years = []string{}
+	for _, year := range []string{"7", "8", "9", "10", "11"} {
+		for _, class := range classes {
+			if strings.HasPrefix(class, year) {
+				data.Years = append(data.Years, year)
+				data.Queries[year] = template.URL(changeYear(r.URL.Query(), year))
+				break
+			}
+		}
+	}
+
+	err = e.Templates.ExecuteTemplate(w, "select-year.tmpl", data)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 	}

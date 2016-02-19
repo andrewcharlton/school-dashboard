@@ -1162,16 +1162,43 @@ $(function () {
 <div class="row">
   <div class="col-sm-3"></div>
   <div class="col-sm-6">
-	{{ $p := .Path }}
-	{{ $q := .Query }}
+  {{ $p := .Path }}
+  {{ $q := .Query }}
+  <ul class="list-group">
+    {{ range .Subjects }}
+    <a class="list-group-item" href="{{ $p }}/{{.}}/?{{ $q }}">{{.}}</a>
+    {{ end }}
+  </ul>
+  </div>
+  <div class="col-sm-3"></div>
+</div>
+
+`,
+
+"select-year.tmpl" : `
+<h2>{{.Heading}}</h2>
+
+<ul class="breadcrumb">
+  <li><a href="{{.BasePath}}/?{{.Query}}">Subjects</a></li>
+  <li><a href="{{.BasePath}}/{{.Subject}}/?{{.Query}}">{{.Subject}}</a></li>
+  <li class="active">{{.Level}}</li>
+</ul>
+
+{{ $p := .Path }}
+{{ $q := .Queries }}
+
+<div class="row">
+  <div class="col-sm-3"></div>
+  <div class="col-sm-6">
 	<ul class="list-group">
-	  {{ range .Subjects }}
-	  <a class="list-group-item" href="{{ $p }}/{{.}}/?{{ $q }}">{{.}}</a>
+	  {{ range .Years }}
+	  <a class="list-group-item" href="{{ $p }}/All Year {{.}}/?{{ index $q . }}">Year {{.}}</a>
 	  {{ end }}
 	</ul>
   </div>
   <div class="col-sm-3"></div>
 </div>
+
 `,
 
 "student.tmpl" : `
@@ -1601,6 +1628,17 @@ one or more characters.</p>
   </div>
   <div class="col-sm-1"></div>
 </div>
+`,
+
+"subjectgroups.tmpl" : `
+<h2>{{ .Subject.Subj }}: Group Summary</h2>
+<br>
+
+<div class="row">
+  <div class="col-sm-1"></div>
+  <div class="col-sm=10">
+	<h3>All Classes</h3>
+
 `,
 
 }
