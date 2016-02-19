@@ -4,6 +4,11 @@
 {{end}}
 {{ end }}
 
+{{ define "PP" }}
+  {{ if . }}<span class="glyphicon glyphicon-star" style="color:#ff9900;"></span>
+  {{ end }}
+{{ end }}
+
 {{ define "StudentAttendance" }}
   {{ if gt . 0.95 }}<span class="text-success">{{ Percent . 1}}</span>
   {{ else if lt . 0.90 }}<span class="text-danger">{{ Percent . 1}}</span>

@@ -32,8 +32,8 @@ func EnglishAndMaths(e env.Env) http.HandlerFunc {
 
 		groups := []group.Group{{}, {}, {}, {}}
 		for _, s := range g.Students {
-			eng := s.EBaccEng().Achieved
-			maths := s.EBaccMaths().Achieved
+			eng := s.EBaccArea("E").Achieved
+			maths := s.EBaccArea("M").Achieved
 			switch {
 			case eng && maths:
 				groups[2].Students = append(groups[2].Students, s)

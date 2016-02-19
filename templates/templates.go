@@ -254,6 +254,11 @@ var allTemplates = map[string]string{
 {{end}}
 {{ end }}
 
+{{ define "PP" }}
+  {{ if . }}<span class="glyphicon glyphicon-star" style="color:#ff9900;"></span>
+  {{ end }}
+{{ end }}
+
 {{ define "StudentAttendance" }}
   {{ if gt . 0.95 }}<span class="text-success">{{ Percent . 1}}</span>
   {{ else if lt . 0.90 }}<span class="text-danger">{{ Percent . 1}}</span>
@@ -274,6 +279,109 @@ var allTemplates = map[string]string{
   {{ else }}<span class="text-warning">{{ printf "%+.2f" . }}</span>
   {{ end }}
 {{ end }}
+`,
+
+"ebacc.tmpl" : `
+{{ define "EBaccResult" }}
+  {{ if .Entered }}
+	{{ template "TickCross" .Achieved }}
+  {{ end }}
+{{ end }}
+
+{{ $g := .Group }}
+{{ $q := .Query }}
+{{ $areas := .Areas }}
+
+<h2>English Baccalaureate</h2>
+<br>
+
+<div class="row">
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
+	<h3>Summary</h3>
+	<table class="table table-condensed table-striped table-hover">
+	  <thead>
+		<th>&nbsp;</th>
+		<th style="text-align:center;">English</th>
+		<th style="text-align:center;">Maths</th>
+		<th style="text-align:center;">Science</th>
+		<th style="text-align:center;">Humanities</th>
+		<th style="text-align:center;">Language</th>
+		<th style="text-align:center;">EBacc</th>
+	  </thead>
+	  <tbody>
+		<tr>
+		  <td>Entered</td>
+		  {{ range $a := .Areas }}
+			<td style="text-align:center;">{{ ($g.EBaccArea $a).Entered }}</td>
+		  {{ end }}
+		  <td style="text-align:center;">{{ $g.EBacc.Entered }}</td>
+		</tr>
+		<tr>
+		  <td>Achieved</td>
+		  {{ range $a := .Areas }}
+			<td style="text-align:center;">{{ ($g.EBaccArea $a).Achieved }}</td>
+		  {{ end }}
+		  <td style="text-align:center;">{{ $g.EBacc.Achieved }}</td>
+		</tr>
+		<tr>
+		  <td>% of Cohort Achieved</td>
+		  {{ range $a := .Areas }}
+			<td style="text-align:center;">{{ Percent ($g.EBaccArea $a).PctCohort 1 }}</td>
+		  {{ end }}
+		  <td style="text-align:center;">{{ Percent $g.EBacc.PctCohort 1 }}</td>
+		</tr>
+		<tr>
+		  <td>% of Entries Achieved</td>
+		  {{ range $a := .Areas }}
+			<td style="text-align:center;">{{ Percent ($g.EBaccArea $a).PctEntries 1 }}</td>
+		  {{ end }}
+		  <td style="text-align:center;">{{ Percent $g.EBacc.PctEntries 1 }}</td>
+		</tr>
+		</body>
+	</table>
+	<br>
+
+	<h3>Students</h3>
+	<br>
+	<p>A tick/cross indicates whether a student achieved a pass in that area. A blank indicates the
+	student was not entered for that area.</p>
+	<br>
+	<table class="table table-condensed table-striped table-hover sortable">
+	  <thead>
+		<th>Name</th>
+		<th style="text-align:center;">KS2</th>
+		<th style="text-align:center;">Gender</th>
+		<th style="text-align:center;">PP</th>
+		<th style="text-align:center;">English</th>
+		<th style="text-align:center;">Maths</th>
+		<th style="text-align:center;">Science</th>
+		<th style="text-align:center;">Humanities</th>
+		<th style="text-align:center;">Language</th>
+		<th style="text-align:center;">EBacc</th>
+		<th style="text-align:center;">Attendance</th>
+	  </thead>
+	  <tbody>
+		{{ $q := .Query }}
+		{{ $areas := .Areas }}
+		{{ range $s := .Group.Students }}
+		  <tr>
+			<td><a href="/students/{{ $s.UPN }}/?{{ $q }}">{{ $s.Name }}</a></td>
+			<td style="text-align:center;">{{ $s.KS2.Av }}</td>
+			<td style="text-align:center;">{{ $s.Gender }}</td>
+			<td style="text-align:center;">{{ template "PP" $s.PP }}</td>
+			{{ range $a := $areas }}
+			  <td style="text-align:center;">{{ template "EBaccResult" ($s.EBaccArea $a) }}</td>
+			{{ end }}
+			<td style="text-align:center;">{{ template "EBaccResult" $s.EBacc}}</td>
+			<td style="text-align:center;">{{ template "StudentAttendance" $s.Attendance.Latest }}</td>
+		  </tr>
+		{{ end }}
+	  </tbody>
+	</table>
+  </div>
+  <div class="col-sm-1"></div>
+</div>
 `,
 
 "effort.tmpl" : `
@@ -313,7 +421,7 @@ var allTemplates = map[string]string{
 `,
 
 "em.tmpl" : `
-<h3>English and Maths</h3>
+<h2>English and Maths</h2>
 <br>
 
 <div class="row">
@@ -699,9 +807,11 @@ var allTemplates = map[string]string{
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Whole School <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu">
 			  <li><a href="/progress8/?{{.Query}}">Progress 8</a></li>
-			  <li><a href="/basics/?{{.Query}}">English and Maths</a></li>
-			  <li class="disabled"><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
 			  <li><a href="/progress8groups/?{{.Query}}">Progress 8 Groups</a></li>
+			  <li class="divider"></li>
+			  <li><a href="/basics/?{{.Query}}">English and Maths</a></li>
+			  <li><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
+			  <li><a href="/attainmentgroups/?{{.Query}}">Attainment Groups</a></li>
 			  <li class="divider"></li>
 			  <li><a href="/attendancegroups/?{{.Query}}">Attendance Summary</a></li>
 			  <li><a href="/attendance/?{{.Query}}">Attendance Explorer</a></li>
@@ -727,15 +837,7 @@ var allTemplates = map[string]string{
   </td>
 {{ end }}
 
-<div class="row">
-  <div class="col-sm-10">
-	<h3>Progress 8</h3>
-  </div>
-  <div class="col-sm-2">
-	<a href="/export/headlines/?{{ .Query }}"><h5><span class="glyphicon glyphicon-download"> Download</span></h5></a>
-  </div>
-</div>
-
+<h2>Progress 8</h2>
 <br>
 
 <div width="100%" id="chart"></div>
@@ -1365,35 +1467,36 @@ $(function () {
 	</thead>
 	<tbody>
 
-	  {{ with .EBaccEng }}
+	  {{ with .EBaccArea "E" }}
 		<tr>
 		  <td>English</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Achieved }}</td>
 		</tr>
 	  {{ end }}
-	  {{ with .EBaccMaths }}
+
+	  {{ with .EBaccArea "M" }}
 		<tr>
 		  <td>Mathematics</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Achieved }}</td>
 		</tr>
 	  {{ end }}
-	  {{ with .EBaccSci }}
+	  {{ with .EBaccArea "S" }}
 		<tr>
 		  <td>Science</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Achieved }}</td>
 		</tr>
 	  {{ end }}
-	  {{ with .EBaccHum }}
+	  {{ with .EBaccArea "H" }}
 		<tr>
 		  <td>Humanities</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Achieved }}</td>
 		</tr>
 	  {{ end }}
-	  {{ with .EBaccLang }}
+	  {{ with .EBaccArea "L" }}
 		<tr>
 		  <td>Languages</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>

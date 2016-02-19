@@ -1,5 +1,7 @@
 package group
 
+import "github.com/andrewcharlton/school-dashboard/analysis/student"
+
 // A Result has
 type Result struct {
 	Ent int
@@ -43,4 +45,61 @@ func (g Group) Basics() Result {
 		return Result{Ent: 0, Ach: 0, Pct: 0.0}
 	}
 	return Result{Ent: entered, Ach: passes, Pct: float64(passes) / float64(entered)}
+}
+
+// An EBacc summary contains the details of how many students in a cohort
+// entered/achieved the various elements of the EBacc, and the associated
+// percentages.
+type EBaccSummary struct {
+	Entered    int
+	Achieved   int
+	PctCohort  float64
+	PctEntries float64
+}
+
+// EBaccArea provides a summary of the group's performance in one
+// element of the EBacc
+func (g Group) EBaccArea(area string) EBaccSummary {
+
+	return g.ebaccSummary(area)
+}
+
+// EBacc provides a summary of the group's performance across the
+// whole EBacc.
+func (g Group) EBacc() EBaccSummary {
+
+	return g.ebaccSummary("")
+}
+
+func (g Group) ebaccSummary(area string) EBaccSummary {
+
+	if len(g.Students) == 0 {
+		return EBaccSummary{0, 0, 0.0, 0.0}
+	}
+
+	entered, achieved := 0, 0
+	for _, s := range g.Students {
+		var r student.EBaccResult
+		switch area {
+		case "":
+			r = s.EBacc()
+		default:
+			r = s.EBaccArea(area)
+		}
+		if r.Entered {
+			entered++
+		}
+		if r.Achieved {
+			achieved++
+		}
+	}
+
+	if entered == 0 {
+		return EBaccSummary{0, 0, 0.0, 0.0}
+	}
+
+	return EBaccSummary{entered, achieved,
+		float64(achieved) / float64(len(g.Students)),
+		float64(achieved) / float64(entered),
+	}
 }

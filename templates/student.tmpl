@@ -151,35 +151,36 @@
 	</thead>
 	<tbody>
 
-	  {{ with .EBaccEng }}
+	  {{ with .EBaccArea "E" }}
 		<tr>
 		  <td>English</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Achieved }}</td>
 		</tr>
 	  {{ end }}
-	  {{ with .EBaccMaths }}
+
+	  {{ with .EBaccArea "M" }}
 		<tr>
 		  <td>Mathematics</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Achieved }}</td>
 		</tr>
 	  {{ end }}
-	  {{ with .EBaccSci }}
+	  {{ with .EBaccArea "S" }}
 		<tr>
 		  <td>Science</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Achieved }}</td>
 		</tr>
 	  {{ end }}
-	  {{ with .EBaccHum }}
+	  {{ with .EBaccArea "H" }}
 		<tr>
 		  <td>Humanities</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Achieved }}</td>
 		</tr>
 	  {{ end }}
-	  {{ with .EBaccLang }}
+	  {{ with .EBaccArea "L" }}
 		<tr>
 		  <td>Languages</td>
 		  <td style="text-align:center;">{{ template "TickCross" .Entered }}</td>
