@@ -67,6 +67,7 @@
 	  <thead>
 		<th>Name</th>
 		<th style="text-align:center;">KS2</th>
+		<th style="text-align:center;">Gender</th>
 		<th style="text-align:center;">PP</th>
 		<th style="text-align:center;">Entries</th>
 		<th style="text-align:center;">Attainment 8</th>
@@ -83,11 +84,8 @@
 		<tr>
 		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
 		  <td style="text-align:center;">{{ .KS2.Av }}</td>
-		  <td style="text-align:center;">
-			{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
-			{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
-			{{end}}
-		  </td>
+		  <td style="text-align:center;">{{ .Gender }}</td>
+		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
 
 		  {{ with .Basket }}
 		  {{ with .Overall }}

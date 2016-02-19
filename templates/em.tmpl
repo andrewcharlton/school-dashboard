@@ -45,41 +45,45 @@
 	  {{ range $n, $g := .Groups }}
 		{{ if eq $n 0 }}
 		  <div class="tab-pane fade active in" id="{{ $n }}">
-		  {{ else }}
-			<div class="tab-pane fade" id="{{ $n }}">
+		{{ else }}
+		  <div class="tab-pane fade" id="{{ $n }}">
+		{{ end }}
+		<br>
+		<table class="table table-condensed table-striped table-hover sortable">
+		  <thead>
+			<th>Name</th>
+			<th style="text-align:center;">KS2</th>
+			<th style="text-align:center;">Gender</th>
+			<th style="text-align:center;">PP</th>
+			<th style="text-align:center;">Language</th>
+			<th style="text-align:center;">Literature</th>
+			<th style="text-align:center;">Maths</th>
+			<th style="text-align:center;">Progress 8</th>
+			<th style="text-align:center;">Attendance</th>
+		  </thead>
+		  <tbody>
+			{{ range $g.Students }}
+			  <tr>
+				<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+				<td style="text-align:center;">{{ .KS2.Av }}</td>
+				<td style="text-align:center;">{{ .Gender }}</td>
+				<td style="text-align:center;">{{ template "PP" .PP }}</td>
+				<td style="text-align:center;">{{ .SubjectGrade "English" }}</td>
+				<td style="text-align:center;">{{ .SubjectGrade "English Literature" }}</td>
+				<td style="text-align:center;">{{ .SubjectGrade "Mathematics" }}</td>
+				<td style="text-align:center;">{{ template "StudentProgress8" .Basket.Overall.Progress8 }}</td>
+				<td style="text-align:center;">{{ template "StudentAttendance" .Attendance.Latest }}</td>
+			  </tr>
 			{{ end }}
-			<br>
-			<table class="table table-condensed table-striped table-hover sortable">
-			  <thead>
-				<th>Name</th>
-				<th style="text-align:center;">KS2</th>
-				<th style="text-align:center;">Language</th>
-				<th style="text-align:center;">Literature</th>
-				<th style="text-align:center;">Maths</th>
-				<th style="text-align:center;">Progress 8</th>
-				<th style="text-align:center;">Attendance</th>
-			  </thead>
-			  <tbody>
-				{{ range $g.Students }}
-				  <tr>
-					<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
-					<td style="text-align:center;">{{ .KS2.Av }}</td>
-					<td style="text-align:center;">{{ .SubjectGrade "English" }}</td>
-					<td style="text-align:center;">{{ .SubjectGrade "English Literature" }}</td>
-					<td style="text-align:center;">{{ .SubjectGrade "Mathematics" }}</td>
-					<td style="text-align:center;">{{ template "StudentProgress8" .Basket.Overall.Progress8 }}</td>
-					<td style="text-align:center;">{{ template "StudentAttendance" .Attendance.Latest }}</td>
-				  </tr>
-				{{ end }}
-			  </tbody>
-			</table>
-			</div>
-		  {{ end }}
-		  </div>
-
+		  </tbody>
+		</table>
+		</div>
+	  {{ end }}
 	</div>
-	<div class="col-sm-1"></div>
+
   </div>
+  <div class="col-sm-1"></div>
+</div>
 
 
 

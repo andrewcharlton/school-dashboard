@@ -102,7 +102,7 @@
 		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
 		  <td style="text-align:center;">{{ .Year }}</td>
 		  <td style="text-align:center;">{{ .Gender }}</td>
-		  <td style="text-align:center;">{{ template "TickCross" .PP }}</td>
+		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
 		  <td style="text-align:center;">{{ .KS2.Av }}</td>
 		  {{ with .Attendance }}
 		  <td style="text-align:center;">{{ .Possible }}</td>
