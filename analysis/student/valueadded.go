@@ -17,12 +17,17 @@ func (va VAScore) Score() float64 {
 }
 
 // SubjectVa calculates the Value Added score for a student in a particular subject.
-// VA is expredded
-func (s Student) SubjectVA(subject string) VAScore {
+// VA is expressed in terms of grades above/below where we would expect students to be.
+func (s Student) SubjectVA(subj string) VAScore {
 
-	r, exists := s.Results[subject]
+	// Hacky ks3 - remove later
+	if s.Year == 7 || s.Year == 8 || s.Year == 9 {
+		return s.ks3VA(subj)
+	}
+
+	r, exists := s.Results[subj]
 	if !exists {
-		return VAScore{Err: fmt.Errorf("No Result for %v in %v found", s.Name(), subject)}
+		return VAScore{Err: fmt.Errorf("No Result for %v in %v found", s.Name(), subj)}
 	}
 
 	ks2 := s.KS2.Score(r.KS2Prior)
@@ -32,7 +37,7 @@ func (s Student) SubjectVA(subject string) VAScore {
 
 	tm, exists := r.Subject.TMs[s.natYear]
 	if !exists {
-		return VAScore{Err: fmt.Errorf("No TM for %v in %v", subject, s.natYear)}
+		return VAScore{Err: fmt.Errorf("No TM for %v in %v", subj, s.natYear)}
 	}
 
 	exp, err := tm.Expected(ks2)
