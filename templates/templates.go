@@ -267,6 +267,13 @@ var allTemplates = map[string]string{
   {{ else }}<span class="text-warning">{{ printf "%+.2f" . }}</span>
   {{ end }}
 {{ end }}
+
+{{ define "StudentProgress8" }}
+  {{ if gt . 0.2 }}<span class="text-success">{{ printf "%+.2f" . }}</span>
+  {{ else if lt . -0.2 }}<span class="text-danger">{{ printf "%+.2f" . }}</span>
+  {{ else }}<span class="text-warning">{{ printf "%+.2f" . }}</span>
+  {{ end }}
+{{ end }}
 `,
 
 "effort.tmpl" : `
@@ -316,30 +323,23 @@ var allTemplates = map[string]string{
 
 	<table class="table table-hover">
 	  <thead>
-		<th></th>
-		<th style='text-align:center;vertical-align:middle'>Number</th>
-		<th style='text-align:center;vertical-align:middle'>Percent</th>
+		<th>&nbsp;</th>
+		{{ range .Names }}
+		  <th style="text-align:center;">{{ . }}</th>
+		{{ end }}
 	  </thead>
 	  <tbody>
 		<tr>
-		  <td>Cohort</td>
-		  <td style='text-align:center;vertical-align:middle'>{{.Cohort}}</td>
-		  <td style='text-align:center;vertical-align:middle'></td>
+		  <td>Students</td>
+		  {{ range .Groups }}
+			<td style="text-align:center;">{{ len .Students }}</td>
+		  {{ end }}
 		</tr>
 		<tr>
-		  <td>English</td>
-		  <td style='text-align:center;vertical-align:middle'>{{.EnPass}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.f" .EnPassPct}}</td>
-		</tr>
-		<tr>
-		  <td>Mathematics</td>
-		  <td style='text-align:center;vertical-align:middle'>{{.MaPass}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.f" .MaPassPct}}</td>
-		</tr>
-		<tr>
-		  <td>Both</td>
-		  <td style='text-align:center;vertical-align:middle'>{{.BothPass}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.f" .BothPassPct}}</td>
+		  <td>Percentage</td>
+		  {{ range .Pcts }}
+			<td style="text-align:center;">{{ Percent . 1 }}</td>
+		  {{ end }}
 		</tr>
 	  </tbody>
 	</table>
@@ -348,42 +348,55 @@ var allTemplates = map[string]string{
 
 	<h4>Students</h4>
 
-	<table class="table table-condensed table-striped table-hover sortable">
-	  <thead>
-		<th>Name</th>
-		<th>KS2</th>
-		<th style='text-align:center;vertical-align:middle'>Eng Grade</th>
-		<th style='text-align:center;vertical-align:middle'>Eng Effort</th>
-		<th style='text-align:center;vertical-align:middle'>Maths Grade</th>
-		<th style='text-align:center;vertical-align:middle'>Maths Effort</th>
-		<th style='text-align:center;vertical-align:middle'>Both</th>
-		<th style='text-align:center;vertical-align:middle'>Av Effort</th>
-		<th style='text-align:center;vertical-align:middle'>Progress 8</th>
-		<th style='text-align:center;vertical-align:middle'>Attendance</th>
-	  </thead>
-	  <tbody>
-		{{ $q := .Query }}
-		{{ range .Students }}
-		<tr>
-		  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
-		  <td style='text-align:center;vertical-align:middle'>{{.KS2.Av}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{.EnGrd}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{.EnEff}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{.MaGrd}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{.MaEff}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{if .Basics}}<span style="color: #009933;">Y</span>
-			{{else}}<span style="color: #cc0000;">N</span>
-			{{end}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.1f" .AvEff}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.2f" .P8}}</td>
-		  <td style='text-align:center;vertical-align:middle'>{{printf "%1.1f" .Att}}%</td>
-		</tr>
-		{{ end }}
-	  </tbody>
-	  <table>
+	<ul class="nav nav-tabs">
+	  {{ range $n, $name := .Names }}
+		<li {{if eq $n 0}}class="active"{{end}}><a href="#{{ $n }}" data-toggle="tab" aria-expanded="{{if eq $n 0}}true{{else}}false{{end}}">{{ $name }}</a></li>
+	  {{ end }}
+	</ul>
+
+	{{ $names := .Names }}
+	{{ $q := .Query }}
+	<div id="EMGroupPanes" class="tab-content">
+	  {{ range $n, $g := .Groups }}
+		{{ if eq $n 0 }}
+		  <div class="tab-pane fade active in" id="{{ $n }}">
+		  {{ else }}
+			<div class="tab-pane fade" id="{{ $n }}">
+			{{ end }}
+			<br>
+			<table class="table table-condensed table-striped table-hover sortable">
+			  <thead>
+				<th>Name</th>
+				<th style="text-align:center;">KS2</th>
+				<th style="text-align:center;">Language</th>
+				<th style="text-align:center;">Literature</th>
+				<th style="text-align:center;">Maths</th>
+				<th style="text-align:center;">Progress 8</th>
+				<th style="text-align:center;">Attendance</th>
+			  </thead>
+			  <tbody>
+				{{ range $g.Students }}
+				  <tr>
+					<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+					<td style="text-align:center;">{{ .KS2.Av }}</td>
+					<td style="text-align:center;">{{ .SubjectGrade "English" }}</td>
+					<td style="text-align:center;">{{ .SubjectGrade "English Literature" }}</td>
+					<td style="text-align:center;">{{ .SubjectGrade "Mathematics" }}</td>
+					<td style="text-align:center;">{{ template "StudentProgress8" .Basket.Overall.Progress8 }}</td>
+					<td style="text-align:center;">{{ template "StudentAttendance" .Attendance.Latest }}</td>
+				  </tr>
+				{{ end }}
+			  </tbody>
+			</table>
+			</div>
+		  {{ end }}
+		  </div>
+
+	</div>
+	<div class="col-sm-1"></div>
   </div>
-  <div class="col-sm-1"></div>
-</div>
+
+
 
 `,
 
@@ -685,8 +698,6 @@ var allTemplates = map[string]string{
 		  <li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Whole School <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu">
-			  <li class="disabled"><a href="/summary/?{{.Query}}">Summary</a></li>
-			  <li class="divider"></li>
 			  <li><a href="/progress8/?{{.Query}}">Progress 8</a></li>
 			  <li><a href="/basics/?{{.Query}}">English and Maths</a></li>
 			  <li class="disabled"><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
@@ -694,8 +705,6 @@ var allTemplates = map[string]string{
 			  <li class="divider"></li>
 			  <li><a href="/attendancegroups/?{{.Query}}">Attendance Summary</a></li>
 			  <li><a href="/attendance/?{{.Query}}">Attendance Explorer</a></li>
-			  <li class="divider"></li> 
-			  <li><a href="/effort/?{{.Query}}">Effort</a></li>
 			</ul>
 		  </li>
 		</ul>
@@ -1268,21 +1277,21 @@ $(function () {
   <table class="table table-condensed table-hover sortable">
 	<thead>
 	  <th>Subject</th>
-	  <th>Level</th>
-	  <th>Grade</th>
-	  <th>Effort</th>
-	  <th>Class</th>
-	  <th>Teacher</th>
+	  <th style="text-align:center;">Level</th>
+	  <th style="text-align:center;">Grade</th>
+	  <th style="text-align:center;">Effort</th>
+	  <th style="text-align:center;">Class</th>
+	  <th style="text-align:center;">Teacher</th>
 	</thead>
 	<tbody>
 	  {{range .Results}}
 		<tr>
 		  <td>{{.Subj}}</td>
-		  <td>{{.Lvl}}</td>
-		  <td>{{.Grd}}</td>
-		  <td>{{.Effort}}</td>
-		  <td>{{.Class}}</td>
-		  <td>{{.Teacher}}</td>
+		  <td style="text-align:center;">{{.Lvl}}</td>
+		  <td style="text-align:center;">{{.Grd}}</td>
+		  <td style="text-align:center;">{{.Effort}}</td>
+		  <td style="text-align:center;">{{.Class}}</td>
+		  <td style="text-align:center;">{{.Teacher}}</td>
 		</tr>
 	  {{end}}
 	</tbody>
@@ -1291,7 +1300,7 @@ $(function () {
 
 {{ define "StudentHeadlinesPane" }}
   <br>
-  <h4>Headline Figures</h4>
+  <h4>Headline Figures</h4><br>
   <table class="table table-condensed table-hover">
 	<tbody>
 	  <tr>
@@ -1310,7 +1319,7 @@ $(function () {
 	</tbody>
   </table>
 
-  <h4>Progress 8</h4>
+  <h4>Progress 8</h4><br>
   <table class="table table-condensed table-hover">
 	<thead>
 	  <th>Basket</th>
@@ -1347,7 +1356,7 @@ $(function () {
 	</tbody>
   </table>
 
-  <h4>EBacc</h4>
+  <h4>EBacc</h4><br>
   <table class="table table-condensed table-hover">
 	<thead>
 	  <th>Area</th>

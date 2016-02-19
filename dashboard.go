@@ -36,8 +36,7 @@ func main() {
 	clientMux.HandleFunc("/", handlers.Index(env))
 	clientMux.HandleFunc("/attendance/", handlers.AttendanceExplorer(env))
 	clientMux.HandleFunc("/attendancegroups/", handlers.AttendanceGroups(env))
-	//	clientMux.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
-	//clientMux.HandleFunc("/headlines/", handlers.Headlines(env))
+	clientMux.HandleFunc("/basics/", handlers.EnglishAndMaths(env))
 	clientMux.HandleFunc("/progress8/", handlers.Progress8(env))
 	clientMux.HandleFunc("/progress8groups/", handlers.Progress8Groups(env))
 	//clientMux.HandleFunc("/effort/", handlers.Effort(env))
@@ -45,7 +44,6 @@ func main() {
 	clientMux.HandleFunc("/subjects/", handlers.SubjectOverview(env))
 	clientMux.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
 	clientMux.HandleFunc("/subjectgroups/", handlers.SubjectGroups(env))
-	//clientMux.HandleFunc("/classlist/", handlers.ClassList(env))
 	clientMux.HandleFunc("/student/", handlers.Student(env))
 	clientMux.HandleFunc("/search/", handlers.Search(env))
 	go func() {
