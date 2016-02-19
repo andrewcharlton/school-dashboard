@@ -46,7 +46,7 @@ func main() {
 	clientMux.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
 	clientMux.HandleFunc("/subjectgroups/", handlers.SubjectGroups(env))
 	//clientMux.HandleFunc("/classlist/", handlers.ClassList(env))
-	//clientMux.HandleFunc("/students/", handlers.Student(env))
+	clientMux.HandleFunc("/student/", handlers.Student(env))
 	clientMux.HandleFunc("/search/", handlers.Search(env))
 	go func() {
 		http.ListenAndServe(":8080", clientMux)

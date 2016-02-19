@@ -8,7 +8,7 @@
 	{{ $q := .Query }}
 	<ul class="list-group">
 	  {{ range .Group.Students }}
-	  <a class="list-group-item" href="/students/{{.UPN}}/?{{$q}}">{{.Name}}	 ({{.Year}} {{.Form}})</a>
+	  <a class="list-group-item" href="/student/{{.UPN}}/?{{$q}}">{{.Name}}	 ({{.Year}} {{.Form}})</a>
 	  {{end}}
 	</ul>
   </div>

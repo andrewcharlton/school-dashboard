@@ -31,24 +31,31 @@ func (s Student) Basics() bool {
 	return eng && maths
 }
 
+// An EBaccResult wraps the results from the EBacc calculations so
+// they can be used directly in a template.
+type EBaccResult struct {
+	Entered  bool
+	Achieved bool
+}
+
 // EBacc calculates whether a student is eligible for the EBacc
 // and whether or not they have achieved it.
-func (s Student) EBacc() (bool, bool) {
+func (s Student) EBacc() EBaccResult {
 
-	eEng, aEng := s.EBaccEng()
-	eMat, aMat := s.EBaccMaths()
-	eSci, aSci := s.EBaccSci()
-	eHum, aHum := s.EBaccHum()
-	eLan, aLan := s.EBaccLang()
-	entered := eEng && eMat && eSci && eHum && eLan
-	achieved := aEng && aMat && aSci && aHum && aLan
-	return entered, achieved
+	e := s.EBaccEng()
+	m := s.EBaccMaths()
+	c := s.EBaccSci()
+	h := s.EBaccHum()
+	l := s.EBaccLang()
+	entered := e.Entered && m.Entered && c.Entered && h.Entered && l.Entered
+	achieved := e.Achieved && m.Achieved && c.Achieved && h.Achieved && l.Achieved
+	return EBaccResult{entered, achieved}
 
 }
 
 // EBaccEng calculates whether a student has achieved a level
 // 2 pass in the English section of the EBacc
-func (s Student) EBaccEng() (bool, bool) {
+func (s Student) EBaccEng() EBaccResult {
 
 	entLang, entLit := false, false
 	achLang, achLit := false, false
@@ -72,12 +79,12 @@ func (s Student) EBaccEng() (bool, bool) {
 			}
 		}
 	}
-	return entLang && entLit, achLang && achLit
+	return EBaccResult{entLang && entLit, achLang && achLit}
 }
 
 // EBaccSci calculates whether or not a student was entered for/
 // achieved two Science qualifications
-func (s Student) EBaccSci() (bool, bool) {
+func (s Student) EBaccSci() EBaccResult {
 
 	entries, passes := 0, 0
 	for _, r := range s.Results {
@@ -88,29 +95,29 @@ func (s Student) EBaccSci() (bool, bool) {
 			}
 		}
 	}
-	return entries >= 2, passes >= 2
+	return EBaccResult{entries >= 2, passes >= 2}
 }
 
 // EBaccMaths calculates whether or not a student was entered for/
 // achieved a Mathematics qualification.
-func (s Student) EBaccMaths() (bool, bool) {
+func (s Student) EBaccMaths() EBaccResult {
 	return s.ebaccArea("M")
 }
 
 // EBaccLang calculates whether or not a student was entered for/
 // achieved a Language qualification.
-func (s Student) EBaccLang() (bool, bool) {
+func (s Student) EBaccLang() EBaccResult {
 	return s.ebaccArea("L")
 }
 
 // EBaccHum calculates whether or not a student was entered for/
 // achieved a Humanities qualification.
-func (s Student) EBaccHum() (bool, bool) {
+func (s Student) EBaccHum() EBaccResult {
 	return s.ebaccArea("H")
 }
 
 // ebaccArea helper function
-func (s Student) ebaccArea(area string) (bool, bool) {
+func (s Student) ebaccArea(area string) EBaccResult {
 
 	ent, ach := false, false
 	for _, r := range s.Results {
@@ -122,5 +129,5 @@ func (s Student) ebaccArea(area string) (bool, bool) {
 			}
 		}
 	}
-	return ent, ach
+	return EBaccResult{ent, ach}
 }
