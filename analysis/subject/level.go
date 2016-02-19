@@ -1,6 +1,9 @@
 package subject
 
-import "sort"
+import (
+	"math"
+	"sort"
+)
 
 // A Level brings together the details and grades
 // of a particular qualification level.
@@ -49,4 +52,25 @@ func (l Level) SortedGrades() []string {
 	}
 
 	return names
+}
+
+// GradeEquivalent returns the nearest grade
+func (l Level) GradeEquivalent(points float64) string {
+
+	// By doing it sorted, should get closer and then further away again.
+	// As soon as points difference starts to deviate again, return the equivalent
+	// grade
+	minDiff := float64(10000)
+	grade := ""
+	for _, g := range l.SortedGrades() {
+		diff := math.Abs(points - float64(l.Gradeset[g].Pts))
+		if diff < minDiff {
+			minDiff = diff
+			grade = g
+		}
+		if diff > minDiff {
+			return grade
+		}
+	}
+	return ""
 }

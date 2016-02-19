@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"sort"
 
 	"github.com/andrewcharlton/school-dashboard/analysis/group"
 	"github.com/andrewcharlton/school-dashboard/analysis/subject"
@@ -39,7 +40,6 @@ func SubjectOverview(e env.Env) http.HandlerFunc {
 		}
 
 		summaries := subjSummaries{}
-
 		for _, subj := range e.Subjects {
 			subGroup := g.SubGroup(group.Studying(subj.Subj, subj.SubjID))
 			if len(subGroup.Students) == 0 {
@@ -47,6 +47,7 @@ func SubjectOverview(e env.Env) http.HandlerFunc {
 			}
 			summaries = append(summaries, subjSummary{subj, subGroup})
 		}
+		sort.Sort(summaries)
 
 		data := struct {
 			Query     template.URL

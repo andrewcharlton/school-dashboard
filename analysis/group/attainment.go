@@ -7,6 +7,26 @@ type Result struct {
 	Pct float64
 }
 
+// AveragePoints returns the average number of points achieved in
+// a subject.
+func (g Group) AveragePoints(subj string) float64 {
+
+	total, cohort := 0, 0
+	for _, s := range g.Students {
+		r, exists := s.Results[subj]
+		if !exists {
+			continue
+		}
+		total += r.Pts
+		cohort++
+	}
+
+	if cohort == 0 {
+		return 0.0
+	}
+	return float64(total) / float64(cohort)
+}
+
 // Basics calculates the percentages of students in the group
 // achieving a Level 2 Pass in both English and Maths,
 func (g Group) Basics() Result {

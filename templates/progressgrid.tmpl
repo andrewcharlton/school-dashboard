@@ -62,8 +62,8 @@
 		<th style="text-align:center;">{{ . }} </th>
 	  {{ end }}
 	{{ end }}
+	  <th style="text-align:center;">{{ .Group.Cohort }}</th>
 	{{ with .Group.SubjectVA .Subject }}
-	  <th style="text-align:center;">{{ .Cohort }}</th>
 	  <th style="text-align:center;">{{ printf "%.2f" .VA }}</th>
 
 	{{ end }}

@@ -35,3 +35,21 @@ func (g Group) KS2Bands() map[string]int {
 
 	return count
 }
+
+// PP returns the percentage of students who are in
+// receipt of pupil premium
+func (g Group) PP() float64 {
+
+	if len(g.Students) == 0 {
+		return 0.0
+	}
+
+	pp := 0
+	for _, s := range g.Students {
+		if s.PP {
+			pp++
+		}
+	}
+
+	return float64(pp) / float64(len(g.Students))
+}

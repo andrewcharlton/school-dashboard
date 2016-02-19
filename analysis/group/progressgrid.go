@@ -26,8 +26,6 @@ func (g Group) SubjectVA(subj string) VASummary {
 		}
 	}
 
-	fmt.Println(cohort, total)
-
 	if cohort == 0 {
 		return VASummary{0, 0.0, fmt.Errorf("No students with VA scores present.")}
 	}

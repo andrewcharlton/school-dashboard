@@ -41,6 +41,17 @@ func Form(form string) func(s student.Student) bool {
 	return func(s student.Student) bool { return s.Form == form }
 }
 
+// Studying returns a subgroup filter for students studying a particular subject.
+func Studying(subj string, subjID int) func(s student.Student) bool {
+	return func(s student.Student) bool {
+		r, exists := s.Results[subj]
+		if !exists {
+			return false
+		}
+		return r.SubjID == subjID
+	}
+}
+
 // Class returns a subgroup filter for a certain subject/class combination
 func Class(subject, class string) func(s student.Student) bool {
 	return func(s student.Student) bool {
