@@ -13,7 +13,7 @@ func ExportHeadlines(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// Produce summary with only year group info
-		if redir := checkRedirect(e, queryOpts{true, false}, w, r); redir {
+		if redir := checkRedirect(e, w, r, 1); redir {
 			return
 		}
 
@@ -22,7 +22,7 @@ func ExportHeadlines(e env.Env) http.HandlerFunc {
 		disp := fmt.Sprintf(`inline; filename="Headlines %d-%02d-%02d.xlsx"`, y, m, d)
 		w.Header().Set("Content-Disposition", disp)
 
-		f := GetFilter(e, r)
+		f := getFilter(e, r)
 
 		err := spreadsheets.Headlines(e, f, w)
 		if err != nil {
