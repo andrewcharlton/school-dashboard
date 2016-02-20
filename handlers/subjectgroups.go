@@ -13,6 +13,8 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
+// SubjectGroups produces a page with a breakdown of how the various student
+// groups are progressing in a subject.
 func SubjectGroups(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

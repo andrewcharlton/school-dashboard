@@ -48,7 +48,7 @@ func (g Group) Basics() Result {
 	return Result{entered, passes, float64(passes) / float64(entered)}
 }
 
-// An EBacc summary contains the details of how many students in a cohort
+// An EBaccsummary contains the details of how many students in a cohort
 // entered/achieved the various elements of the EBacc, and the associated
 // percentages.
 type EBaccSummary struct {

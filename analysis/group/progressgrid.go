@@ -111,7 +111,7 @@ func (g Group) ProgressGrid(subject *subject.Subject, natYear string) ProgressGr
 		rowVA[ks2ID] += s.SubjectVA(subject.Subj).Score()
 	}
 
-	for n, _ := range ks2Levels {
+	for n := range ks2Levels {
 		if cohorts[n] > 0 {
 			rowVA[n] /= float64(cohorts[n])
 		}
