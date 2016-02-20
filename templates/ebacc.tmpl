@@ -1,0 +1,100 @@
+{{ define "EBaccResult" }}
+  {{ if .Entered }}
+	{{ template "TickCross" .Achieved }}
+  {{ end }}
+{{ end }}
+
+{{ $g := .Group }}
+{{ $q := .Query }}
+{{ $areas := .Areas }}
+
+<h2>English Baccalaureate</h2>
+<br>
+
+<div class="row">
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
+	<h3>Summary</h3>
+	<table class="table table-condensed table-striped table-hover">
+	  <thead>
+		<th>&nbsp;</th>
+		<th style="text-align:center;">English</th>
+		<th style="text-align:center;">Maths</th>
+		<th style="text-align:center;">Science</th>
+		<th style="text-align:center;">Humanities</th>
+		<th style="text-align:center;">Language</th>
+		<th style="text-align:center;">EBacc</th>
+	  </thead>
+	  <tbody>
+		<tr>
+		  <td>Entered</td>
+		  {{ range $a := .Areas }}
+			<td style="text-align:center;">{{ ($g.EBaccArea $a).Entered }}</td>
+		  {{ end }}
+		  <td style="text-align:center;">{{ $g.EBacc.Entered }}</td>
+		</tr>
+		<tr>
+		  <td>Achieved</td>
+		  {{ range $a := .Areas }}
+			<td style="text-align:center;">{{ ($g.EBaccArea $a).Achieved }}</td>
+		  {{ end }}
+		  <td style="text-align:center;">{{ $g.EBacc.Achieved }}</td>
+		</tr>
+		<tr>
+		  <td>% of Cohort Achieved</td>
+		  {{ range $a := .Areas }}
+			<td style="text-align:center;">{{ Percent ($g.EBaccArea $a).PctCohort 1 }}</td>
+		  {{ end }}
+		  <td style="text-align:center;">{{ Percent $g.EBacc.PctCohort 1 }}</td>
+		</tr>
+		<tr>
+		  <td>% of Entries Achieved</td>
+		  {{ range $a := .Areas }}
+			<td style="text-align:center;">{{ Percent ($g.EBaccArea $a).PctEntries 1 }}</td>
+		  {{ end }}
+		  <td style="text-align:center;">{{ Percent $g.EBacc.PctEntries 1 }}</td>
+		</tr>
+		</body>
+	</table>
+	<br>
+
+	<h3>Students</h3>
+	<br>
+	<p>A tick/cross indicates whether a student achieved a pass in that area. A blank indicates the
+	student was not entered for that area.</p>
+	<br>
+	<table class="table table-condensed table-striped table-hover sortable">
+	  <thead>
+		<th>Name</th>
+		<th style="text-align:center;">KS2</th>
+		<th style="text-align:center;">Gender</th>
+		<th style="text-align:center;">PP</th>
+		<th style="text-align:center;">English</th>
+		<th style="text-align:center;">Maths</th>
+		<th style="text-align:center;">Science</th>
+		<th style="text-align:center;">Humanities</th>
+		<th style="text-align:center;">Language</th>
+		<th style="text-align:center;">EBacc</th>
+		<th style="text-align:center;">Attendance</th>
+	  </thead>
+	  <tbody>
+		{{ $q := .Query }}
+		{{ $areas := .Areas }}
+		{{ range $s := .Group.Students }}
+		  <tr>
+			<td><a href="/students/{{ $s.UPN }}/?{{ $q }}">{{ $s.Name }}</a></td>
+			<td style="text-align:center;">{{ $s.KS2.Av }}</td>
+			<td style="text-align:center;">{{ $s.Gender }}</td>
+			<td style="text-align:center;">{{ template "PP" $s.PP }}</td>
+			{{ range $a := $areas }}
+			  <td style="text-align:center;">{{ template "EBaccResult" ($s.EBaccArea $a) }}</td>
+			{{ end }}
+			<td style="text-align:center;">{{ template "EBaccResult" $s.EBacc}}</td>
+			<td style="text-align:center;">{{ template "StudentAttendance" $s.Attendance.Latest }}</td>
+		  </tr>
+		{{ end }}
+	  </tbody>
+	</table>
+  </div>
+  <div class="col-sm-1"></div>
+</div>

@@ -2,83 +2,96 @@ package handlers
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/analysis/groups"
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/analysis/group"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-// TODO: Attendance Explorer
-// Historical browser
-// week browser
-
-type attData struct {
-	Cohort       int
-	Possible     int
-	Absences     int
-	Unauthorised int
-	Under85      int
-	Under90      int
-}
-
-func (a attData) PctAttendance() float64 {
-
-	if a.Possible == 0 {
-		return 0.0
-	}
-	return 100.0 - 100.0*float64(a.Absences)/float64(a.Possible)
-}
-
-func Attendance(e database.Env) http.HandlerFunc {
+// AttendanceGroup summary pages
+func AttendanceGroups(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+		if redir := checkRedirect(e, w, r, 0); redir {
 			return
 		}
+		header(e, w, r, 0)
+		defer footer(e, w, r)
 
-		Header(e, w, r)
-		FilterPage(e, w, r, true)
-		defer Footer(e, w, r)
-
-		f := GetFilter(e, r)
-		g, err := e.DB.GroupByFilter(f)
+		f := getFilter(e, r)
+		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
 		}
 
-		attGroups := map[string]attData{}
-		headers := []string{}
-		for _, grp := range groups.YearGroups {
-			headers = append(headers, grp.Name)
+		type YearGroup struct {
+			Name   string
+			Query  template.URL
+			Groups []subGroup
 		}
 
-		for _, s := range g.Students {
-			for _, grp := range groups.YearGroups {
-				if grp.Contains(s) {
-					a := attGroups[grp.Name]
-					a.Cohort++
-					a.Possible += s.Attendance.Possible
-					a.Absences += s.Attendance.Absences
-					a.Unauthorised += s.Attendance.Unauthorised
-					switch {
-					case s.Attendance.Latest() < 85.0:
-						a.Under85++
-						a.Under90++
-					case s.Attendance.Latest() < 90.0:
-						a.Under90++
-					}
-					attGroups[grp.Name] = a
-				}
-			}
-		}
+		// Ignore error - will appear as blank string anyway
+		week, _ := e.CurrentWeek()
 
 		data := struct {
-			Headers   []string
-			AttGroups map[string]attData
+			Week       string
+			Query      template.URL
+			YearGroups []YearGroup
 		}{
-			headers,
-			attGroups,
+			week,
+			template.URL(r.URL.RawQuery),
+			[]YearGroup{{"All Years", template.URL(""), subGroups(g)}},
+		}
+
+		for year := 7; year < 15; year++ {
+			y := g.SubGroup(group.Year(year))
+			if len(y.Students) == 0 {
+				continue
+			}
+			yeargroup := YearGroup{fmt.Sprintf("Year %v", year),
+				template.URL(fmt.Sprintf("&year=%v", year)),
+				subGroups(y)}
+			data.YearGroups = append(data.YearGroups, yeargroup)
+		}
+
+		err = e.Templates.ExecuteTemplate(w, "attendancegroups.tmpl", data)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+		}
+	}
+}
+
+// AttendanceExplorer provides a page for exploring the attendance figures
+// in more detail, and examine individual students.
+func AttendanceExplorer(e env.Env) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		if redir := checkRedirect(e, w, r, 2); redir {
+			return
+		}
+
+		header(e, w, r, 2)
+		defer footer(e, w, r)
+
+		f := getFilter(e, r)
+		g, err := e.GroupByFilter(f)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+			return
+		}
+
+		week, _ := e.CurrentWeek()
+
+		data := struct {
+			Query template.URL
+			Week  string
+			Group group.Group
+		}{
+			template.URL(r.URL.RawQuery),
+			week,
+			g,
 		}
 
 		err = e.Templates.ExecuteTemplate(w, "attendance.tmpl", data)

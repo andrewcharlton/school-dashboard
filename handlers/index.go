@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func Index(e database.Env) http.HandlerFunc {
+func Index(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		Header(e, w, r)
-		FilterPage(e, w, r, false)
-		defer Footer(e, w, r)
+		header(e, w, r, 0)
+		defer footer(e, w, r)
 
 		fmt.Fprintln(w, `<h3>Venerable Bede Data Analysis</h3><br>
 					 Please choose an option from the menu bar.<br>

@@ -1,40 +1,122 @@
-<h2>Attendance</h2>
+{{ define "AttendanceHeader" }}
+<th style="text-align:center;">Cohort</th>
+<th style="text-align:center;">This Week</th>
+<th style="text-align:center;">Possible</th>
+<th style="text-align:center;">Attendance %</th>
+<th style="text-align:center;">Authorised %</th>
+<th style="text-align:center;">Unauthorised %</th>
+<th style="text-align:center;">% PA</th>
+{{ end }}
+
+{{ define "AttendanceRow" }}
+<td style="text-align:center;">{{ .Cohort }}</td>
+<td style="text-align:center;">{{ Percent .Week 1}}</td>
+<td style="text-align:center;">{{ .Possible }}</td>
+<td style="text-align:center;">{{ Percent .PercentAttendance 1}}</td>
+<td style="text-align:center;">{{ Percent .PercentAuthorised 1}}</td>
+<td style="text-align:center;">{{ Percent .PercentUnauthorised 1}}</td>
+<td style="text-align:center;">{{ Percent .PercentPA 1}}</td>
+{{ end }}
+
+{{ define "AttendanceSessionTable" }}
+<table class="table table-condensed table-hover">
+  <thead>
+	<th>Session</th>
+	<th style='text-align:center;vertical-align:middle'>Monday</th>
+	<th style='text-align:center;vertical-align:middle'>Tuesday</th>
+	<th style='text-align:center;vertical-align:middle'>Wednesday</th>
+	<th style='text-align:center;vertical-align:middle'>Thursday</th>
+	<th style='text-align:center;vertical-align:middle'>Friday</th>
+  </thead>
+  <tbody>
+	<tr class="active">
+	  <td>Morning</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 0}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 2}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 4}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 6}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 8}}</td>
+	</tr>
+	<tr class="active">
+	  <td>Afternoon</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 1}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 3}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 5}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 7}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 9}}</td>
+	</tr>
+  </tbody>
+</table>
+{{ end }}
+
+<h2>Attendance Explorer</h2>
+<h4>Week Beginning {{ .Week }}</h4>
 <br>
 
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
-	<table class="table table-condensed table-hover">
+
+	{{ $q := .Query }}
+	{{ with .Group }}
+	<h3>Summary</h3>
+	<table class="table table-condensed table-striped table-hover">
 	  <thead>
-		<th>Group</th>
-		<th style="text-align:center;">Cohort</th>
+		{{ template "AttendanceHeader" }}
+	  </thead>
+	  <tbody>
+		<tr>
+		  {{ template "AttendanceRow" .Attendance }}
+		</tr>
+	  </tbody>
+	</table>
+	<br>
+
+	<h3>Absence Patterns</h3>
+	{{ template "AttendanceSessionTable" .Attendance }}
+	<br>
+
+	<h3>Students</h3>
+	<table class="table table-condensed table-striped table-hover">
+	  <thead>
+		<th>Name</th>
+		<th style="text-align:center;">Year</th>
+		<th style="text-align:center;">Gender</th>
+		<th style="text-align:center;">PP</th>
+		<th style="text-align:center;">KS2</th>
 		<th style="text-align:center;">Possible</th>
 		<th style="text-align:center;">Absences</th>
 		<th style="text-align:center;">Unauthorised</th>
 		<th style="text-align:center;">Attendance %</th>
-		<th style="text-align:center;">Under 85%</th>
-		<th style="text-align:center;">Under 90%</th>
+		<th style="text-align:center;">Week %</th>
 	  </thead>
 	  <tbody>
-		{{ $data := .AttGroups }}
-		{{ range .Headers }}
-		<tr>
-		  <td>{{ . }}</td>
-		  {{ with index $data . }}
-		  <td style="text-align:center;">{{ .Cohort }}</td>
+	  {{ range .Students }}
+		{{ with .Attendance }}
+		{{ if ge .Latest 0.95 }}<tr class="success">
+		{{ else if ge .Latest 0.90 }}<tr class="warning">
+		{{ else if eq .Possible 0 }}<tr>
+		{{ else }}<tr class="danger">
+		{{ end }}
+		{{ end }}
+		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+		  <td style="text-align:center;">{{ .Year }}</td>
+		  <td style="text-align:center;">{{ .Gender }}</td>
+		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
+		  <td style="text-align:center;">{{ .KS2.Av }}</td>
+		  {{ with .Attendance }}
 		  <td style="text-align:center;">{{ .Possible }}</td>
 		  <td style="text-align:center;">{{ .Absences }}</td>
 		  <td style="text-align:center;">{{ .Unauthorised }}</td>
-		  <td style="text-align:center;">{{ printf "%.1f" .PctAttendance }}</td>
-		  <td style="text-align:center;">{{ .Under85 }}</td>
-		  <td style="text-align:center;">{{ .Under90 }}</td>
+		  <td style="text-align:center;">{{ Percent .Latest 1}}</td>
+		  <td style="text-align:center;">{{ Percent .Week 1 }}</td>
 		  {{ end }}
 		</tr>
-		{{ end }}
+	  {{ end }}
 	  </tbody>
 	</table>
+
+	{{ end }}
   </div>
   <div class="col-sm-1"></div>
 </div>
-
-

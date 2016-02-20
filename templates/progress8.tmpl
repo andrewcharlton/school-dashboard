@@ -1,22 +1,28 @@
-<div class="row">
-  <div class="col-sm-9"><h2>Progress 8</h2></div>
-  <div class="col-sm-3">
-	<a href="/export/headlines/?{{.Query}}" class="btn btn-primary btn-sm pull-right">
-	  <span class="glyphicon glyphicon-download-alt"> Download</span>
-	</a>
-  </div>
-</div>
+{{ define "P8Block" }}
+  <td style="text-align:center;"
+	data-container="body"
+	data-toggle="popover"
+	data-placement="right"
+	data-html="true"
+	data-trigger="hover"
+	data-content="{{ range .Subjects }} {{.}}<br> {{ end }}">
+	{{printf "%+.2f" .Progress8 }}
+  </td>
+{{ end }}
 
+<h2>Progress 8</h2>
 <br>
 
 <div width="100%" id="chart"></div>
 
 <br>
 
+
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
 
+	{{ with .Group.Progress8 }}
 	<table class="table">
 	  <thead>
 		<th width="25%">&nbsp;</th>
@@ -29,30 +35,31 @@
 	  <tbody>
 		<tr>
 		  <td>Attainment 8</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%.2f" .Att8 }}</td>
+		  {{ range .Attainment }}
+		  <td style="text-align:center;">{{printf "%.2f" . }}</td>
 		  {{ end }}
 		</tr>
 		<tr>
 		  <td>Points per Slot</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%.2f" .Att8PerSlot }}</td>
+		  {{ range .AttainmentPerSlot }}
+		  <td style="text-align:center;">{{printf "%.2f" . }}</td>
 		  {{ end }}
 		</tr>
 		<tr>
 		  <td>Entries</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%.2f" .Entries }}</td>
+		  {{ range .Entries }}
+		  <td style="text-align:center;">{{printf "%.2f" . }}</td>
 		  {{ end }}
 		</tr>
 		<tr>
 		  <td>Progress 8</td>
-		  {{ range .Slots }}
-		  <td style="text-align:center;">{{printf "%+.2f" .Prog8 }}</td>
+		  {{ range .Progress }}
+		  <td style="text-align:center;">{{printf "%+.2f" . }}</td>
 		  {{ end }}
 		</tr>
 	  </tbody>
 	</table>
+	{{ end }}
 
 	<br>
 
@@ -60,7 +67,10 @@
 	  <thead>
 		<th>Name</th>
 		<th style="text-align:center;">KS2</th>
+		<th style="text-align:center;">Gender</th>
 		<th style="text-align:center;">PP</th>
+		<th style="text-align:center;">Entries</th>
+		<th style="text-align:center;">Attainment 8</th>
 		<th style="text-align:center;">English</th>
 		<th style="text-align:center;">Maths</th>
 		<th style="text-align:center;">EBacc</th>
@@ -70,25 +80,23 @@
 	  </thead>
 	  <tbody>
 		{{ $q := .Query }}
-		{{ range .Students }}
+		{{ range .Group.Students }}
 		<tr>
 		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
 		  <td style="text-align:center;">{{ .KS2.Av }}</td>
-		  <td style="text-align:center;">
-			{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
-			{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
-			{{end}}
-		  </td>
+		  <td style="text-align:center;">{{ .Gender }}</td>
+		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
 
-		  {{ range .Slots }}
-		  <td style="text-align:center;"
-		data-container="body"
-  data-toggle="popover"
-  data-placement="right"
-  data-html="true"
-  data-trigger="hover"
-  data-content="{{ .Text }}"> {{printf "%+.2f" .Prog8 }}
-		  </td>
+		  {{ with .Basket }}
+		  {{ with .Overall }}
+		  <td style="text-align:center;">{{printf "%v"  .Entries }}</td>
+		  <td style="text-align:center;">{{printf "%.1f"  .Attainment }}</td>
+		  {{ end }}
+		  {{ template "P8Block" .English }}
+		  {{ template "P8Block" .Maths }}
+		  {{ template "P8Block" .EBacc }}
+		  {{ template "P8Block" .Other }}
+		  {{ template "P8Block" .Overall }}
 		  {{ end }}
 
 		  <td style="text-align:center;">{{printf "%.1f"  .Attendance.Latest }}</td>
@@ -111,8 +119,8 @@ $(function () {
 
 <script>
 var national = {
-  x: [{{ range .GraphNat.X }}{{.}}, {{end}}], 
-  y: [{{ range .GraphNat.Y }}{{.}}, {{end}}], 
+  x: [{{ range .NatLine }}{{ .X }}, {{ end }}],
+  y: [{{ range .NatLine }}{{ .Y }}, {{ end }}],
   mode: 'lines',
   name: 'National',
   line: {shape: 'spline'},
@@ -120,53 +128,53 @@ var national = {
   hoverinfo: 'none',
 };
 
-{{ with index .GraphPupils 0 }}
+{{ with index .PupilData 0 }}
 var male_pp = {
-  x: [{{ range .X }}{{ . }}, {{ end }}],
-  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  x: [{{ range . }}{{ .X }}, {{ end }}],
+  y: [{{ range . }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
-  name: 'Male - Disadvantaged',
-  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  name: 'Male: Disadvantaged',
+  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
 {{ end }}
 
-{{ with index .GraphPupils 1 }}
+{{ with index .PupilData 1 }}
 var male_non = {
-  x: [{{ range .X }}{{ . }}, {{ end }}],
-  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  x: [{{ range . }}{{ .X }}, {{ end }}],
+  y: [{{ range . }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
-  name: 'Male - Non-Disadvantaged',
-  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  name: 'Male: Non-Disadvantaged',
+  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
 {{ end }}
 
-{{ with index .GraphPupils 2 }}
+{{ with index .PupilData 2 }}
 var female_pp = {
-  x: [{{ range .X }}{{ . }}, {{ end }}],
-  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  x: [{{ range . }}{{ .X }}, {{ end }}],
+  y: [{{ range . }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
-  name: 'Female - Disadvantaged',
-  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  name: 'Female: Disadvantaged',
+  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
 {{ end }}
 
-{{ with index .GraphPupils 3 }}
+{{ with index .PupilData 3 }}
 var female_non = {
-  x: [{{ range .X }}{{ . }}, {{ end }}],
-  y: [{{ range .Y }}{{ . }}, {{ end }}],
+  x: [{{ range . }}{{ .X }}, {{ end }}],
+  y: [{{ range . }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
-  name: 'Female - Non-Disadvantaged',
-  text: [{{ range .Text }}"{{.}}", {{ end }}],
+  name: 'Female: Non-Disadvantaged',
+  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };

@@ -16,95 +16,103 @@
 
 {{ $q := .Query }}
 
-{{ with .Grid }}
-{{ $g := .Grades }}
-{{ $c := .Cells }}
-{{ $va := .VA }}
-{{ $tm := .TMExists }}
+{{ with .ProgressGrid }}
+  {{ $cells := .Cells }}
+  {{ $cellVA := .CellVA }}
+  {{ $cohorts := .Cohorts }}
+  {{ $rowVA := .RowVA }}
 
-<table class="table table-condensed" style="table-layout:fixed;">
-  <thead>
-	<th>KS2</th>
-	{{ range .Grades }}
-	<th style="text-align:center;">{{.}}</th>
-	{{ end }}
-	<th style="text-align:center;">VA</th>
-  </thead>
-  <tbody>
-	{{ range .KS2 }}
-	{{ $ks2 := . }}
-	<tr>
-	  <td>{{.}}</td>
-	  {{ range $g }}
-	  {{ with index $c $ks2 . }}
-	  <td style="text-align:center; border:1px solid #888888"
-	   {{ if ge .VA 0.67 }}class="success"{{ end }}
-	   {{ if lt .VA -0.33 }}class="danger"{{ end }}
-	   {{ if (ge .VA -0.33) and (lt .VA 0.67) }}class="warning"{{ end }}
-	   {{ if eq (len .Students) 0 }}></td>
-	  {{ else }}
-	  data-container="body"
-	  data-toggle="popover"
-	  data-placement="right"
-	  title="VA {{if $tm}}{{printf "%0.2f" .VA}}{{end}}"
-	  data-html="true"
-	  data-trigger="hover click"
-	  data-content="{{range .Students}}
-	  <a href='/students/{{.UPN}}/?{{$q}}' target='_blank'>{{.Name}}</a><br>
-	  {{end}}"
-	  >{{len .Students}}</td>
-	{{ end }}
-	{{ end }}
-	{{ end }}
-	<td style="text-align:center;">{{printf "%+.2f" (index $va .)}}</td>
-	</tr>
-	{{ end }}
-  </tbody>
-  <tfoot>
-	<th>Total</th>
-	{{ $counts := .Counts }}
-	{{ range $g }}<th style="text-align:center;">{{ index $counts . }} </th>{{ end }}
-	<th style="text-align:center;">{{printf "%+.2f" .TotalVA }}</th>
-  </tfoot>
-</table>
+  <table class="table table-condensed" style="table-layout:fixed;">
+	<thead>
+	  <th>KS2</th>
+	  {{ range .Grades }}
+		<th style="text-align:center;">{{.}}</th>
+	  {{ end }}
+	  <th style="text-align:center;">Cohort</th>
+	  <th style="text-align:center;">VA</th>
+	</thead>
+	<tbody>
+	  {{ range $i, $ks2 := .KS2 }}
+		<tr>
+		  <td>{{ $ks2 }}</td>
+		  {{ with index $cells $i }}
+			{{ range $j, $c := . }}
+			  {{ $va := index $cellVA $i $j }}
+			  <td style="text-align:center; border:1px solid #888888"
+		 {{ if gt $va 0.67  }}class="success"
+		 {{ else if lt $va -0.33 }}class="danger"
+		 {{ else }}class="warning" {{ end }}
 
-{{ end }}
+		 {{ if eq (len $c.Students) 0 }}></td>
+			  {{ else }}
+				data-container="body"
+				data-toggle="popover"
+				data-placement="right"
+				title="VA {{ printf "%+.2f" $va }}"
+				data-html="true"
+				data-trigger="hover click"
+				data-content="{{range $c.Students}}
+				<a href='/students/{{.UPN}}/?{{$q}}' target='_blank'>{{.Name}}</a><br>
+			  {{end}}">
+			  {{ len $c.Students }}</td>
+		  {{ end }}
+		{{ end }}
+	  {{ end }}
+	  <td style="text-align:center;">{{ index $cohorts $i }}</td>
+	  <td style="text-align:center;">{{ printf "%+.2f" (index $rowVA $i) }}</td>
+		</tr>
+	  {{ end }}
+	</tbody>
+	<tfoot>
+	  <th>Total</th>
+	  {{ range .Counts }}
+		<th style="text-align:center;">{{ . }} </th>
+	  {{ end }}
+	{{ end }}
+	  <th style="text-align:center;">{{ .Group.Cohort }}</th>
+	{{ with .Group.SubjectVA .Subject }}
+	  <th style="text-align:center;">{{ printf "%.2f" .VA }}</th>
 
-<script>
+	{{ end }}
+	</tfoot>
+  </table>
+
+
+  <script>
 $(function () {
   $('[data-toggle="popover"]').popover()
 })
-</script>
+  </script>
 
-<br>
-<h4>Students</h4>
-<table class="table table-condensed table-striped table-hover sortable">
-  <thead>
-	<th>Name</th>
-	<th>Class</th>
-	<th style="text-align:center;">PP</th>
-	<th style="text-align:center;">KS2</th>
-	<th style="text-align:center;">Grade</th>
-	<th style="text-align:center;">Effort</th>
-	<th style="text-align:center;">Value Added</th>
-	<th style="text-align:center;">Attendance</th>
-  </thead>
-  <tbody>
-	{{range .Students}}
-	<tr>
-	  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
-	  <td>{{.Class}}</td>
-	  <td style="text-align:center;">
-		{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
-		{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
-		{{end}}
-	  </td>
-	  <td style="text-align:center;">{{.KS2}}</td>
-	  <td style="text-align:center;">{{.Grade}}</td>
-	  <td style="text-align:center;">{{.Effort}}</td>
-	  <td style="text-align:center;">{{if .VAExists}}{{printf "%.1f" .VA}}{{end}}</td>
-	  <td style="text-align:center;">{{printf "%.1f" .Attendance}}</td>
-	</tr>
-	{{end}}
-  </tbody>
-</table>
+  <br>
+  <h4>Students</h4>
+  <table class="table table-condensed table-striped table-hover sortable">
+	<thead>
+	  <th>Name</th>
+	  <th>Class</th>
+	  <th style="text-align:center;">KS2</th>
+	  <th style="text-align:center;">Gender</th>
+	  <th style="text-align:center;">PP</th>
+	  <th style="text-align:center;">Grade</th>
+	  <th style="text-align:center;">Effort</th>
+	  <th style="text-align:center;">Value Added</th>
+	  <th style="text-align:center;">Attendance</th>
+	</thead>
+	<tbody>
+	  {{ $subj := .Subject }}
+	  {{ $prior := .KS2Prior }}
+	  {{range .Group.Students}}
+		<tr>
+		  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+		  <td>{{ .Class $subj }}</td>
+		  <td style="text-align:center;">{{ .KS2.Score $prior }}</td>
+		  <td style="text-align:center;">{{ .Gender }}</td>
+		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
+		  <td style="text-align:center;">{{ .SubjectGrade $subj }}</td>
+		  <td style="text-align:center;">{{ .SubjectEffort $subj }}</td>
+		  <td style="text-align:center;">{{ template "StudentVA" (.SubjectVA $subj).Score }}</td>
+		  <td style="text-align:center;">{{ template "StudentAttendance" .Attendance.Latest }}</td>
+		</tr>
+	  {{end}}
+	</tbody>
+  </table>

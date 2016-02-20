@@ -8,28 +8,23 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
 // These functions provide pages to select a subject/class for analysis etc.
 // Expects URL path in the form:
-// /basepath/*subject name*/*subject id*/*class name*/?*query*
-
+// /basepath/subjID/
 // Produce page to pick a subject from
-func selectSubject(e database.Env, w http.ResponseWriter, r *http.Request, heading string) {
+func selectSubject(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
-	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+	if redir := checkRedirect(e, w, r, 0); redir {
 		return
 	}
-
-	Header(e, w, r)
-	FilterPage(e, w, r, true)
-	defer Footer(e, w, r)
-
-	subjects := e.DB.Subjects()
+	header(e, w, r, 0)
+	defer footer(e, w, r)
 
 	distinct := map[string]struct{}{}
-	for _, subj := range subjects {
+	for _, subj := range e.Subjects {
 		distinct[subj.Subj] = struct{}{}
 	}
 
@@ -68,9 +63,9 @@ func (s subjLevels) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s subjLevels) Less(i, j int) bool { return s[i].Level < s[j].Level }
 
 // Produce page to pick a level from
-func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading string) {
+func selectLevel(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
-	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+	if redir := checkRedirect(e, w, r, 0); redir {
 		return
 	}
 
@@ -79,7 +74,7 @@ func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading
 	subject := path[2]
 
 	levels := subjLevels{}
-	for id, s := range e.DB.Subjects() {
+	for id, s := range e.Subjects {
 		if s.Subj == subject {
 			levels = append(levels, subjLevel{id, s.Lvl})
 		}
@@ -93,9 +88,8 @@ func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading
 		return
 	}
 
-	Header(e, w, r)
-	FilterPage(e, w, r, true)
-	defer Footer(e, w, r)
+	header(e, w, r, 0)
+	defer footer(e, w, r)
 
 	data := struct {
 		Heading  string
@@ -120,15 +114,13 @@ func selectLevel(e database.Env, w http.ResponseWriter, r *http.Request, heading
 }
 
 // Produce page to pick a class from
-func selectClass(e database.Env, w http.ResponseWriter, r *http.Request, heading string) {
+func selectClass(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
 
-	if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
+	if redir := checkRedirect(e, w, r, 0); redir {
 		return
 	}
-
-	Header(e, w, r)
-	FilterPage(e, w, r, true)
-	defer Footer(e, w, r)
+	header(e, w, r, 0)
+	defer footer(e, w, r)
 
 	// Assume subject name and subj_id are last two parts of the path
 	path := strings.Split(r.URL.Path, "/")
@@ -138,10 +130,10 @@ func selectClass(e database.Env, w http.ResponseWriter, r *http.Request, heading
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-	level := e.DB.Subjects()[subjID].Lvl
+	level := e.Subjects[subjID].Lvl
 
-	f := GetFilter(e, r)
-	classes, err := e.DB.Classes(path[3], f.Date)
+	f := getFilter(e, r)
+	classes, err := e.Classes(path[3], f.Date)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 	}
@@ -181,11 +173,74 @@ func selectClass(e database.Env, w http.ResponseWriter, r *http.Request, heading
 	for _, year := range []string{"7", "8", "9", "10", "11"} {
 		if years[year] {
 			data.Years = append(data.Years, year)
-			data.Queries[year] = template.URL(ChangeYear(r.URL.Query(), year))
+			data.Queries[year] = template.URL(changeYear(r.URL.Query(), year))
 		}
 	}
 
 	err = e.Templates.ExecuteTemplate(w, "select-class.tmpl", data)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+	}
+
+}
+
+// Produce page to pick a class from
+func selectYear(e env.Env, w http.ResponseWriter, r *http.Request, heading string) {
+
+	if redir := checkRedirect(e, w, r, 0); redir {
+		return
+	}
+	header(e, w, r, 0)
+	defer footer(e, w, r)
+
+	// Assume subject name and subj_id are last two parts of the path
+	path := strings.Split(r.URL.Path, "/")
+	subject := path[2]
+	subjID, err := strconv.Atoi(path[3])
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+	level := e.Subjects[subjID].Lvl
+
+	f := getFilter(e, r)
+	classes, err := e.Classes(path[3], f.Date)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+	}
+
+	data := struct {
+		Heading  string
+		Subject  string
+		Level    string
+		Years    []string
+		Queries  map[string]template.URL
+		BasePath template.URL
+		Path     template.URL
+		Query    template.URL
+	}{
+		heading,
+		subject,
+		level,
+		[]string{},
+		map[string]template.URL{},
+		template.URL("/" + path[1]),
+		template.URL(r.URL.Path),
+		template.URL(r.URL.RawQuery),
+	}
+
+	data.Years = []string{}
+	for _, year := range []string{"7", "8", "9", "10", "11"} {
+		for _, class := range classes {
+			if strings.HasPrefix(class, year) {
+				data.Years = append(data.Years, year)
+				data.Queries[year] = template.URL(changeYear(r.URL.Query(), year))
+				break
+			}
+		}
+	}
+
+	err = e.Templates.ExecuteTemplate(w, "select-year.tmpl", data)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 	}

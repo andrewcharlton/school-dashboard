@@ -1,0 +1,23 @@
+<h2>{{.Heading}}</h2>
+
+<ul class="breadcrumb">
+  <li><a href="{{.BasePath}}/?{{.Query}}">Subjects</a></li>
+  <li><a href="{{.BasePath}}/{{.Subject}}/?{{.Query}}">{{.Subject}}</a></li>
+  <li class="active">{{.Level}}</li>
+</ul>
+
+{{ $p := .Path }}
+{{ $q := .Queries }}
+
+<div class="row">
+  <div class="col-sm-3"></div>
+  <div class="col-sm-6">
+	<ul class="list-group">
+	  {{ range .Years }}
+	  <a class="list-group-item" href="{{ $p }}/All Year {{.}}/?{{ index $q . }}">Year {{.}}</a>
+	  {{ end }}
+	</ul>
+  </div>
+  <div class="col-sm-3"></div>
+</div>
+

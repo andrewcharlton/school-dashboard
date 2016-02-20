@@ -1,0 +1,31 @@
+{{ define "TickCross" }}
+{{if .}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
+{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
+{{end}}
+{{ end }}
+
+{{ define "PP" }}
+  {{ if . }}<span class="glyphicon glyphicon-star" style="color:#ff9900;"></span>
+  {{ end }}
+{{ end }}
+
+{{ define "StudentAttendance" }}
+  {{ if gt . 0.95 }}<span class="text-success">{{ Percent . 1}}</span>
+  {{ else if lt . 0.90 }}<span class="text-danger">{{ Percent . 1}}</span>
+  {{ else }}<span class="text-warning">{{ Percent . 1}}</span>
+  {{ end }}
+{{ end }}
+
+{{ define "StudentVA" }}
+  {{ if gt . 0.67 }}<span class="text-success">{{ printf "%+.2f" . }}</span>
+  {{ else if lt . -0.33 }}<span class="text-danger">{{ printf "%+.2f" . }}</span>
+  {{ else }}<span class="text-warning">{{ printf "%+.2f" . }}</span>
+  {{ end }}
+{{ end }}
+
+{{ define "StudentProgress8" }}
+  {{ if gt . 0.2 }}<span class="text-success">{{ printf "%+.2f" . }}</span>
+  {{ else if lt . -0.2 }}<span class="text-danger">{{ printf "%+.2f" . }}</span>
+  {{ else }}<span class="text-warning">{{ printf "%+.2f" . }}</span>
+  {{ end }}
+{{ end }}

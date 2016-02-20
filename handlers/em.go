@@ -5,111 +5,68 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/andrewcharlton/school-dashboard/analysis"
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/analysis/group"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func EnglishAndMaths(e database.Env) http.HandlerFunc {
+type emList struct {
+	Name        string
+	Percentages []float64
+}
+
+func EnglishAndMaths(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if redir := checkRedirect(e, queryOpts{true, true}, w, r); redir {
+		if redir := checkRedirect(e, w, r, 2); redir {
 			return
 		}
+		header(e, w, r, 2)
+		defer footer(e, w, r)
 
-		Header(e, w, r)
-		FilterPage(e, w, r, false)
-		defer Footer(e, w, r)
-
-		f := GetFilter(e, r)
-		g, err := e.DB.GroupByFilter(f)
+		f := getFilter(e, r)
+		g, err := e.GroupByFilter(f)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
 		}
-		nat := e.Nationals[f.NatYear]
 
-		type student struct {
-			analysis.Student
-			EnGrd  string
-			EnEff  int
-			MaGrd  string
-			MaEff  int
-			Basics bool
-			AvEff  float64
-			P8     float64
-			Att    float64
+		groups := []group.Group{{}, {}, {}, {}}
+		for _, s := range g.Students {
+			eng := s.EBaccArea("E").Achieved
+			maths := s.EBaccArea("M").Achieved
+			switch {
+			case eng && maths:
+				groups[2].Students = append(groups[2].Students, s)
+			case eng:
+				groups[0].Students = append(groups[0].Students, s)
+			case maths:
+				groups[1].Students = append(groups[1].Students, s)
+			default:
+				groups[3].Students = append(groups[3].Students, s)
+			}
+		}
+
+		pcts := []float64{}
+		for _, grp := range groups {
+			pcts = append(pcts, float64(len(grp.Students))/float64(len(g.Students)))
 		}
 
 		data := struct {
-			Students    []student
-			Query       template.URL
-			Cohort      int
-			EnPass      int
-			MaPass      int
-			BothPass    int
-			EnPassPct   float64
-			MaPassPct   float64
-			BothPassPct float64
+			Query  template.URL
+			Names  []string
+			Groups []group.Group
+			Pcts   []float64
 		}{
-			Students: []student{},
-			Query:    template.URL(r.URL.RawQuery),
-		}
-
-		for _, s := range g.Students {
-			data.Cohort += 1
-			if s.Basics().AchB {
-				data.BothPass += 1
-			}
-
-			en, exists := s.Courses["English"]
-			var enGrd string
-			var enEff int
-			if exists {
-				enGrd = en.Grd
-				enEff = en.Effort
-				if en.L2Pass {
-					data.EnPass += 1
-				}
-			}
-
-			ma, exists := s.Courses["Mathematics"]
-			var maGrd string
-			var maEff int
-			if exists {
-				maGrd = ma.Grd
-				maEff = ma.Effort
-				if ma.L2Pass {
-					data.MaPass += 1
-				}
-			}
-
-			natP8, err := nat.Progress8(s.KS2.APS)
-			p8 := 0.0
-			if err == nil {
-				p8 = s.Basket().Progress8(natP8).Pts
-			}
-
-			data.Students = append(data.Students, student{s,
-				enGrd,
-				enEff,
-				maGrd,
-				maEff,
-				s.Basics().AchB,
-				s.Effort().Pts,
-				p8,
-				s.Attendance.Latest(),
-			})
-		}
-
-		if data.Cohort > 0 {
-			data.EnPassPct = float64(100) * float64(data.EnPass) / float64(data.Cohort)
-			data.MaPassPct = float64(100) * float64(data.MaPass) / float64(data.Cohort)
-			data.BothPassPct = float64(100) * float64(data.BothPass) / float64(data.Cohort)
+			template.URL(r.URL.RawQuery),
+			[]string{"English Only", "Mathematics Only", "English & Maths", "Neither"},
+			groups,
+			pcts,
 		}
 
 		err = e.Templates.ExecuteTemplate(w, "em.tmpl", data)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintf(w, "Error: %v", err)
 		}
 	}
+
 }

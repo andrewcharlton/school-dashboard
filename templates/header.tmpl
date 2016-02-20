@@ -16,6 +16,9 @@
 	<!-- Bootstrap -->
 	<link href="/static/css/bootstrap-spacelab.min.css" rel="stylesheet">
 
+	<!-- CSS Overrides -->
+	<link href="/static/css/custom.css" rel="stylesheet">
+
   </head>
   <body>
 
@@ -25,8 +28,9 @@
 		  <a class="navbar-brand" href="/index/?{{.Query}}">{{.School}}</a>
 		</div>
 
-		<form class="navbar-form navbar-right form-horizontal" action="/studentsearch/" role="search">
+		<form class="navbar-form navbar-right form-horizontal" action="/search/" role="search">
 		  {{with .F}}
+		  <input type="text" name="natyear" value="{{.NatYear}}" style="display: none;">
 		  <input type="text" name="date" value="{{.Date}}" style="display: none;">
 		  <input type="text" name="resultset" value="{{.Resultset}}" style="display: none;">
 		  {{end}}
@@ -40,11 +44,10 @@
 		  <li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Departments <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu">
-			  <li><a href="/subjects/?{{.Query}}">Summary</a></li>
+			  <li><a href="/subjects/?{{.Query}}">Summary List</a></li>
 			  <li class="divider"></li>
 			  <li><a href="/progressgrid/?{{.Query}}">Progress Grid</a></li>
-			  <li class="divider"></li>
-			  <li><a href="/classlist/?{{.Query}}">Class Lists</a></li>
+			  <li><a href="/subjectgroups/?{{.Query}}">Group Comparisons</a></li>
 			</ul>
 		  </li>
 		</ul>
@@ -53,14 +56,15 @@
 		  <li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Whole School <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu">
-			  <li class="disabled"><a href="/summary/?{{.Query}}">Summary</a></li>
-			  <li class="divider"></li>
 			  <li><a href="/progress8/?{{.Query}}">Progress 8</a></li>
-			  <li><a href="/basics/?{{.Query}}">English and Maths</a></li>
-			  <li class="disabled"><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
+			  <li><a href="/progress8groups/?{{.Query}}">Progress 8 Groups</a></li>
 			  <li class="divider"></li>
-			  <li><a href="/effort/?{{.Query}}">Effort</a></li>
-			  <li><a href="/attendance/?{{.Query}}">Attendance</a></li>
+			  <li><a href="/basics/?{{.Query}}">English and Maths</a></li>
+			  <li><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
+			  <li><a href="/attainmentgroups/?{{.Query}}">Attainment Groups</a></li>
+			  <li class="divider"></li>
+			  <li><a href="/attendancegroups/?{{.Query}}">Attendance Summary</a></li>
+			  <li><a href="/attendance/?{{.Query}}">Attendance Explorer</a></li>
 			</ul>
 		  </li>
 		</ul>

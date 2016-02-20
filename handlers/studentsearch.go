@@ -4,60 +4,33 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"strings"
 
-	"github.com/andrewcharlton/school-dashboard/database"
+	"github.com/andrewcharlton/school-dashboard/analysis/group"
+	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-func SearchRedirect(e database.Env) http.HandlerFunc {
-
+// Search returns a student search page
+func Search(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		query := r.URL.Query()
-		name := query.Get("name")
-		url := "/search/" + name + "/?" + r.URL.RawQuery
+		fmt.Println(r.URL.RawPath, r.URL.RawQuery)
 
-		http.Redirect(w, r, url, 301)
-	}
-}
+		header(e, w, r, 0)
+		defer footer(e, w, r)
 
-func Search(e database.Env) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+		name := r.URL.Query().Get("name")
 
-		if redir := checkRedirect(e, queryOpts{false, false}, w, r); redir {
-			return
-		}
-
-		Header(e, w, r)
-		FilterPage(e, w, r, true)
-		defer Footer(e, w, r)
-
-		name := ""
-		path := strings.Split(r.URL.Path, "/")
-		for i := len(path) - 1; i > 1; i-- {
-			if path[i] != "" {
-				name = path[i]
-				break
-			}
-		}
-
-		f := GetFilter(e, r)
-		list, err := e.DB.Search(name, f.Date)
-		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
-			return
-		}
+		f := getFilter(e, r)
+		g, err := e.Search(name, f)
 
 		data := struct {
-			Name     string
-			Query    template.URL
-			Results  bool
-			Students []database.StudentLookup
+			Query template.URL
+			Name  string
+			Group group.Group
 		}{
-			name,
 			template.URL(r.URL.RawQuery),
-			(len(list) > 0),
-			list,
+			name,
+			g,
 		}
 
 		err = e.Templates.ExecuteTemplate(w, "studentsearch.tmpl", data)
