@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" // database driver
 
 	"github.com/andrewcharlton/school-dashboard/analysis/student"
 	"github.com/andrewcharlton/school-dashboard/analysis/subject"

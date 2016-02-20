@@ -42,7 +42,7 @@ func checkRedirect(e env.Env, w http.ResponseWriter, r *http.Request, detail int
 	// If detail <= 1, remove any extra filters
 	if detail <= 1 {
 		del := []string{}
-		for key, _ := range query {
+		for key := range query {
 			switch key {
 			case "natyear", "date", "resultset", "year":
 				continue

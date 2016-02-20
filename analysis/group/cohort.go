@@ -29,8 +29,8 @@ func (g Group) KS2Bands() map[string]int {
 	count := map[string]int{}
 	total := 0
 	for _, s := range g.Students {
-		count[s.KS2.Band] += 1
-		total += 1
+		count[s.KS2.Band]++
+		total++
 	}
 
 	return count

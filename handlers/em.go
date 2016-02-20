@@ -14,6 +14,8 @@ type emList struct {
 	Percentages []float64
 }
 
+// EnglishAndMaths produces a summary page with the number/percentage
+// of students achieving passes in English and/or Maths.
 func EnglishAndMaths(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

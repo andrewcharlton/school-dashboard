@@ -3,10 +3,10 @@ package group
 import "github.com/andrewcharlton/school-dashboard/analysis/student"
 
 var (
-	// Disadvantaged students
+	// PP = Disadvantaged students
 	PP = func(s student.Student) bool { return s.PP }
 
-	// Non-Disadvantaged students
+	// NonPP = Non-Disadvantaged students
 	NonPP = func(s student.Student) bool { return !s.PP }
 
 	// Male students
@@ -24,10 +24,10 @@ var (
 	// Low attainin students at KS2
 	Low = func(s student.Student) bool { return s.KS2.Band == "Low" }
 
-	// Persistent absentees (less than 90% attendance)
+	// PA = Persistent absentees (less than 90% attendance)
 	PA = func(s student.Student) bool { return s.Attendance.Latest() < 0.9 }
 
-	// Students with greater than 90% attendance
+	// NonPA = Students with greater than 90% attendance
 	NonPA = func(s student.Student) bool { return s.Attendance.Latest() >= 0.9 }
 )
 

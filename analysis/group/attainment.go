@@ -2,11 +2,12 @@ package group
 
 import "github.com/andrewcharlton/school-dashboard/analysis/student"
 
-// A Result has
+// A Result contains the number of students that are eligible for, and
+// the number who achieved a particular measure.
 type Result struct {
-	Ent int
-	Ach int
-	Pct float64
+	Entered  int
+	Achieved int
+	Percent  float64
 }
 
 // AveragePoints returns the average number of points achieved in
@@ -42,9 +43,9 @@ func (g Group) Basics() Result {
 	}
 
 	if entered == 0 {
-		return Result{Ent: 0, Ach: 0, Pct: 0.0}
+		return Result{0, 0, 0.0}
 	}
-	return Result{Ent: entered, Ach: passes, Pct: float64(passes) / float64(entered)}
+	return Result{entered, passes, float64(passes) / float64(entered)}
 }
 
 // An EBacc summary contains the details of how many students in a cohort

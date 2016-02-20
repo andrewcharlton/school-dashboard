@@ -11,6 +11,7 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
+// ProgressGrid produces a page containing a progress grid for a subject
 func ProgressGrid(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

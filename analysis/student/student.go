@@ -1,3 +1,4 @@
+// Package student provides student-level calculations
 package student
 
 import "github.com/andrewcharlton/school-dashboard/analysis/subject"
@@ -46,7 +47,7 @@ func (s *Student) SetNationals(year string, att8 Attainment8, exists bool) {
 	s.natAtt8Exists = exists
 }
 
-// Gender: coded 0 = Female, 1 = Male
+// Gender coded as integer, Female = 0, Male = 1
 type Gender int
 
 // String converts the bool representation of the gender

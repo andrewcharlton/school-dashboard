@@ -9,7 +9,8 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
-// AttendanceGroup summary pages
+// AttendanceGroups produces a page with attendance summaries for the
+// various student groups.
 func AttendanceGroups(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

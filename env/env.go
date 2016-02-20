@@ -12,7 +12,7 @@ import (
 	"github.com/andrewcharlton/school-dashboard/templates"
 )
 
-// Environment variables
+// Env is a container for environment variables
 type Env struct {
 	database.Database
 	Templates *template.Template

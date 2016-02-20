@@ -7,6 +7,7 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
+// Index produces a landing page
 func Index(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

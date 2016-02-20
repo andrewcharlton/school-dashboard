@@ -9,6 +9,8 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
+// EBacc produces a page with summary figures of how the group
+// has achieved in the EBacc.
 func EBacc(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

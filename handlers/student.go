@@ -9,6 +9,8 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
+// Student produces a page for an individual student with all of their
+// details/results/attendance etc.
 func Student(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -28,7 +30,7 @@ func Student(e env.Env) http.HandlerFunc {
 		f := getFilter(e, r)
 		s, err := e.Student(upn, f)
 		if err != nil {
-			fmt.Fprintf(w, "Error: %", err)
+			fmt.Fprintf(w, "Error: %v", err)
 		}
 
 		data := struct {

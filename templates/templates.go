@@ -2,7 +2,7 @@ package templates
 
 var allTemplates = map[string]string{
 
-"attendance.tmpl" : `
+	"attendance.tmpl" : `
 {{ define "AttendanceHeader" }}
 <th style="text-align:center;">Cohort</th>
 <th style="text-align:center;">This Week</th>
@@ -127,7 +127,7 @@ var allTemplates = map[string]string{
 </div>
 `,
 
-"attendancegroups.tmpl" : `
+	"attendancegroups.tmpl" : `
 <h2>Attendance Group Summary</h2>
 <h4>Week Beginning {{ .Week }}</h4>
 <br>
@@ -187,7 +187,7 @@ var allTemplates = map[string]string{
 
 `,
 
-"common.tmpl" : `
+	"common.tmpl" : `
 {{ define "TickCross" }}
 {{if .}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
 {{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
@@ -221,7 +221,7 @@ var allTemplates = map[string]string{
 {{ end }}
 `,
 
-"ebacc.tmpl" : `
+	"ebacc.tmpl" : `
 {{ define "EBaccResult" }}
   {{ if .Entered }}
 	{{ template "TickCross" .Achieved }}
@@ -324,7 +324,7 @@ var allTemplates = map[string]string{
 </div>
 `,
 
-"em.tmpl" : `
+	"em.tmpl" : `
 <h2>English and Maths</h2>
 <br>
 
@@ -416,7 +416,7 @@ var allTemplates = map[string]string{
 
 `,
 
-"filter.tmpl" : `
+	"filter.tmpl" : `
 <div class="row" id="filter_bar" style="display: block;">
   <div class="col-sm-10">
 	{{range .Labels}}
@@ -607,13 +607,13 @@ var allTemplates = map[string]string{
 <hr>
 `,
 
-"footer.tmpl" : `
+	"footer.tmpl" : `
 </div>
 </body>
 </html>
 `,
 
-"header.tmpl" : `
+	"header.tmpl" : `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -690,7 +690,7 @@ var allTemplates = map[string]string{
 	<div class="container">
 `,
 
-"progress8.tmpl" : `
+	"progress8.tmpl" : `
 {{ define "P8Block" }}
   <td style="text-align:center;"
 	data-container="body"
@@ -904,7 +904,7 @@ Plotly.newPlot('chart', data, layout);
 
 `,
 
-"progress8groups.tmpl" : `
+	"progress8groups.tmpl" : `
 <h2>Progress 8 Group Summary</h2>
 <br>
 
@@ -959,7 +959,7 @@ Plotly.newPlot('chart', data, layout);
 
 `,
 
-"progressgrid.tmpl" : `
+	"progressgrid.tmpl" : `
 <div class="row">
   <div class="col-sm-9"><h2>Progress Grid</h2></div>
   <div class="col-sm-3">
@@ -1080,7 +1080,7 @@ $(function () {
   </table>
 `,
 
-"select-class.tmpl" : `
+	"select-class.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -1112,7 +1112,7 @@ $(function () {
 
 `,
 
-"select-level.tmpl" : `
+	"select-level.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -1135,7 +1135,7 @@ $(function () {
 </div>
 `,
 
-"select-subject.tmpl" : `
+	"select-subject.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -1158,7 +1158,7 @@ $(function () {
 
 `,
 
-"select-year.tmpl" : `
+	"select-year.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -1184,7 +1184,7 @@ $(function () {
 
 `,
 
-"student.tmpl" : `
+	"student.tmpl" : `
 {{ define "StudentKS2Pane" }}
   <br>
   <table class="table table-hover">
@@ -1641,7 +1641,7 @@ $(function () {
 
 `,
 
-"studentsearch.tmpl" : `
+	"studentsearch.tmpl" : `
 <h2>Student Search Results</h2>
 
 <p>Searching for: <b>{{.Name}}</b></p>
@@ -1666,7 +1666,7 @@ If you're unsure of the spelling, a '*' can be used to replace
 one or more characters.</p>
 `,
 
-"subject-overview.tmpl" : `
+	"subject-overview.tmpl" : `
 <h2>Subject Summaries</h2>
 <br>
 <div class="row">
@@ -1703,7 +1703,7 @@ one or more characters.</p>
 </div>
 `,
 
-"subjectgroups.tmpl" : `
+	"subjectgroups.tmpl" : `
 <h2>{{ .Subject.Subj }}: Group Summary</h2>
 <br>
 

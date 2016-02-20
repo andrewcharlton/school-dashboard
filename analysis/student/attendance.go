@@ -21,6 +21,7 @@ func (att AttendanceInfo) Latest() float64 {
 	return float64(att.Possible-att.Absences) / float64(att.Possible)
 }
 
+// AttendanceSessions contains the names of the sessions.
 var AttendanceSessions = map[int]string{
 	0: "Mon AM",
 	1: "Mon PM",

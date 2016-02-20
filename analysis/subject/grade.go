@@ -1,6 +1,7 @@
 package subject
 
-// A Grade
+// A Grade contains the details of a grade and its associated
+// points scores etc.
 type Grade struct {
 
 	// Name of the grade

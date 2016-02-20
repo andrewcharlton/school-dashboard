@@ -2,6 +2,7 @@ package student
 
 import "fmt"
 
+// A VAScore wraps the output from a VA calculation for use in templates.
 type VAScore struct {
 	Expected float64
 	Achieved float64
@@ -16,7 +17,7 @@ func (va VAScore) Score() float64 {
 	return va.Achieved - va.Expected
 }
 
-// SubjectVa calculates the Value Added score for a student in a particular subject.
+// SubjectVA calculates the Value Added score for a student in a particular subject.
 // VA is expressed in terms of grades above/below where we would expect students to be.
 func (s Student) SubjectVA(subj string) VAScore {
 

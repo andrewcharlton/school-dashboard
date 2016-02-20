@@ -2,7 +2,7 @@ package student
 
 import "fmt"
 
-// Effort is a wrapper for average effort
+// EffortAv wraps the average effort figures for use in templates.
 type EffortAv struct {
 	Effort float64
 	Err    error
@@ -14,7 +14,7 @@ func (s Student) Effort() EffortAv {
 	total, num := 0, 0
 	for _, r := range s.Results {
 		total += r.Effort
-		num += 1
+		num++
 	}
 
 	if num == 0 {
