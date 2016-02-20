@@ -107,7 +107,7 @@ var allTemplates = map[string]string{
 		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
 		  <td style="text-align:center;">{{ .Year }}</td>
 		  <td style="text-align:center;">{{ .Gender }}</td>
-		  <td style="text-align:center;">{{ template "TickCross" .PP }}</td>
+		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
 		  <td style="text-align:center;">{{ .KS2.Av }}</td>
 		  {{ with .Attendance }}
 		  <td style="text-align:center;">{{ .Possible }}</td>
@@ -185,66 +185,6 @@ var allTemplates = map[string]string{
 </div>
 
 
-`,
-
-"classlist.tmpl" : `
-<h2>Class Lists</h2>
-
-<ul class="breadcrumb">
-  <li><a href="/classlist/?{{.Query}}">Subjects</a></li>
-  <li><a href="/classlist/{{.Subject}}/?{{.Query}}">{{.Subject}}</a></li>
-  <li><a href="/classlist/{{.Subject}}/{{.SubjID}}/?{{.Query}}">{{.Level}}</a></li>
-  <li class="active">{{.Class}}</li>
-</ul>
-
-
-<div class="row" style="min-height:700px;">
-  <div class="col-sm-1"></div>
-  <div class="col-sm-10">
-	<ul class="nav nav-tabs">
-	  <li class="active"><a href="#info" data-toggle="tab" aria-expanded="true">Pupil Info</a></li>
-	  <li class=""><a href="#photos" data-toggle="tab" aria-expanded="false">Photos</a></li>
-	  <li class=""><a href="#assessments" data-toggle="tab" aria-expanded="false">Assessment History</a></li>
-	</ul>
-
-	<div id="myTabContent" class="tab-content">
-	  <div class="tab-pane fade active in" id="info">
-		<table class="table table-hover">
-		  <thead>
-			<th>Name</th>
-			<th>Gender</th>
-			<th>KS2 Average</th>
-			<th>Pupil Premium</th>
-			<th>SEN</th>
-			<th>Attendance</th>
-		  </thead>
-		  <tbody>
-			{{ $q := .Query }}
-			{{ range .Students }}
-			<tr>
-			  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Surname}}, {{.Forename}}</a></td>
-			  <td>{{.Gender}}</td>
-			  <td>{{.KS2.Av}}</td>
-			  <td>{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
-				{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
-				{{end}}</td>
-			  <td>{{.SEN.Status}}</td>
-			  <td></td>
-			</tr>
-			{{ end}}
-		  </tbody>
-		</table>
-	  </div>
-	  <div class="tab-pane" id="photos">
-		Photos to go here!
-	  </div>
-	  <div class="tab-pane" id="assessments">
-		Assessment History to go here
-	  </div>
-	</div>
-  </div>
-  <div class="col-sm-1"></div>
-</div>
 `,
 
 "common.tmpl" : `
@@ -384,42 +324,6 @@ var allTemplates = map[string]string{
 </div>
 `,
 
-"effort.tmpl" : `
-<div class="row">
-  <div class="col-sm-1"></div>
-  <div class="col-sm-10">
-	<h3>Attitude to Learning</h3>
-
-	<table class="table table-hover sortable">
-	  <thead>
-		<th>Name</th>
-		<th style="text-align:center;">1's</th>
-		<th style="text-align:center;">2's</th>
-		<th style="text-align:center;">3's</th>
-		<th style="text-align:center;">4's</th>
-		<th style="text-align:center;">Average</th>
-		<th style="text-align:center;">Progress 8 Score</th>
-	  </thead>
-	  <tbody>
-		{{ $q := .Query }}
-		{{ range .Efforts }}
-		<tr>
-		  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
-		  <td style="text-align:center;">{{index .Scores 1}}</td>
-		  <td style="text-align:center;">{{index .Scores 2}}</td>
-		  <td style="text-align:center;">{{index .Scores 3}}</td>
-		  <td style="text-align:center;">{{index .Scores 4}}</td>
-		  <td style="text-align:center;">{{printf "%1.1f" .Average}}</td>
-		  <td style="text-align:center;">{{printf "%1.1f" .Prog8}}</td>
-		</tr>
-		{{ end }}
-	  </tbody>
-	</table>
-  </div>
-  <div class="col-sm-1"></div>
-</div>
-`,
-
 "em.tmpl" : `
 <h2>English and Maths</h2>
 <br>
@@ -427,7 +331,7 @@ var allTemplates = map[string]string{
 <div class="row">
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
-	<h4>Headlines</h4>
+	<h3>Headlines</h3>
 
 	<table class="table table-hover">
 	  <thead>
@@ -454,7 +358,7 @@ var allTemplates = map[string]string{
 
 	<br>
 
-	<h4>Students</h4>
+	<h3>Students</h3>
 
 	<ul class="nav nav-tabs">
 	  {{ range $n, $name := .Names }}
@@ -468,41 +372,45 @@ var allTemplates = map[string]string{
 	  {{ range $n, $g := .Groups }}
 		{{ if eq $n 0 }}
 		  <div class="tab-pane fade active in" id="{{ $n }}">
-		  {{ else }}
-			<div class="tab-pane fade" id="{{ $n }}">
+		{{ else }}
+		  <div class="tab-pane fade" id="{{ $n }}">
+		{{ end }}
+		<br>
+		<table class="table table-condensed table-striped table-hover sortable">
+		  <thead>
+			<th>Name</th>
+			<th style="text-align:center;">KS2</th>
+			<th style="text-align:center;">Gender</th>
+			<th style="text-align:center;">PP</th>
+			<th style="text-align:center;">Language</th>
+			<th style="text-align:center;">Literature</th>
+			<th style="text-align:center;">Maths</th>
+			<th style="text-align:center;">Progress 8</th>
+			<th style="text-align:center;">Attendance</th>
+		  </thead>
+		  <tbody>
+			{{ range $g.Students }}
+			  <tr>
+				<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+				<td style="text-align:center;">{{ .KS2.Av }}</td>
+				<td style="text-align:center;">{{ .Gender }}</td>
+				<td style="text-align:center;">{{ template "PP" .PP }}</td>
+				<td style="text-align:center;">{{ .SubjectGrade "English" }}</td>
+				<td style="text-align:center;">{{ .SubjectGrade "English Literature" }}</td>
+				<td style="text-align:center;">{{ .SubjectGrade "Mathematics" }}</td>
+				<td style="text-align:center;">{{ template "StudentProgress8" .Basket.Overall.Progress8 }}</td>
+				<td style="text-align:center;">{{ template "StudentAttendance" .Attendance.Latest }}</td>
+			  </tr>
 			{{ end }}
-			<br>
-			<table class="table table-condensed table-striped table-hover sortable">
-			  <thead>
-				<th>Name</th>
-				<th style="text-align:center;">KS2</th>
-				<th style="text-align:center;">Language</th>
-				<th style="text-align:center;">Literature</th>
-				<th style="text-align:center;">Maths</th>
-				<th style="text-align:center;">Progress 8</th>
-				<th style="text-align:center;">Attendance</th>
-			  </thead>
-			  <tbody>
-				{{ range $g.Students }}
-				  <tr>
-					<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
-					<td style="text-align:center;">{{ .KS2.Av }}</td>
-					<td style="text-align:center;">{{ .SubjectGrade "English" }}</td>
-					<td style="text-align:center;">{{ .SubjectGrade "English Literature" }}</td>
-					<td style="text-align:center;">{{ .SubjectGrade "Mathematics" }}</td>
-					<td style="text-align:center;">{{ template "StudentProgress8" .Basket.Overall.Progress8 }}</td>
-					<td style="text-align:center;">{{ template "StudentAttendance" .Attendance.Latest }}</td>
-				  </tr>
-				{{ end }}
-			  </tbody>
-			</table>
-			</div>
-		  {{ end }}
-		  </div>
-
+		  </tbody>
+		</table>
+		</div>
+	  {{ end }}
 	</div>
-	<div class="col-sm-1"></div>
+
   </div>
+  <div class="col-sm-1"></div>
+</div>
 
 
 
@@ -661,7 +569,6 @@ var allTemplates = map[string]string{
 			<label class="checkbox-inline"><input type="checkbox" name="ethnicity" value="{{.}}"{{if index $E .}} checked="yes"{{end}}>{{.}}</input></label>
 			{{end}}
 			{{end}}
-			<label class="checkbox-inline"><input type="checkbox" name="ethnicity" value="Other"{{if index $E "Other"}} checked="yes"{{end}}>Other</input></label>
 		  </div>
 		</div>
 	  </div>
@@ -704,47 +611,6 @@ var allTemplates = map[string]string{
 </div>
 </body>
 </html>
-`,
-
-"group.tmpl" : `
-<h3>{{.Title}}</h3>
-<br>
-
-<div class="row">
-  <div class="col-sm-1"></div>
-  <div class="col-sm-10">
-	<table class="table table-striped table-hover table-condensed">
-	  {{ with .Summary }}
-	  <thead>
-		<th></th>
-		<th style="text-align:center;">Cohort</th>
-		{{ range .Headers }}
-		<th style="text-align:center;">{{ . }}</th>
-		{{ end }}
-	  </thead>
-	  <tbody>
-		{{ range .Groups }}
-		<tr>
-		  <td>{{ .Name }}</td>
-		  <td style="text-align:center;">{{ .Cohort }}</td>
-		  {{ range .Scores }}
-		  {{ if .Error }}
-		  <td style="text-align:center;">-</td>
-		  {{ else }}
-		  <td style="text-align:center;">{{ printf "%.1f" .Score }}</td>
-		  {{ end }}
-		  {{ end }}
-		</tr>
-		{{ end }}
-	  </tbody>
-	  {{ end }}
-	</table>
-  </div>
-  <div class="col-sm-1"></div>
-</div>
-
-<br>
-
 `,
 
 "header.tmpl" : `
@@ -894,6 +760,7 @@ var allTemplates = map[string]string{
 	  <thead>
 		<th>Name</th>
 		<th style="text-align:center;">KS2</th>
+		<th style="text-align:center;">Gender</th>
 		<th style="text-align:center;">PP</th>
 		<th style="text-align:center;">Entries</th>
 		<th style="text-align:center;">Attainment 8</th>
@@ -910,11 +777,8 @@ var allTemplates = map[string]string{
 		<tr>
 		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
 		  <td style="text-align:center;">{{ .KS2.Av }}</td>
-		  <td style="text-align:center;">
-			{{if .PP}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
-			{{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
-			{{end}}
-		  </td>
+		  <td style="text-align:center;">{{ .Gender }}</td>
+		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
 
 		  {{ with .Basket }}
 		  {{ with .Overall }}
@@ -1096,7 +960,14 @@ Plotly.newPlot('chart', data, layout);
 `,
 
 "progressgrid.tmpl" : `
-<h2>Progress Grid</h2>
+<div class="row">
+  <div class="col-sm-9"><h2>Progress Grid</h2></div>
+  <div class="col-sm-3">
+	<a href="/export/subject/{{.SubjID}}/?{{.Query}}" class="btn btn-primary btn-sm pull-right">
+	  <span class="glyphicon glyphicon-download-alt"> Download</span>
+	</a>
+  </div>
+</div>
 
 <ul class="breadcrumb">
   <li><a href="/progressgrid/?{{.Query}}">Subjects</a></li>
@@ -1181,9 +1052,9 @@ $(function () {
 	<thead>
 	  <th>Name</th>
 	  <th>Class</th>
+	  <th style="text-align:center;">KS2</th>
 	  <th style="text-align:center;">Gender</th>
 	  <th style="text-align:center;">PP</th>
-	  <th style="text-align:center;">KS2</th>
 	  <th style="text-align:center;">Grade</th>
 	  <th style="text-align:center;">Effort</th>
 	  <th style="text-align:center;">Value Added</th>
@@ -1196,9 +1067,9 @@ $(function () {
 		<tr>
 		  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
 		  <td>{{ .Class $subj }}</td>
-		  <td style="text-align:center;">{{ .Gender }}</td>
-		  <td style="text-align:center;">{{ template "TickCross" .PP }}</td>
 		  <td style="text-align:center;">{{ .KS2.Score $prior }}</td>
+		  <td style="text-align:center;">{{ .Gender }}</td>
+		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
 		  <td style="text-align:center;">{{ .SubjectGrade $subj }}</td>
 		  <td style="text-align:center;">{{ .SubjectEffort $subj }}</td>
 		  <td style="text-align:center;">{{ template "StudentVA" (.SubjectVA $subj).Score }}</td>
@@ -1697,7 +1568,7 @@ $(function () {
 		  </tr>
 		  <tr>
 			<td>Pupil Premium</td>
-			<td>{{ template "TickCross" .PP }}</td>
+			<td>{{ template "PP" .PP }}</td>
 		  </tr>
 		  <tr>
 			<td>SEN</td>
@@ -1796,7 +1667,7 @@ one or more characters.</p>
 `,
 
 "subject-overview.tmpl" : `
-<h3>Subject Summaries</h3>
+<h2>Subject Summaries</h2>
 <br>
 <div class="row">
   <div class="col-sm-1"></div>
