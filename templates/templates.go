@@ -1713,5 +1713,4 @@ one or more characters.</p>
 	<h3>All Classes</h3>
 
 `,
-
 }
