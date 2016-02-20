@@ -98,7 +98,7 @@ func (s Student) engBasket() [2]Slot {
 	if lang && lit {
 		return [2]Slot{eng[0], eng[0]}
 	}
-	return [2]Slot{eng[0], Slot{}}
+	return [2]Slot{eng[0], {}}
 }
 
 func (s Student) mathsBasket() [2]Slot {
