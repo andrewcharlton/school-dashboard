@@ -57,6 +57,8 @@ func progressGridPage(e env.Env, w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
+		Query        template.URL
+		Year         string
 		Subject      string
 		Level        string
 		SubjID       string
@@ -64,8 +66,9 @@ func progressGridPage(e env.Env, w http.ResponseWriter, r *http.Request) {
 		KS2Prior     string
 		Group        group.Group
 		ProgressGrid group.ProgressGrid
-		Query        template.URL
 	}{
+		template.URL(r.URL.RawQuery),
+		f.Year,
 		subject.Subj,
 		subject.Lvl,
 		path[3],
@@ -73,7 +76,6 @@ func progressGridPage(e env.Env, w http.ResponseWriter, r *http.Request) {
 		subject.KS2Prior,
 		g,
 		g.ProgressGrid(subject, f.NatYear),
-		template.URL(r.URL.RawQuery),
 	}
 
 	err = e.Templates.ExecuteTemplate(w, "progressgrid.tmpl", data)

@@ -153,5 +153,5 @@ func ks3VA(ks2, current string, year int) (float64, error) {
 		return 0.0, fmt.Errorf("Current level not recognised: %v", current)
 	}
 
-	return float64(currSub - ks2Sub - 2*year + 13), nil
+	return float64(currSub-ks2Sub-2*year+13) / 3.0, nil
 }

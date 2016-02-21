@@ -1278,6 +1278,7 @@ Plotly.newPlot('chart', data, layout);
   <li class="active">{{.Class}}</li>
 </ul>
 
+{{ $y := .Year }}
 {{ $q := .Query }}
 
 {{ with .ProgressGrid }}
@@ -1303,9 +1304,15 @@ Plotly.newPlot('chart', data, layout);
 			{{ range $j, $c := . }}
 			  {{ $va := index $cellVA $i $j }}
 			  <td style="text-align:center; border:1px solid #888888"
-		 {{ if gt $va 0.67  }}class="success"
-		 {{ else if lt $va -0.33 }}class="danger"
-		 {{ else }}class="warning" {{ end }}
+		 {{ if eq $y "7" "8" "9" }}
+				  {{ if gt $va 0.2  }}class="success"
+				  {{ else if lt $va -0.2 }}class="danger"
+				  {{ else }}class="warning" {{ end }}
+				{{ else }}
+				  {{ if gt $va 0.67  }}class="success"
+				  {{ else if lt $va -0.33 }}class="danger"
+				  {{ else }}class="warning" {{ end }}
+				{{ end }}
 
 		 {{ if eq (len $c.Students) 0 }}></td>
 			  {{ else }}
@@ -1333,7 +1340,7 @@ Plotly.newPlot('chart', data, layout);
 		<th style="text-align:center;">{{ . }} </th>
 	  {{ end }}
 	{{ end }}
-	  <th style="text-align:center;">{{ .Group.Cohort }}</th>
+	<th style="text-align:center;">{{ .Group.Cohort }}</th>
 	{{ with .Group.SubjectVA .Subject }}
 	  <th style="text-align:center;">{{ printf "%.2f" .VA }}</th>
 
