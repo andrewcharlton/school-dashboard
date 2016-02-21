@@ -28,18 +28,16 @@ func redirect(e env.Env) http.HandlerFunc {
 func header(e env.Env, w http.ResponseWriter, r *http.Request, detail int) {
 
 	f := getFilter(e, r)
-	var ks3 template.URL
-	var ks4 template.URL
+	ks3 := f
+	ks4 := f
+
 	switch f.Year {
-	case "":
-		ks3 = template.URL(changeYear(r.URL.Query(), "9"))
-		ks4 = template.URL(changeYear(r.URL.Query(), "11"))
 	case "7", "8", "9":
-		ks3 = template.URL(r.URL.RawQuery)
-		ks4 = template.URL(changeYear(r.URL.Query(), "11"))
+		ks4 = trimFilter(ks4)
+		ks4.Year = "11"
 	default:
-		ks3 = template.URL(changeYear(r.URL.Query(), "9"))
-		ks4 = template.URL(r.URL.RawQuery)
+		ks3 = trimFilter(ks3)
+		ks3.Year = "9"
 	}
 
 	data := struct {
@@ -52,8 +50,8 @@ func header(e env.Env, w http.ResponseWriter, r *http.Request, detail int) {
 		e.Config.School,
 		f,
 		template.URL(r.URL.RawQuery),
-		ks3,
-		ks4,
+		encodeFilter(ks3),
+		encodeFilter(ks4),
 	}
 
 	err := e.Templates.ExecuteTemplate(w, "header.tmpl", data)
@@ -111,6 +109,54 @@ func getFilter(e env.Env, r *http.Request) database.Filter {
 		}
 	}
 	return f
+}
+
+// trimFilter trims the filter to just essential parts
+func trimFilter(f database.Filter) database.Filter {
+
+	f.PP = ""
+	f.EAL = ""
+	f.Gender = ""
+	f.SEN = []string{}
+	f.KS2Bands = []string{}
+	f.Ethnicities = []string{}
+
+	return f
+}
+
+// encodeFilter back to a query string
+func encodeFilter(f database.Filter) template.URL {
+
+	query := fmt.Sprintf("natyear=%v&date=%v&resultset=%v", f.NatYear, f.Date, f.Resultset)
+	if f.Year != "" {
+		query += "&year=" + f.Year
+	}
+	if f.PP != "" {
+		query += "&pp=" + f.PP
+	}
+	if f.EAL != "" {
+		query += "&eal=" + f.EAL
+	}
+	if f.Gender != "" {
+		query += "&gender=" + f.Gender
+	}
+	if len(f.SEN) > 0 && !(len(f.SEN) == 1 && f.SEN[0] == "") {
+		for _, s := range f.SEN {
+			query += "&sen=" + s
+		}
+	}
+	if len(f.KS2Bands) > 0 && !(len(f.KS2Bands) == 1 && f.KS2Bands[0] == "") {
+		for _, k := range f.KS2Bands {
+			query += "&ks2band=" + k
+		}
+	}
+	if len(f.Ethnicities) > 0 && !(len(f.Ethnicities) == 1 && f.Ethnicities[0] == "") {
+		for _, e := range f.Ethnicities {
+			query += "&ethnicity=" + e
+		}
+	}
+
+	return template.URL(query)
 }
 
 // FilterPage writes the contents of the filter template to w.
