@@ -804,6 +804,7 @@ $(function () {
 		</tbody>
 	  </table>
 	</div>
+	<br>
 	<p style="text-align:right;"><i>Any problems, please let <a href="mailto:andrew.charlton@venerablebede.co.uk">Andrew Charlton</a> know.</i></p>
   </div>
   <div class="col-md-1"></div>
