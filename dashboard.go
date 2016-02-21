@@ -34,6 +34,7 @@ func main() {
 	clientMux.Handle("/static/", http.StripPrefix("/static/", static))
 	clientMux.Handle("/images/", http.StripPrefix("/images/", images))
 	clientMux.HandleFunc("/", handlers.Index(env))
+	clientMux.HandleFunc("/attainmentgroups/", handlers.AttainmentGroups(env))
 	clientMux.HandleFunc("/attendance/", handlers.AttendanceExplorer(env))
 	clientMux.HandleFunc("/attendancegroups/", handlers.AttendanceGroups(env))
 	clientMux.HandleFunc("/basics/", handlers.EnglishAndMaths(env))

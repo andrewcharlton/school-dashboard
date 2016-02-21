@@ -2,6 +2,53 @@ package templates
 
 var allTemplates = map[string]string{
 
+	"attainmentgroups.tmpl": `
+<h2>Attainment Group Summary</h2>
+<br>
+
+{{ $q := .Query }}
+<div class="row">
+  <div class="col-sm-1"></div>
+  <div class="col-sm-10">
+
+	<table class="table table-condensed table-hover sortable">
+	  <thead>
+		<th>Group</th>
+		<th style="text-align:center;">Cohort</th>
+		<th style="text-align:center;">KS2 APS</th>
+		<th style="text-align:center;">English</th>
+		<th style="text-align:center;">Maths</th>
+		<th style="text-align:center;">Science</th>
+		<th style="text-align:center;">Humanities</th>
+		<th style="text-align:center;">Language</th>
+		<th style="text-align:center;">Basics</th>
+		<th style="text-align:center;">EBacc</th>
+	  </thead>
+	  <tbody>
+		{{ range .Groups }}
+		  <tr>
+			<td>{{ .Name }}</td>
+			<td style="text-align:center;">{{ .Group.Cohort }}</td>
+			<td style="text-align:center;">{{ printf "%.2f" .Group.KS2APS }}</td>
+			<td style="text-align:center;">{{ Percent (.Group.EBaccArea "E").PctCohort 1 }}</td>
+			<td style="text-align:center;">{{ Percent (.Group.EBaccArea "M").PctCohort 1 }}</td>
+			<td style="text-align:center;">{{ Percent (.Group.EBaccArea "S").PctCohort 1 }}</td>
+			<td style="text-align:center;">{{ Percent (.Group.EBaccArea "H").PctCohort 1 }}</td>
+			<td style="text-align:center;">{{ Percent (.Group.EBaccArea "L").PctCohort 1 }}</td>
+			<td style="text-align:center;">{{ Percent .Group.Basics.Percent 1 }}</td>
+			<td style="text-align:center;">{{ Percent .Group.EBacc.PctCohort 1 }}</td>
+		  </tr>
+		{{ end }}
+	  </tbody>
+	</table>
+  </div>
+  <div class="col-sm-1"></div>
+</div>
+
+
+
+`,
+
 	"attendance.tmpl": `
 {{ define "AttendanceHeader" }}
 <th style="text-align:center;">Cohort</th>
