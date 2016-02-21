@@ -21,13 +21,13 @@ func SubjectGroups(e env.Env) http.HandlerFunc {
 		path := strings.Split(r.URL.Path, "/")
 		switch len(path) {
 		case 3:
-			selectSubject(e, w, r, "Progress Grid")
+			selectSubject(e, w, r, "Subject Group Summary")
 		case 4:
-			selectLevel(e, w, r, "Progress Grid")
+			selectLevel(e, w, r, "Subject Group Summary")
 		case 5:
-			selectYear(e, w, r, "Progress Grid")
+			selectYear(e, w, r, "Subject Group Summary")
 		case 6:
-			progressGridPage(e, w, r)
+			subjectGroupPage(e, w, r)
 		}
 	}
 }
@@ -70,11 +70,13 @@ func subjectGroupPage(e env.Env, w http.ResponseWriter, r *http.Request) {
 		SubGroups []subGroup
 		Classes   []subGroup
 		Query     template.URL
+		Year      string
 	}{
 		subj,
 		subGroups(g),
 		clsGrps,
 		template.URL(r.URL.RawQuery),
+		f.Year,
 	}
 
 	err = e.Templates.ExecuteTemplate(w, "subjectgroups.tmpl", data)

@@ -1805,7 +1805,7 @@ one or more characters.</p>
 		<tr>
 		  <td><a href="/progressgrid/{{ .Subject.Subj }}/{{ .Subject.SubjID }}/All Year {{ $y }}/?{{ $q}}">{{ .Subject.Subj }}</a></td>
 		  <td style="text-align:center;">{{ .Group.Cohort }}</td>
-		  <td style="text-align:center;">{{ Percent .Group.PP 1 }}%</td>
+		  <td style="text-align:center;">{{ Percent .Group.PP 1 }}</td>
 		  <td style="text-align:center;">{{ printf "%.1f" .Group.KS2APS }}</td>
 		  {{ $pts := (.Group.AveragePoints .Subject.Subj) }}
 		  <td style="text-align:center;">{{ printf "%.1f" $pts }}</td>
@@ -1820,13 +1820,82 @@ one or more characters.</p>
 `,
 
 	"subjectgroups.tmpl": `
-<h2>{{ .Subject.Subj }}: Group Summary</h2>
+<h2>{{ .Subj.Subj }} Group Summary</h2>
 <br>
+
+{{ $s := .Subj }}
+{{ $q := .Query }}
+{{ $y := .Year }}
 
 <div class="row">
   <div class="col-sm-1"></div>
-  <div class="col-sm=10">
-	<h3>All Classes</h3>
+  <div class="col-sm-10">
+	<h4>Pupil Groups</h4>
+	<br>
+
+	<table class="table table-condensed table-striped table-hover sortable">
+	  <thead>
+		<th>Group</th>
+		<th style="text-align:center;">Cohort</th>
+		<th style="text-align:center;">% PP</th>
+		<th style="text-align:center;">KS2 APS</th>
+		<th style="text-align:center;">Current APS</th>
+		<th style="text-align:center;">Average Grade</th>
+		<th style="text-align:center;">Value Added</th>
+	  </thead>
+	  <tbody>
+		{{ range .SubGroups }}
+		  {{ $va := (.Group.SubjectVA $s.Subj).VA }}
+		  {{ if gt $va 0.33 }}<tr class="success">
+		  {{ else if lt $va -0.33 }}<tr class="danger">
+		  {{ else }}<tr class="warning">
+		  {{ end }}
+			<td><a href="/progressgrid/{{ $s.Subj }}/{{ $s.SubjID }}/All Year {{ $y }}/?{{ $q }}{{ .Query }}">{{ .Name }}</a></td>
+			<td style="text-align:center;">{{ .Group.Cohort }}</td>
+			<td style="text-align:center;">{{ Percent .Group.PP 1 }}</td>
+			<td style="text-align:center;">{{ printf "%.1f" .Group.KS2APS }}</td>
+			{{ $pts := (.Group.AveragePoints $s.Subj) }}
+			<td style="text-align:center;">{{ printf "%.1f" $pts }}</td>
+			<td style="text-align:center;">{{ $s.Level.GradeEquivalent $pts }}</td>
+			<td style="text-align:center;">{{ printf "%+.2f" $va }}</td>
+		  </tr>
+		{{ end }}
+	  </body>
+	</table>
+
+	<br>
+	<h4>Classes</h4>
+	<br>
+
+	<table class="table table-condensed table-striped table-hover sortable">
+	  <thead>
+		<th>Group</th>
+		<th style="text-align:center;">Cohort</th>
+		<th style="text-align:center;">% PP</th>
+		<th style="text-align:center;">KS2 APS</th>
+		<th style="text-align:center;">Current APS</th>
+		<th style="text-align:center;">Average Grade</th>
+		<th style="text-align:center;">Value Added</th>
+	  </thead>
+	  <tbody>
+		{{ range .Classes }}
+		  {{ $va := (.Group.SubjectVA $s.Subj).VA }}
+		  {{ if gt $va 0.33 }}<tr class="success">
+		  {{ else if lt $va -0.33 }}<tr class="danger">
+		  {{ else }}<tr class="warning">
+		  {{ end }}
+			<td><a href="/progressgrid/{{ $s.Subj }}/{{ $s.SubjID }}/{{ .Name }}/?{{ $q }}">{{ .Name }}</a></td>
+			<td style="text-align:center;">{{ .Group.Cohort }}</td>
+			<td style="text-align:center;">{{ Percent .Group.PP 1 }}</td>
+			<td style="text-align:center;">{{ printf "%.1f" .Group.KS2APS }}</td>
+			{{ $pts := (.Group.AveragePoints $s.Subj) }}
+			<td style="text-align:center;">{{ printf "%.1f" $pts }}</td>
+			<td style="text-align:center;">{{ $s.Level.GradeEquivalent $pts }}</td>
+			<td style="text-align:center;">{{ printf "%+.2f" $va }}</td>
+		  </tr>
+		{{ end }}
+	  </body>
+	</table>
 
 `,
 }

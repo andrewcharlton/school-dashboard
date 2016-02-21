@@ -20,7 +20,7 @@
 		<tr>
 		  <td><a href="/progressgrid/{{ .Subject.Subj }}/{{ .Subject.SubjID }}/All Year {{ $y }}/?{{ $q}}">{{ .Subject.Subj }}</a></td>
 		  <td style="text-align:center;">{{ .Group.Cohort }}</td>
-		  <td style="text-align:center;">{{ Percent .Group.PP 1 }}%</td>
+		  <td style="text-align:center;">{{ Percent .Group.PP 1 }}</td>
 		  <td style="text-align:center;">{{ printf "%.1f" .Group.KS2APS }}</td>
 		  {{ $pts := (.Group.AveragePoints .Subject.Subj) }}
 		  <td style="text-align:center;">{{ printf "%.1f" $pts }}</td>
