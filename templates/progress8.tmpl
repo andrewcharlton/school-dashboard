@@ -128,57 +128,49 @@ var national = {
   hoverinfo: 'none',
 };
 
-{{ with index .PupilData 0 }}
 var male_pp = {
-  x: [{{ range . }}{{ .X }}, {{ end }}],
-  y: [{{ range . }}{{ .Y }}, {{ end }}],
+  x: [{{ range (index .PupilData 0) }}{{ .X }}, {{ end }}],
+  y: [{{ range (index .PupilData 0) }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
   name: 'Male: Disadvantaged',
-  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
+  text: [{{ range (index .PupilData 0) }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
-{{ end }}
 
-{{ with index .PupilData 1 }}
 var male_non = {
-  x: [{{ range . }}{{ .X }}, {{ end }}],
-  y: [{{ range . }}{{ .Y }}, {{ end }}],
+  x: [{{ range (index .PupilData 1) }}{{ .X }}, {{ end }}],
+  y: [{{ range (index .PupilData 1) }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
   name: 'Male: Non-Disadvantaged',
-  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
+  text: [{{ range (index .PupilData 1) }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
-{{ end }}
 
-{{ with index .PupilData 2 }}
 var female_pp = {
-  x: [{{ range . }}{{ .X }}, {{ end }}],
-  y: [{{ range . }}{{ .Y }}, {{ end }}],
+  x: [{{ range (index .PupilData 2) }}{{ .X }}, {{ end }}],
+  y: [{{ range (index .PupilData 2) }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
   name: 'Female: Disadvantaged',
-  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
+  text: [{{ range (index .PupilData 2) }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
-{{ end }}
 
-{{ with index .PupilData 3 }}
 var female_non = {
-  x: [{{ range . }}{{ .X }}, {{ end }}],
-  y: [{{ range . }}{{ .Y }}, {{ end }}],
+  x: [{{ range (index .PupilData 3) }}{{ .X }}, {{ end }}],
+  y: [{{ range (index .PupilData 3) }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
   name: 'Female: Non-Disadvantaged',
-  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
+  text: [{{ range (index .PupilData 3) }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
-{{ end }}
 
 var data = [ national, male_pp, male_non, female_pp , female_non, ];
 

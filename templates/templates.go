@@ -821,57 +821,49 @@ var national = {
   hoverinfo: 'none',
 };
 
-{{ with index .PupilData 0 }}
 var male_pp = {
-  x: [{{ range . }}{{ .X }}, {{ end }}],
-  y: [{{ range . }}{{ .Y }}, {{ end }}],
+  x: [{{ range (index .PupilData 0) }}{{ .X }}, {{ end }}],
+  y: [{{ range (index .PupilData 0) }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
   name: 'Male: Disadvantaged',
-  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
+  text: [{{ range (index .PupilData 0) }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
-{{ end }}
 
-{{ with index .PupilData 1 }}
 var male_non = {
-  x: [{{ range . }}{{ .X }}, {{ end }}],
-  y: [{{ range . }}{{ .Y }}, {{ end }}],
+  x: [{{ range (index .PupilData 1) }}{{ .X }}, {{ end }}],
+  y: [{{ range (index .PupilData 1) }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
   name: 'Male: Non-Disadvantaged',
-  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
+  text: [{{ range (index .PupilData 1) }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
-{{ end }}
 
-{{ with index .PupilData 2 }}
 var female_pp = {
-  x: [{{ range . }}{{ .X }}, {{ end }}],
-  y: [{{ range . }}{{ .Y }}, {{ end }}],
+  x: [{{ range (index .PupilData 2) }}{{ .X }}, {{ end }}],
+  y: [{{ range (index .PupilData 2) }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
   name: 'Female: Disadvantaged',
-  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
+  text: [{{ range (index .PupilData 2) }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
-{{ end }}
 
-{{ with index .PupilData 3 }}
 var female_non = {
-  x: [{{ range . }}{{ .X }}, {{ end }}],
-  y: [{{ range . }}{{ .Y }}, {{ end }}],
+  x: [{{ range (index .PupilData 3) }}{{ .X }}, {{ end }}],
+  y: [{{ range (index .PupilData 3) }}{{ .Y }}, {{ end }}],
   mode: 'markers',
   type: 'scatter',
   name: 'Female: Non-Disadvantaged',
-  text: [{{ range . }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
+  text: [{{ range (index .PupilData 3) }}"<b>{{.Name}}</b><br>{{ range .P8.Subjects }}<br>{{.}}{{ end }} ", {{ end }}],
   marker: { size: 8 },
   hoverinfo: 'text',
 };
-{{ end }}
 
 var data = [ national, male_pp, male_non, female_pp , female_non, ];
 
@@ -913,6 +905,9 @@ Plotly.newPlot('chart', data, layout);
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
 
+	<h4>Group Details</h4>
+	<br>
+
 	<table class="table table-condensed table-hover">
 	  <thead>
 		<th>Group</th>
@@ -929,33 +924,71 @@ Plotly.newPlot('chart', data, layout);
 	  </thead>
 	  <tbody>
 		{{ range .Groups }}
-		{{ with index .Group.Progress8.Progress 4 }}
-		{{ if gt . 0.2 }}<tr class="success">
-		{{ else if lt . -0.2 }}<tr class="danger">
-		{{ else }}<tr class="warning">
-		{{ end }}
-		{{ end }}
-		  <td><a href="/progress8/?{{ $q }}{{ .Query }}">{{ .Name }}</a></td>
-		  {{ with .Group }}
-		  <td style="text-align:center;">{{ .Cohort }}</td>
-		  <td style="text-align:center;">{{ printf "%.1f" .KS2APS }}</td>
-		  {{ with .Progress8 }}
-		  <td style="text-align:center;">{{ index .Entries 4 | printf "%.1f"  }}</td>
-		  <td style="text-align:center;">{{ index .Attainment 4 | printf "%.1f"  }}</td>
-		  {{ range .Progress }}
-		  <td style="text-align:center;">{{ printf "%.2f" . }}</td>
-		  {{ end }}
-		  {{ end }}
-		  <td style="text-align:center;">{{ Percent .Attendance.PercentAttendance 1 }}</td>
-		  {{ end }}
-		</tr>
-		{{ end }}
+		  {{ with index .Group.Progress8.Progress 4 }}
+			{{ if gt . 0.2 }}<tr class="success">
+			  {{ else if lt . -0.2 }}<tr class="danger">
+				{{ else }}<tr class="warning">
+				  {{ end }}
+				{{ end }}
+				<td><a href="/progress8/?{{ $q }}{{ .Query }}">{{ .Name }}</a></td>
+				{{ with .Group }}
+				  <td style="text-align:center;">{{ .Cohort }}</td>
+				  <td style="text-align:center;">{{ printf "%.1f" .KS2APS }}</td>
+				  {{ with .Progress8 }}
+					<td style="text-align:center;">{{ printf "%.1f" (index .Entries 4) }}</td>
+					<td style="text-align:center;">{{ printf "%.1f" (index .Attainment 4) }}</td>
+					{{ range .Progress }}
+					  <td style="text-align:center;">{{ printf "%.2f" . }}</td>
+					{{ end }}
+				  {{ end }}
+				  <td style="text-align:center;">{{ Percent .Attendance.PercentAttendance 1 }}</td>
+				{{ end }}
+				</tr>
+			  {{ end }}
 	  </tbody>
-	<table>
-  
+	</table>
+
+	<br>
+	<h4>Group Matrix</h4>
+	<br>
+
+	{{ with .Matrix }}
+	  <table class="table table-condensed table-hover">
+		<thead>
+		  <th>&nbsp;</th>
+		  {{ range .Headers }}
+			<th style="text-align:center;">{{ . }}</th>
+		  {{ end }}
+		</thead>
+		<tbody>
+		  {{ $headers := .Headers }}
+		  {{ range $i, $g := .Groups }}
+			<tr>
+			  <th>{{ index $headers $i }}</th>
+			  {{ range $g }}
+				{{ $p8 := (index .Group.Progress8.Progress 4) }}
+				{{ if eq (len .Group.Students) 0 }}
+				  <td style="text-align:center;"> - </td>
+				{{ else if gt $p8 0.2 }}
+				  <td style="text-align:center;" class="success"><a href="/progress8/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $p8 }}</a></td>
+				{{ else if lt $p8 -0.2 }}
+				  <td style="text-align:center;" class="danger"><a href="/progress8/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $p8 }}</a></td>
+				{{ else }}
+				  <td style="text-align:center;" class="warning"><a href="/progress8/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $p8 }}</a></td>
+				{{ end }}
+				</td>
+			  {{ end }}
+			</tr>
+		  {{ end }}
+		</tbody>
+	  </table>
+	{{ end }}
+
   </div>
   <div class="col-sm-1"></div>
 </div>
+
+<br>
 
 `,
 

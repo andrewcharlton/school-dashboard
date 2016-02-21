@@ -119,9 +119,11 @@ func Progress8Groups(e env.Env) http.HandlerFunc {
 		data := struct {
 			Query  template.URL
 			Groups []subGroup
+			Matrix subGroupMatrix
 		}{
 			template.URL(r.URL.RawQuery),
 			subGroups(g),
+			groupMatrix(g),
 		}
 
 		err = e.Templates.ExecuteTemplate(w, "progress8groups.tmpl", data)
