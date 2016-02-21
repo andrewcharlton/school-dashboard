@@ -1236,15 +1236,16 @@ Plotly.newPlot('chart', data, layout);
 			  <th>{{ index $headers $i }}</th>
 			  {{ range $g }}
 				{{ $p8 := (index .Group.Progress8.Progress 4) }}
-				{{ if eq (len .Group.Students) 0 }}
-				  <td style="text-align:center;"> - </td>
-				{{ else if gt $p8 0.2 }}
-				  <td style="text-align:center;" class="success"><a href="/progress8/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $p8 }}</a></td>
-				{{ else if lt $p8 -0.2 }}
-				  <td style="text-align:center;" class="danger"><a href="/progress8/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $p8 }}</a></td>
-				{{ else }}
-				  <td style="text-align:center;" class="warning"><a href="/progress8/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $p8 }}</a></td>
-				{{ end }}
+				<td style="text-align:center;">
+				  {{ if eq (len .Group.Students) 0 }}
+					-
+				  {{ else if gt $p8 0.2 }}
+					<a class="text-success" href="/progress8/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $p8 }}</a>
+				  {{ else if lt $p8 -0.2 }}
+					<a class="text-danger" href="/progress8/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $p8 }}</a>
+				  {{ else }}
+					<a class="text-warning" href="/progress8/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $p8 }}</a>
+				  {{ end }}
 				</td>
 			  {{ end }}
 			</tr>
