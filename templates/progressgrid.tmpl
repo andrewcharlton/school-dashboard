@@ -52,7 +52,7 @@
 				data-html="true"
 				data-trigger="hover click"
 				data-content="{{range $c.Students}}
-				<a href='/students/{{.UPN}}/?{{$q}}' target='_blank'>{{.Name}}</a><br>
+				<a href='/student/{{.UPN}}/?{{$q}}' target='_blank'>{{.Name}}</a><br>
 			  {{end}}">
 			  {{ len $c.Students }}</td>
 		  {{ end }}
@@ -103,7 +103,7 @@ $(function () {
 	  {{ $prior := .KS2Prior }}
 	  {{range .Group.Students}}
 		<tr>
-		  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+		  <td><a href="/student/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
 		  <td>{{ .Class $subj }}</td>
 		  <td style="text-align:center;">{{ .KS2.Score $prior }}</td>
 		  <td style="text-align:center;">{{ .Gender }}</td>

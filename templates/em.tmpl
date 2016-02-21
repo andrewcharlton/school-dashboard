@@ -64,7 +64,7 @@
 		  <tbody>
 			{{ range $g.Students }}
 			  <tr>
-				<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+				<td><a href="/student/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
 				<td style="text-align:center;">{{ .KS2.Av }}</td>
 				<td style="text-align:center;">{{ .Gender }}</td>
 				<td style="text-align:center;">{{ template "PP" .PP }}</td>

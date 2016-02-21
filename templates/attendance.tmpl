@@ -99,7 +99,7 @@
 		{{ else }}<tr class="danger">
 		{{ end }}
 		{{ end }}
-		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+		  <td><a href="/student/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
 		  <td style="text-align:center;">{{ .Year }}</td>
 		  <td style="text-align:center;">{{ .Gender }}</td>
 		  <td style="text-align:center;">{{ template "PP" .PP }}</td>

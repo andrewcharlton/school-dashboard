@@ -151,7 +151,7 @@ var allTemplates = map[string]string{
 		{{ else }}<tr class="danger">
 		{{ end }}
 		{{ end }}
-		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+		  <td><a href="/student/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
 		  <td style="text-align:center;">{{ .Year }}</td>
 		  <td style="text-align:center;">{{ .Gender }}</td>
 		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
@@ -380,7 +380,7 @@ var allTemplates = map[string]string{
 			<tbody>
 			  {{ range $s := $g.Students }}
 				<tr>
-				  <td><a href="/students/{{ $s.UPN }}/?{{ $q }}">{{ $s.Name }}</a></td>
+				  <td><a href="/student/{{ $s.UPN }}/?{{ $q }}">{{ $s.Name }}</a></td>
 				  <td style="text-align:center;">{{ $s.KS2.Av }}</td>
 				  <td style="text-align:center;">{{ $s.Gender }}</td>
 				  <td style="text-align:center;">{{ template "PP" $s.PP }}</td>
@@ -474,7 +474,7 @@ $(function () {
 		  <tbody>
 			{{ range $g.Students }}
 			  <tr>
-				<td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+				<td><a href="/student/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
 				<td style="text-align:center;">{{ .KS2.Av }}</td>
 				<td style="text-align:center;">{{ .Gender }}</td>
 				<td style="text-align:center;">{{ template "PP" .PP }}</td>
@@ -858,7 +858,7 @@ $(function () {
 		{{ $q := .Query }}
 		{{ range .Group.Students }}
 		<tr>
-		  <td><a href="/students/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+		  <td><a href="/student/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
 		  <td style="text-align:center;">{{ .KS2.Av }}</td>
 		  <td style="text-align:center;">{{ .Gender }}</td>
 		  <td style="text-align:center;">{{ template "PP" .PP }}</td>
@@ -1130,7 +1130,7 @@ Plotly.newPlot('chart', data, layout);
 				data-html="true"
 				data-trigger="hover click"
 				data-content="{{range $c.Students}}
-				<a href='/students/{{.UPN}}/?{{$q}}' target='_blank'>{{.Name}}</a><br>
+				<a href='/student/{{.UPN}}/?{{$q}}' target='_blank'>{{.Name}}</a><br>
 			  {{end}}">
 			  {{ len $c.Students }}</td>
 		  {{ end }}
@@ -1181,7 +1181,7 @@ $(function () {
 	  {{ $prior := .KS2Prior }}
 	  {{range .Group.Students}}
 		<tr>
-		  <td><a href="/students/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
+		  <td><a href="/student/{{.UPN}}/?{{$q}}">{{.Name}}</a></td>
 		  <td>{{ .Class $subj }}</td>
 		  <td style="text-align:center;">{{ .KS2.Score $prior }}</td>
 		  <td style="text-align:center;">{{ .Gender }}</td>
