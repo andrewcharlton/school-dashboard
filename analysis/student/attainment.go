@@ -1,5 +1,7 @@
 package student
 
+import "fmt"
+
 // SubjectGrade provides a lookup for the grade in a particular subject.
 // Returns "" if no grade is found.
 func (s Student) SubjectGrade(subj string) string {
@@ -36,6 +38,7 @@ func (s Student) Basics() bool {
 type EBaccResult struct {
 	Entered  bool
 	Achieved bool
+	Results  []string
 }
 
 // EBacc calculates whether a student is eligible for the EBacc
@@ -49,7 +52,7 @@ func (s Student) EBacc() EBaccResult {
 		achieved = achieved && r.Achieved
 	}
 
-	return EBaccResult{entered, achieved}
+	return EBaccResult{entered, achieved, []string{}}
 }
 
 // EBaccArea calculates whether a student was entered and/or achieved
@@ -77,27 +80,31 @@ func (s Student) ebaccEng() EBaccResult {
 
 	entLang, entLit := false, false
 	achLang, achLit := false, false
+	results := []string{}
 	for _, r := range s.Results {
 		switch r.EBacc {
 		case "E":
+			results = append(results, fmt.Sprintf("%v (%v)", r.Subj, r.Grd))
 			entLang, entLit = true, true
 			if r.L2Pass {
 				achLang = true
 				achLit = true
 			}
 		case "En":
+			results = append(results, fmt.Sprintf("%v (%v)", r.Subj, r.Grd))
 			entLang = true
 			if r.L2Pass {
 				achLang = true
 			}
 		case "El":
+			results = append(results, fmt.Sprintf("%v (%v)", r.Subj, r.Grd))
 			entLit = true
 			if r.L2Pass {
 				achLit = true
 			}
 		}
 	}
-	return EBaccResult{entLang && entLit, achLang && achLit}
+	return EBaccResult{entLang && entLit, achLang && achLit, results}
 }
 
 // EBaccSci calculates whether or not a student was entered for/
@@ -105,28 +112,32 @@ func (s Student) ebaccEng() EBaccResult {
 func (s Student) ebaccSci() EBaccResult {
 
 	entries, passes := 0, 0
+	results := []string{}
 	for _, r := range s.Results {
 		if r.EBacc == "S" {
+			results = append(results, fmt.Sprintf("%v (%v)", r.Subj, r.Grd))
 			entries++
 			if r.L2Pass {
 				passes++
 			}
 		}
 	}
-	return EBaccResult{entries >= 2, passes >= 2}
+	return EBaccResult{entries >= 2, passes >= 2, results}
 }
 
 // ebaccArea helper function
 func (s Student) ebaccArea(area string) EBaccResult {
 
 	ent, ach := false, false
+	results := []string{}
 	for _, r := range s.Results {
 		if r.EBacc == area {
+			results = append(results, fmt.Sprintf("%v (%v)", r.Subj, r.Grd))
 			ent = true
 			if r.L2Pass {
 				ach = true
 			}
 		}
 	}
-	return EBaccResult{ent, ach}
+	return EBaccResult{ent, ach, results}
 }

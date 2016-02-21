@@ -271,7 +271,21 @@ var allTemplates = map[string]string{
 	"ebacc.tmpl": `
 {{ define "EBaccResult" }}
   {{ if .Entered }}
-	{{ template "TickCross" .Achieved }}
+	{{ if gt (len .Results) 0 }}
+	  <td style="text-align:center;"
+		  data-container="body"
+		  data-toggle="popover"
+		  data-placement="right"
+		  data-html="true"
+		  data-trigger="hover"
+		  data-content="{{ range .Results }} {{.}}<br> {{ end }}">
+		{{ template "TickCross" .Achieved }}
+	  </td>
+	{{ else }}
+	  <td style="text-align:center;">{{ template "TickCross" .Achieved }}</td>
+	{{ end }}
+  {{ else }}
+	<td></td>
   {{ end }}
 {{ end }}
 
@@ -371,9 +385,9 @@ var allTemplates = map[string]string{
 				  <td style="text-align:center;">{{ $s.Gender }}</td>
 				  <td style="text-align:center;">{{ template "PP" $s.PP }}</td>
 				  {{ range $a := $areas }}
-					<td style="text-align:center;">{{ template "EBaccResult" ($s.EBaccArea $a) }}</td>
+					{{ template "EBaccResult" ($s.EBaccArea $a) }}
 				  {{ end }}
-				  <td style="text-align:center;">{{ template "EBaccResult" $s.EBacc}}</td>
+				    {{ template "EBaccResult" $s.EBacc}}
 				  <td style="text-align:center;">{{ template "StudentAttendance" $s.Attendance.Latest }}</td>
 				</tr>
 			  {{ end }}
@@ -385,6 +399,12 @@ var allTemplates = map[string]string{
   </div>
   <div class="col-sm-1"></div>
 </div>
+
+<script>
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
+</script>
 `,
 
 	"em.tmpl": `
