@@ -27,14 +27,30 @@ func EBacc(e env.Env) http.HandlerFunc {
 			return
 		}
 
+		groups := [3]group.Group{}
+		for _, s := range g.Students {
+			switch {
+			case s.EBacc().Achieved:
+				groups[0].Students = append(groups[0].Students, s)
+			case s.EBacc().Entered:
+				groups[1].Students = append(groups[1].Students, s)
+			default:
+				groups[2].Students = append(groups[2].Students, s)
+			}
+		}
+
 		data := struct {
-			Query template.URL
-			Areas []string
-			Group group.Group
+			Query        template.URL
+			Areas        []string
+			Group        group.Group
+			SubGroups    [3]group.Group
+			GroupHeaders []string
 		}{
 			template.URL(r.URL.RawQuery),
 			[]string{"E", "M", "S", "H", "L"},
 			g,
+			groups,
+			[]string{"Achieving EBacc", "Eligible for EBacc", "Not Eligible for EBacc"},
 		}
 
 		err = e.Templates.ExecuteTemplate(w, "ebacc.tmpl", data)

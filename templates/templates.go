@@ -11,7 +11,7 @@ var allTemplates = map[string]string{
   <div class="col-sm-1"></div>
   <div class="col-sm-10">
 
-	<table class="table table-condensed table-hover sortable">
+	<table class="table table-condensed table-striped table-hover sortable">
 	  <thead>
 		<th>Group</th>
 		<th style="text-align:center;">Cohort</th>
@@ -29,7 +29,7 @@ var allTemplates = map[string]string{
 		  <tr>
 			<td>{{ .Name }}</td>
 			<td style="text-align:center;">{{ .Group.Cohort }}</td>
-			<td style="text-align:center;">{{ printf "%.2f" .Group.KS2APS }}</td>
+			<td style="text-align:center;">{{ printf "%.1f" .Group.KS2APS }}</td>
 			<td style="text-align:center;">{{ Percent (.Group.EBaccArea "E").PctCohort 1 }}</td>
 			<td style="text-align:center;">{{ Percent (.Group.EBaccArea "M").PctCohort 1 }}</td>
 			<td style="text-align:center;">{{ Percent (.Group.EBaccArea "S").PctCohort 1 }}</td>
@@ -334,38 +334,54 @@ var allTemplates = map[string]string{
 	<p>A tick/cross indicates whether a student achieved a pass in that area. A blank indicates the
 	student was not entered for that area.</p>
 	<br>
-	<table class="table table-condensed table-striped table-hover sortable">
-	  <thead>
-		<th>Name</th>
-		<th style="text-align:center;">KS2</th>
-		<th style="text-align:center;">Gender</th>
-		<th style="text-align:center;">PP</th>
-		<th style="text-align:center;">English</th>
-		<th style="text-align:center;">Maths</th>
-		<th style="text-align:center;">Science</th>
-		<th style="text-align:center;">Humanities</th>
-		<th style="text-align:center;">Language</th>
-		<th style="text-align:center;">EBacc</th>
-		<th style="text-align:center;">Attendance</th>
-	  </thead>
-	  <tbody>
-		{{ $q := .Query }}
-		{{ $areas := .Areas }}
-		{{ range $s := .Group.Students }}
-		  <tr>
-			<td><a href="/students/{{ $s.UPN }}/?{{ $q }}">{{ $s.Name }}</a></td>
-			<td style="text-align:center;">{{ $s.KS2.Av }}</td>
-			<td style="text-align:center;">{{ $s.Gender }}</td>
-			<td style="text-align:center;">{{ template "PP" $s.PP }}</td>
-			{{ range $a := $areas }}
-			  <td style="text-align:center;">{{ template "EBaccResult" ($s.EBaccArea $a) }}</td>
-			{{ end }}
-			<td style="text-align:center;">{{ template "EBaccResult" $s.EBacc}}</td>
-			<td style="text-align:center;">{{ template "StudentAttendance" $s.Attendance.Latest }}</td>
-		  </tr>
+	<ul class="nav nav-tabs">
+	  {{ range $n, $name := .GroupHeaders }}
+		<li {{if eq $n 0}}class="active"{{end}}><a href="#{{ $n }}" data-toggle="tab" aria-expanded="{{if eq $n 0}}true{{else}}false{{end}}">{{ $name }}</a></li>
+	  {{ end }}
+	</ul>
+
+	{{ $headers := .GroupHeaders }}
+	<div id="EBaccPanes"  class="tab-content">
+	  {{ range $n, $g := .SubGroups }}
+		{{ if eq $n 0 }}
+		  <div class="tab-pane fade active in" id="{{ $n }}">
+		{{ else }}
+		  <div class="tab-pane fade" id="{{ $n }}">
 		{{ end }}
-	  </tbody>
-	</table>
+		  <br>
+		  <table class="table table-condensed table-striped table-hover sortable">
+			<thead>
+			  <th>Name</th>
+			  <th style="text-align:center;">KS2</th>
+			  <th style="text-align:center;">Gender</th>
+			  <th style="text-align:center;">PP</th>
+			  <th style="text-align:center;">English</th>
+			  <th style="text-align:center;">Maths</th>
+			  <th style="text-align:center;">Science</th>
+			  <th style="text-align:center;">Humanities</th>
+			  <th style="text-align:center;">Language</th>
+			  <th style="text-align:center;">EBacc</th>
+			  <th style="text-align:center;">Attendance</th>
+			</thead>
+			<tbody>
+			  {{ range $s := $g.Students }}
+				<tr>
+				  <td><a href="/students/{{ $s.UPN }}/?{{ $q }}">{{ $s.Name }}</a></td>
+				  <td style="text-align:center;">{{ $s.KS2.Av }}</td>
+				  <td style="text-align:center;">{{ $s.Gender }}</td>
+				  <td style="text-align:center;">{{ template "PP" $s.PP }}</td>
+				  {{ range $a := $areas }}
+					<td style="text-align:center;">{{ template "EBaccResult" ($s.EBaccArea $a) }}</td>
+				  {{ end }}
+				  <td style="text-align:center;">{{ template "EBaccResult" $s.EBacc}}</td>
+				  <td style="text-align:center;">{{ template "StudentAttendance" $s.Attendance.Latest }}</td>
+				</tr>
+			  {{ end }}
+			</tbody>
+		  </table>
+		</div>
+	  {{ end }}
+	</div>
   </div>
   <div class="col-sm-1"></div>
 </div>
