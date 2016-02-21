@@ -28,7 +28,7 @@ func KS3Summary(e env.Env) http.HandlerFunc {
 			return
 		}
 
-		ks3Subjects := subject.SubjectList{}
+		ks3Subjects := subject.List{}
 		var lvl subject.Level
 		for _, s := range e.Subjects {
 			if s.Lvl == "KS3" {
@@ -40,7 +40,7 @@ func KS3Summary(e env.Env) http.HandlerFunc {
 
 		data := struct {
 			Query    template.URL
-			Subjects subject.SubjectList
+			Subjects subject.List
 			KS3      subject.Level
 			Group    group.Group
 		}{
@@ -74,7 +74,7 @@ func KS3Groups(e env.Env) http.HandlerFunc {
 			return
 		}
 
-		ks3Subjects := subject.SubjectList{}
+		ks3Subjects := subject.List{}
 		for _, s := range e.Subjects {
 			if s.Lvl == "KS3" {
 				ks3Subjects = append(ks3Subjects, *s)
@@ -85,7 +85,7 @@ func KS3Groups(e env.Env) http.HandlerFunc {
 		data := struct {
 			Query    template.URL
 			Year     string
-			Subjects subject.SubjectList
+			Subjects subject.List
 			Groups   []subGroup
 			Matrix   subGroupMatrix
 		}{

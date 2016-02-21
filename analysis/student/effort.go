@@ -8,7 +8,7 @@ type EffortAv struct {
 	Err    error
 }
 
-// Effort calculates the average effort a student has achieved
+// AverageEffort calculates the average effort a student has achieved
 // in their subjects.
 func (s Student) AverageEffort() EffortAv {
 

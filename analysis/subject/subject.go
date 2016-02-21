@@ -33,18 +33,18 @@ type Subject struct {
 	TMs map[string]TransitionMatrix
 }
 
-// A SubjectList allows subjects to be sorted by name and then level.
-type SubjectList []Subject
+// A List allows subjects to be sorted by name and then level.
+type List []Subject
 
-func (s SubjectList) Len() int      { return len(s) }
-func (s SubjectList) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-func (s SubjectList) Less(i, j int) bool {
+func (l List) Len() int      { return len(l) }
+func (l List) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
+func (l List) Less(i, j int) bool {
 	switch {
-	case s[i].Subj < s[j].Subj:
+	case l[i].Subj < l[j].Subj:
 		return true
-	case s[j].Subj < s[i].Subj:
+	case l[j].Subj < l[i].Subj:
 		return false
-	case s[i].Lvl < s[j].Lvl:
+	case l[i].Lvl < l[j].Lvl:
 		return true
 	default:
 		return false

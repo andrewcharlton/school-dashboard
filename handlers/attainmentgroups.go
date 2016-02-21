@@ -8,6 +8,8 @@ import (
 	"github.com/andrewcharlton/school-dashboard/env"
 )
 
+// AttainmentGroups produces a page with a summary of the
+// attainment of each subgroup
 func AttainmentGroups(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

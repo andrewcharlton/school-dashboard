@@ -50,7 +50,7 @@ type subGroupMatrix struct {
 func groupMatrix(g group.Group) subGroupMatrix {
 
 	headers := []string{}
-	groups := make([][]subGroup, 0)
+	var groups [][]subGroup
 
 	for i, def1 := range groupDefs[1:] {
 		headers = append(headers, def1.Name)
