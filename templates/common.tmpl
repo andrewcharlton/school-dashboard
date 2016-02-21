@@ -29,3 +29,10 @@
   {{ else }}<span class="text-warning">{{ printf "%+.2f" . }}</span>
   {{ end }}
 {{ end }}
+
+{{ define "KS3VA" }}
+  {{ if gt . 0.33 }}<span class="text-success">{{ printf "%+.2f" . }}</span>
+  {{ else if lt . -0.33 }}<span class="text-danger">{{ printf "%+.2f" . }}</span>
+  {{ else }}<span class="text-warning">{{ printf "%+.2f" . }}</span>
+  {{ end }}
+{{ end }}

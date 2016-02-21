@@ -1,0 +1,80 @@
+<h2>Key Stage 3 Group Comparison</h2>
+<br>
+
+{{ $q := .Query }}
+{{ $y := .Year }}
+{{ $subj := .Subjects }}
+
+<h4>Group Details</h4>
+<br>
+
+<table class="table table-condensed table-striped table-hover sortable">
+  <thead>
+	<th>Group</th>
+	<th style="text-align:center;">Cohort</th>
+	<th style="text-align:center;">KS2 APS</th>
+	{{ range .Subjects }}<th style="text-align:center;">{{ .Code }}</th>{{ end }}
+	  <th style="text-align:center;">Overall</th>
+	  <th style="text-align:center;">Attendance</th>
+  </thead>
+  <tbody>
+	{{ range $g := .Groups }}
+	  <tr>
+		<td><a href="/ks3summary/?{{ $q }}{{ $g.Query }}">{{ $g.Name }}</a></td>
+		<td style="text-align:center;">{{ $g.Group.Cohort }}</td>
+		<td style="text-align:center;">{{ printf "%.1f" $g.Group.KS2APS }}</td>
+		{{ range $subj }}
+		  <td style="text-align:center;">
+			{{ $va := ($g.Group.SubjectVA .Subj).VA }}
+			{{ if gt $va 0.33 }}<a class="text-success"
+			{{ else if lt $va -0.33 }}<a class="text-danger"
+			{{ else }}<a class="text-warning"
+			{{ end }}
+				href="/progressgrid/{{ .Subj }}/{{ .SubjID }}/All Year {{ $y }}/?{{ $q }}{{ $g.Query }}">
+			  {{ printf "%+.2f" $va }}
+			</a>
+		  </td>
+		{{ end }}
+		<td style="text-align:center;">{{ template "KS3VA" $g.Group.AverageVA }}</td>
+		<td style="text-align:center;">{{ template "StudentAttendance" $g.Group.Attendance.PercentAttendance }}</td>
+	  </tr>
+	{{ end }}
+  </tbody>
+</table>
+
+<br>
+<h4>Group Matrix</h4>
+<br>
+
+{{ with .Matrix }}
+  <table class="table table-condensed table-hover" style="table-layout:fixed;">
+	<thead>
+	  <th></th>
+	  {{ range .Headers }}
+		<th style="text-align:center;">{{ . }}</th>
+	  {{ end }}
+	</thead>
+	<tbody>
+	  {{ $headers := .Headers }}
+	  {{ range $i, $g := .Groups }}
+		<tr>
+		  <th>{{ index $headers $i }}</th>
+		  {{ range $g }}
+			{{ $va := .Group.AverageVA }}
+			<td style="text-align:center;">
+			  {{ if eq (len .Group.Students) 0 }}
+				-
+			  {{ else if gt $va 0.2 }}
+				<a class="text-success" href="/ks3summary/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $va }}</a>
+			  {{ else if lt $va -0.2 }}
+				<a class="text-danger"  href="/ks3summary/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $va }}</a>
+			  {{ else }}
+				<a class="text-warning" href="/ks3summary/?{{ $q }}{{ .Query }}">{{ printf "%+.2f" $va }}</a>
+			  {{ end }}
+			</td>
+		  {{ end }}
+		</tr>
+	  {{ end }}
+	</tbody>
+  </table>
+{{ end }}
