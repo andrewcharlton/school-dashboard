@@ -12,32 +12,37 @@
   <thead>
 	<th></th>
 	{{ range .Subjects }}<th style="text-align:center;">{{ .Code }}</th>{{ end }}
+	<th>Average</th>
   </thead>
   <tbody>
 	<tr>
 	  <td>Average Points</td>
 	  {{ range .Subjects }}
-		<th style="text-align:center;">{{ printf "%.1f" ($g.SubjectPoints .Subj) }}</th>
+		<td style="text-align:center;">{{ printf "%.1f" ($g.SubjectPoints .Subj) }}</td>
 	  {{ end }}
+	  <td style="text-align:center;">{{ printf "%.1f" $g.APS }}</td>
 	</tr>
 	<tr>
 	  <td>Average Grade</td>
 	  {{ range .Subjects }}
 		{{ $pts := ($g.SubjectPoints .Subj) }}
-		<th style="text-align:center;">{{ $ks3.GradeEquivalent $pts }}</th>
+		<td style="text-align:center;">{{ $ks3.GradeEquivalent $pts }}</td>
 	  {{ end }}
+	  <td style="text-align:center;">{{ $ks3.GradeEquivalent $g.APS }}</td>
 	</tr>
 	<tr>
 	  <td>Value Added</td>
 	  {{ range .Subjects }}
-		<th style="text-align:center;">{{ printf "%.1f" ($g.SubjectVA .Subj).VA }}</th>
+		<td style="text-align:center;">{{ printf "%.1f" ($g.SubjectVA .Subj).VA }}</td>
 	  {{ end }}
+	  <td style="text-align:center;">{{ printf "%.1f" $g.AverageVA }}</td>
 	</tr>
 	<tr>
 	  <td>Average Effort</td>
 	  {{ range .Subjects }}
-		<th style="text-align:center;">{{ printf "%.1f" ($g.SubjectEffort .Subj) }}</th>
+		<td style="text-align:center;">{{ printf "%.1f" ($g.SubjectEffort .Subj) }}</td>
 	  {{ end }}
+	  <td style="text-align:center;">{{ printf "%.1f" $g.AverageEffort }}</td>
 	</tr>
   </tbody>
 </table>
@@ -62,17 +67,17 @@
 	{{ range .Group.Students }}
 	  <tr>
 		<td><a href="/student/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
-		<td>{{ .Gender }}</td>
-		<td>{{ template "PP" .PP }}</td>
-		<td>{{ .KS2.Av }}</td>
+		<td style="text-align:center;">{{ .Gender }}</td>
+		<td style="text-align:center;">{{ template "PP" .PP }}</td>
+		<td style="text-align:center;">{{ .KS2.Av }}</td>
 		{{ $s := . }}
 		{{ range $subj }}
-		  <td>{{ $s.SubjectGrade .Subj }}</td>
+		  <td style="text-align:center;">{{ $s.SubjectGrade .Subj }}</td>
 		{{ end }}
-		<td>{{ printf "%.1f" .APS }}</td>
-		<td>{{ $ks3.GradeEquivalent .APS }}</td>
-		<td>{{ printf "%.1f" .Effort.Effort }}</td>
-		<td>{{ template "StudentAttendance" .Attendance.Latest }}</td>
+		<td style="text-align:center;">{{ printf "%.1f" .APS }}</td>
+		<td style="text-align:center;">{{ $ks3.GradeEquivalent .APS }}</td>
+		<td style="text-align:center;">{{ printf "%.1f" .AverageEffort.Effort }}</td>
+		<td style="text-align:center;">{{ template "StudentAttendance" .Attendance.Latest }}</td>
 	  </tr>
 	{{ end }}
   </tbody>

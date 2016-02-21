@@ -13,25 +13,6 @@ type VASummary struct {
 	Err    error
 }
 
-// SubjectVA calculates the overall VA for a group studying a subject.
-func (g Group) SubjectVA(subj string) VASummary {
-
-	total := 0.0
-	cohort := 0
-	for _, s := range g.Students {
-		va := s.SubjectVA(subj)
-		if va.Err == nil {
-			total += va.Score()
-			cohort++
-		}
-	}
-
-	if cohort == 0 {
-		return VASummary{0, 0.0, fmt.Errorf("No students with VA scores present.")}
-	}
-	return VASummary{cohort, total / float64(cohort), nil}
-}
-
 // A ProgressGrid holds all of the details for filling out a progress grid
 // for the subject.
 type ProgressGrid struct {

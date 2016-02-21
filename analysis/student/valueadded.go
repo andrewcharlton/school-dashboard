@@ -48,3 +48,24 @@ func (s Student) SubjectVA(subj string) VAScore {
 
 	return VAScore{Expected: exp, Achieved: r.Att8}
 }
+
+// AverageVA calculates the average Value Added for a student.
+func (s Student) AverageVA() VAScore {
+
+	exp, ach := 0.0, 0.0
+	n := 0
+	for _, r := range s.Results {
+		va := s.SubjectVA(r.Subj)
+		if va.Err == nil {
+			exp += va.Expected
+			ach += va.Achieved
+			n++
+		}
+	}
+
+	if n == 0 {
+		return VAScore{0.0, 0.0, fmt.Errorf("No VA scores")}
+	}
+
+	return VAScore{exp / float64(n), ach / float64(n), nil}
+}

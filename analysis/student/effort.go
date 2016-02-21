@@ -8,8 +8,9 @@ type EffortAv struct {
 	Err    error
 }
 
-// Effort calculates the average effort a student.
-func (s Student) Effort() EffortAv {
+// Effort calculates the average effort a student has achieved
+// in their subjects.
+func (s Student) AverageEffort() EffortAv {
 
 	total, num := 0, 0
 	for _, r := range s.Results {

@@ -10,45 +10,15 @@ type Result struct {
 	Percent  float64
 }
 
-// SubjectEffort returns the average effort grades recorded in a
-// subject.
-func (g Group) SubjectEffort(subj string) float64 {
+// APS calculates the average points score achieved by each student in
+// the group
+func (g Group) APS() float64 {
 
-	total, cohort := 0, 0
+	total := 0.0
 	for _, s := range g.Students {
-		r, exists := s.Results[subj]
-		if !exists {
-			continue
-		}
-		total += r.Effort
-		cohort++
-
+		total += s.APS()
 	}
-
-	if cohort == 0 {
-		return 0.0
-	}
-	return float64(total) / float64(cohort)
-}
-
-// SubjectPoints returns the average number of points achieved in
-// a subject.
-func (g Group) SubjectPoints(subj string) float64 {
-
-	total, cohort := 0, 0
-	for _, s := range g.Students {
-		r, exists := s.Results[subj]
-		if !exists {
-			continue
-		}
-		total += r.Pts
-		cohort++
-	}
-
-	if cohort == 0 {
-		return 0.0
-	}
-	return float64(total) / float64(cohort)
+	return total / float64(len(g.Students))
 }
 
 // Basics calculates the percentages of students in the group
