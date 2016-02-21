@@ -2,6 +2,7 @@ BEGIN TRANSACTION;
 CREATE TABLE `subjects` (
 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`subject`	TEXT,
+	`code`	TEXT,
 	`level_id`	INTEGER,
 	`ebacc`	TEXT,
 	`tm`	INTEGER,
@@ -75,6 +76,10 @@ CREATE TABLE "resultsets" (
 	`is_exam`	INTEGER,
 	`list`	INTEGER
 );
+CREATE TABLE "news" (
+	`date`	TEXT,
+	`comment`	TEXT
+);
 CREATE TABLE `nat_years` (
 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`year`	TEXT NOT NULL UNIQUE
@@ -95,18 +100,22 @@ CREATE TABLE "nat_tm_subjects" (
 	FOREIGN KEY(`year_id`) REFERENCES nat_years ( id ),
 	FOREIGN KEY(`level_id`) REFERENCES levels(id)
 );
-CREATE TABLE `nat_progress8` (
+CREATE TABLE "nat_progress8" (
 	`year_id`	INTEGER,
 	`ks2`	TEXT,
 	`att8`	REAL,
+	`english`	REAL,
+	`maths`	REAL,
+	`ebacc`	REAL,
+	`other`	REAL,
 	PRIMARY KEY(year_id,ks2),
-	FOREIGN KEY(`year_id`) REFERENCES nat_years(id)
+	FOREIGN KEY(`year_id`) REFERENCES nat_years ( id )
 );
 CREATE TABLE `levels` (
 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`level`	TEXT,
-	`is_gcse`	INTEGER
-);
+	`is_gcse`	INTEGER,
+	`keystage`	INTEGER);
 CREATE TABLE `grades` (
 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`level_id`	INTEGER,
@@ -166,7 +175,7 @@ CREATE TABLE "attendance_sessions" (
 CREATE VIEW tms AS
 SELECT year_id, level_id, subject, ks2, grade, probability
 FROM nat_tms
-INNER JOIN nat_tm_subjects ON nat_tms.subject_id = nat_tm_subjects.id;
+INNER JOIN nat_tm_subjects ON subject_id = nat_tm_subjects.id;
 CREATE VIEW students AS
 SELECT students_permanent.upn as upn, date_id, surname, forename, year, form, pp, eal, gender, ethnicity,
 sen_status, sen_need, sen_info, sen_strat, sen_access, sen_iep, ks2_aps, ks2_band, ks2_en, ks2_ma, ks2_av, ks2_re, ks2_wr, ks2_gps
@@ -175,18 +184,30 @@ INNER JOIN students_temporal ON students_permanent.upn = students_temporal.upn
 INNER JOIN dates ON students_temporal.date_id = dates.id
 WHERE dates.list = 1;
 CREATE VIEW results AS
-SELECT upn, subject_id, subject, resultset_id as resultset, date, is_exam, grade, effort, points
+SELECT upn, subject_id, subject, resultset_id as resultset, date, is_exam, list, grade, effort, points
 FROM student_results
 INNER JOIN grades ON grade_id = grades.id
 INNER JOIN subjects ON student_results.subject_id = subjects.id
 INNER JOIN resultsets ON student_results.resultset_id = resultsets.id;
-CREATE VIEW classes AS
-SELECT student_classes.upn, (surname ||  " " || forename) as name, date_id, subject, class, teacher
+CREATE VIEW classlist AS
+SELECT date_id, subject_id, class, student_classes.upn
 FROM student_classes
-INNER JOIN subjects ON student_classes.subject_id = subjects.id
-INNER JOIN students_permanent ON student_classes.upn = students_permanent.upn;
+INNER JOIN students_permanent ON student_classes.upn = students_permanent.upn
+ORDER BY (surname ||  " " || forename);
+CREATE VIEW classes_filter AS
+SELECT students_temporal.date_id as date_id, subject_id, class, students_permanent.upn as upn, surname, forename, year, pp, eal, gender, ethnicity,
+sen_status, ks2_band
+FROM students_permanent
+INNER JOIN students_temporal ON students_permanent.upn = students_temporal.upn
+INNER JOIN student_classes ON (student_classes.upn = students_permanent.upn AND student_classes.date_id = students_temporal.date_id)
+INNER JOIN dates ON students_temporal.date_id = dates.id
+WHERE dates.list = 1;
+CREATE VIEW classes AS
+SELECT upn, date_id, subject_id, subject, class, teacher
+FROM student_classes
+INNER JOIN subjects ON subject_id = subjects.id;
 CREATE VIEW attendance AS
-SELECT attendance_weekly.upn as upn, attendance_weeks.year_id, week_start, poss_year, absence_year, unauth_year, mon_am, mon_pm, tue_am, tue_pm, wed_am, wed_pm, thu_am, thu_pm, fri_am, fri_pm
+SELECT attendance_weekly.upn as upn, attendance_weeks.year_id, week_start, att_week, poss_year, absence_year, unauth_year, mon_am, mon_pm, tue_am, tue_pm, wed_am, wed_pm, thu_am, thu_pm, fri_am, fri_pm
 FROM attendance_weekly
 INNER JOIN attendance_weeks ON attendance_weekly.week_id = attendance_weeks.id
 INNER JOIN attendance_sessions ON (attendance_weekly.upn = attendance_sessions.upn AND attendance_sessions.year_id = attendance_weeks.year_id)
