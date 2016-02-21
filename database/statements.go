@@ -58,4 +58,7 @@ var sqlStatements = map[string]string{
 	"currentWeek": `SELECT week_start FROM attendance_weeks
 					ORDER BY week_start DESC
 					LIMIT 1`,
+
+	"news": `SELECT date, comment FROM news
+			 ORDER BY date`,
 }

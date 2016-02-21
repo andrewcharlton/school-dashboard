@@ -783,6 +783,33 @@ $(function () {
 	<div class="container">
 `,
 
+	"index.tmpl": `
+<h2>{{ .School }} Data Analysis</h2>
+<br>
+
+<div class="row">
+  <div class="col-md-1"></div>
+  <div class="col-md-10">
+	<div style="height:70%;min-height:70%">
+	  <h4>Updates</h4>
+	  <br>
+	  <table>
+		<tbody>
+		  {{ range .News }}
+			<tr>
+			  <td>{{ .Date }}</td>
+			  <td>{{ .Comment }}</td>
+			</tr>
+		  {{ end }}
+		</tbody>
+	  </table>
+	</div>
+	<p style="text-align:right;"><i>Any problems, please let <a href="mailto:andrew.charlton@venerablebede.co.uk">Andrew Charlton</a> know.</i></p>
+  </div>
+  <div class="col-md-1"></div>
+</div>
+`,
+
 	"ks3groups.tmpl": `
 <h2>Key Stage 3 Group Comparison</h2>
 <br>

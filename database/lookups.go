@@ -8,6 +8,39 @@ import (
 	"github.com/andrewcharlton/school-dashboard/analysis/group"
 )
 
+// A NewsItem contains the details of a news item
+type NewsItem struct {
+	Date    string
+	Comment string
+}
+
+// News returns a list of news items
+func (db Database) News() ([]NewsItem, error) {
+
+	news := []NewsItem{}
+	rows, err := db.stmts["news"].Query()
+	if err != nil {
+		return []NewsItem{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var date, comm string
+		err := rows.Scan(&date, &comm)
+		if err != nil {
+			return []NewsItem{}, err
+		}
+
+		split := strings.Split(date, "/")
+		if len(split) == 3 {
+			formattedDate := fmt.Sprintf("%v-%v-%v", split[2], split[1], split[0])
+			news = append(news, NewsItem{formattedDate, comm})
+		}
+	}
+
+	return news, nil
+}
+
 // CurrentWeek looks up the name of the latest week, as used
 // for attendance.
 func (db Database) CurrentWeek() (string, error) {
