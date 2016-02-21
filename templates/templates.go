@@ -762,6 +762,9 @@ $(function () {
 			  <li><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
 			  <li><a href="/attainmentgroups/?{{.Query}}">Attainment Groups</a></li>
 			  <li class="divider"></li>
+			  <li><a href="/ks3summary/?{{.Query}}">KS3 Summary</a></li>
+			  <li><a href="/ks3groups/?{{.Query}}">KS3 Groups</a></li>
+			  <li class="divider"></li>
 			  <li><a href="/attendancegroups/?{{.Query}}">Attendance Summary</a></li>
 			  <li><a href="/attendance/?{{.Query}}">Attendance Explorer</a></li>
 			</ul>
@@ -771,6 +774,94 @@ $(function () {
 	</nav>
 
 	<div class="container">
+`,
+
+	"ks3summary.tmpl": `
+<h2>Key Stage 3 Summary</h2>
+<br>
+
+{{ $q := .Query }}
+{{ $subj := .Subjects }}
+{{ $ks3 := .KS3 }}
+{{ $g := .Group }}
+
+<h4>Cohort Overview</h4>
+<br>
+<table class="table table-striped table-condensed table-hover">
+  <thead>
+	<th></th>
+	{{ range .Subjects }}<th style="text-align:center;">{{ .Code }}</th>{{ end }}
+  </thead>
+  <tbody>
+	<tr>
+	  <td>Average Points</td>
+	  {{ range .Subjects }}
+		<th style="text-align:center;">{{ printf "%.1f" ($g.SubjectPoints .Subj) }}</th>
+	  {{ end }}
+	</tr>
+	<tr>
+	  <td>Average Grade</td>
+	  {{ range .Subjects }}
+		{{ $pts := ($g.SubjectPoints .Subj) }}
+		<th style="text-align:center;">{{ $ks3.GradeEquivalent $pts }}</th>
+	  {{ end }}
+	</tr>
+	<tr>
+	  <td>Value Added</td>
+	  {{ range .Subjects }}
+		<th style="text-align:center;">{{ printf "%.1f" ($g.SubjectVA .Subj).VA }}</th>
+	  {{ end }}
+	</tr>
+	<tr>
+	  <td>Average Effort</td>
+	  {{ range .Subjects }}
+		<th style="text-align:center;">{{ printf "%.1f" ($g.SubjectEffort .Subj) }}</th>
+	  {{ end }}
+	</tr>
+  </tbody>
+</table>
+
+<br>
+<h4>Students</h4>
+<br>
+
+<table class="table table-striped table-condensed table-hover sortable">
+  <thead>
+	<th>Name</th>
+	<th style="text-align:center;">Gender</th>
+	<th style="text-align:center;">PP</th>
+	<th style="text-align:center;">KS2</th>
+	{{ range .Subjects }}<th style="text-align:center;">{{ .Code }}</th>{{ end }}
+	  <th style="text-align:center;">Current APS</th>
+	  <th style="text-align:center;">Average Grade</th>
+	  <th style="text-align:center;">Effort</th>
+	  <th style="text-align:center;">Attendance</th>
+  </thead>
+  <tbody>
+	{{ range .Group.Students }}
+	  <tr>
+		<td><a href="/student/{{ .UPN }}/?{{ $q }}">{{ .Name }}</a></td>
+		<td>{{ .Gender }}</td>
+		<td>{{ template "PP" .PP }}</td>
+		<td>{{ .KS2.Av }}</td>
+		{{ $s := . }}
+		{{ range $subj }}
+		  <td>{{ $s.SubjectGrade .Subj }}</td>
+		{{ end }}
+		<td>{{ printf "%.1f" .APS }}</td>
+		<td>{{ $ks3.GradeEquivalent .APS }}</td>
+		<td>{{ printf "%.1f" .Effort.Effort }}</td>
+		<td>{{ template "StudentAttendance" .Attendance.Latest }}</td>
+	  </tr>
+	{{ end }}
+  </tbody>
+</table>
+
+
+
+
+
+
 `,
 
 	"progress8.tmpl": `
@@ -1807,7 +1898,7 @@ one or more characters.</p>
 		  <td style="text-align:center;">{{ .Group.Cohort }}</td>
 		  <td style="text-align:center;">{{ Percent .Group.PP 1 }}</td>
 		  <td style="text-align:center;">{{ printf "%.1f" .Group.KS2APS }}</td>
-		  {{ $pts := (.Group.AveragePoints .Subject.Subj) }}
+		  {{ $pts := (.Group.SubjectPoints .Subject.Subj) }}
 		  <td style="text-align:center;">{{ printf "%.1f" $pts }}</td>
 		  <td style="text-align:center;">{{ .Subject.Level.GradeEquivalent $pts }}</td>
 		  <td style="text-align:center;">{{ printf "%+.2f" (.Group.SubjectVA .Subject.Subj).VA }}</td>

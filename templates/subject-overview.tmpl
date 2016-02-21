@@ -22,7 +22,7 @@
 		  <td style="text-align:center;">{{ .Group.Cohort }}</td>
 		  <td style="text-align:center;">{{ Percent .Group.PP 1 }}</td>
 		  <td style="text-align:center;">{{ printf "%.1f" .Group.KS2APS }}</td>
-		  {{ $pts := (.Group.AveragePoints .Subject.Subj) }}
+		  {{ $pts := (.Group.SubjectPoints .Subject.Subj) }}
 		  <td style="text-align:center;">{{ printf "%.1f" $pts }}</td>
 		  <td style="text-align:center;">{{ .Subject.Level.GradeEquivalent $pts }}</td>
 		  <td style="text-align:center;">{{ printf "%+.2f" (.Group.SubjectVA .Subject.Subj).VA }}</td>

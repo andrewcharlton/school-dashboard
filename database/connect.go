@@ -287,7 +287,7 @@ func (db *Database) loadResultsets() error {
 // subjects pulls in the subject list, indexed by subject id
 func (db *Database) loadSubjects() error {
 
-	rows, err := db.conn.Query(`SELECT id, subject, level_id, ebacc, ks2_prior, tm
+	rows, err := db.conn.Query(`SELECT id, subject, subject, level_id, ebacc, ks2_prior, tm
 								FROM subjects`)
 	if err != nil {
 		return err
@@ -299,7 +299,7 @@ func (db *Database) loadSubjects() error {
 		var lvl int
 		var tm string
 		var s subject.Subject
-		err := rows.Scan(&s.SubjID, &s.Subj, &lvl, &s.EBacc, &s.KS2Prior, &tm)
+		err := rows.Scan(&s.SubjID, &s.Subj, &s.Code, &lvl, &s.EBacc, &s.KS2Prior, &tm)
 		if err != nil {
 			return err
 		}

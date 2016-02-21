@@ -13,6 +13,22 @@ func (s Student) SubjectGrade(subj string) string {
 	return r.Grd
 }
 
+// APS returns the average point score achieved by a student in his/her courses.
+func (s Student) APS() float64 {
+
+	total, number := 0, 0
+	for _, r := range s.Results {
+		if r.Grd != "" {
+			total += r.Pts
+			number++
+		}
+	}
+	if number == 0 {
+		return 0.0
+	}
+	return float64(total) / float64(number)
+}
+
 // Basics measures whether a student has achieved a level 2 pass
 // in both English and Maths.
 func (s Student) Basics() bool {

@@ -7,6 +7,9 @@ type Subject struct {
 	// Name of the subject
 	Subj string
 
+	// Short identifier
+	Code string
+
 	// Unique ID of the subject
 	SubjID int
 
@@ -28,4 +31,22 @@ type Subject struct {
 
 	// tms for the subject
 	TMs map[string]TransitionMatrix
+}
+
+// A SubjectList allows subjects to be sorted by name and then level.
+type SubjectList []Subject
+
+func (s SubjectList) Len() int      { return len(s) }
+func (s SubjectList) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s SubjectList) Less(i, j int) bool {
+	switch {
+	case s[i].Subj < s[j].Subj:
+		return true
+	case s[j].Subj < s[i].Subj:
+		return false
+	case s[i].Lvl < s[j].Lvl:
+		return true
+	default:
+		return false
+	}
 }
