@@ -65,5 +65,5 @@ func (s Student) ks3VA(subj string) VAScore {
 		exp = 5
 	}
 
-	return VAScore{Expected: float64(exp), Achieved: float64(current - ks2sub), Err: nil}
+	return VAScore{Expected: float64(exp) / 3.0, Achieved: float64(current-ks2sub) / 3.0, Err: nil}
 }

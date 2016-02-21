@@ -62,21 +62,26 @@ func subjectGroupPage(e env.Env, w http.ResponseWriter, r *http.Request) {
 
 	clsGrps := []subGroup{}
 	for _, c := range classes {
-		clsGrps = append(clsGrps, subGroup{c, template.URL(c), g.SubGroup(group.Class(subj.Subj, c))})
+		grp := g.SubGroup(group.Class(subj.Subj, c))
+		if len(grp.Students) > 0 {
+			clsGrps = append(clsGrps, subGroup{c, template.URL(c), grp})
+		}
 	}
 
 	data := struct {
-		Subj      *subject.Subject
-		SubGroups []subGroup
-		Classes   []subGroup
 		Query     template.URL
 		Year      string
+		Subj      *subject.Subject
+		SubGroups []subGroup
+		Matrix    subGroupMatrix
+		Classes   []subGroup
 	}{
-		subj,
-		subGroups(g),
-		clsGrps,
 		template.URL(r.URL.RawQuery),
 		f.Year,
+		subj,
+		subGroups(g),
+		groupMatrix(g),
+		clsGrps,
 	}
 
 	err = e.Templates.ExecuteTemplate(w, "subjectgroups.tmpl", data)
