@@ -762,15 +762,15 @@ $(function () {
 		  <li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Whole School <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu">
-			  <li><a href="/progress8/?{{.Query}}">Progress 8</a></li>
-			  <li><a href="/progress8groups/?{{.Query}}">Progress 8 Groups</a></li>
+			  <li><a href="/progress8/?{{.KS4}}">Progress 8</a></li>
+			  <li><a href="/progress8groups/?{{.KS4}}">Progress 8 Groups</a></li>
 			  <li class="divider"></li>
-			  <li><a href="/basics/?{{.Query}}">English and Maths</a></li>
-			  <li><a href="/ebacc/?{{.Query}}">English Baccalaureate</a></li>
-			  <li><a href="/attainmentgroups/?{{.Query}}">Attainment Groups</a></li>
+			  <li><a href="/basics/?{{.KS4}}">English and Maths</a></li>
+			  <li><a href="/ebacc/?{{.KS4}}">English Baccalaureate</a></li>
+			  <li><a href="/attainmentgroups/?{{.KS4}}">Attainment Groups</a></li>
 			  <li class="divider"></li>
-			  <li><a href="/ks3summary/?{{.Query}}">KS3 Summary</a></li>
-			  <li><a href="/ks3groups/?{{.Query}}">KS3 Groups</a></li>
+			  <li><a href="/ks3summary/?{{.KS3}}">KS3 Summary</a></li>
+			  <li><a href="/ks3groups/?{{.KS3}}">KS3 Groups</a></li>
 			  <li class="divider"></li>
 			  <li><a href="/attendancegroups/?{{.Query}}">Attendance Summary</a></li>
 			  <li><a href="/attendance/?{{.Query}}">Attendance Explorer</a></li>

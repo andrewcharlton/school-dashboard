@@ -28,14 +28,32 @@ func redirect(e env.Env) http.HandlerFunc {
 func header(e env.Env, w http.ResponseWriter, r *http.Request, detail int) {
 
 	f := getFilter(e, r)
+	var ks3 template.URL
+	var ks4 template.URL
+	switch f.Year {
+	case "":
+		ks3 = template.URL(changeYear(r.URL.Query(), "9"))
+		ks4 = template.URL(changeYear(r.URL.Query(), "11"))
+	case "7", "8", "9":
+		ks3 = template.URL(r.URL.RawQuery)
+		ks4 = template.URL(changeYear(r.URL.Query(), "11"))
+	default:
+		ks3 = template.URL(changeYear(r.URL.Query(), "9"))
+		ks4 = template.URL(r.URL.RawQuery)
+	}
+
 	data := struct {
 		School string
 		F      database.Filter
 		Query  template.URL
+		KS3    template.URL
+		KS4    template.URL
 	}{
 		e.Config.School,
 		f,
 		template.URL(r.URL.RawQuery),
+		ks3,
+		ks4,
 	}
 
 	err := e.Templates.ExecuteTemplate(w, "header.tmpl", data)
