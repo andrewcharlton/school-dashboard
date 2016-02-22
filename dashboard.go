@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/andrewcharlton/school-dashboard/env"
@@ -11,6 +12,13 @@ import (
 )
 
 func main() {
+
+	// Get Hostname
+	host, err := getHost()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("School dashboard started.\nConnect at: %v:8080", host)
 
 	// Get database filename
 	args := flag.Args()
@@ -58,4 +66,41 @@ func main() {
 	adminMux.Handle("/static/", http.StripPrefix("/static/", static))
 	adminMux.HandleFunc("/admin/", func(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, "Hello") })
 	http.ListenAndServe(":8081", adminMux)
+
+}
+
+func getHost() (string, error) {
+
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+
+	for _, i := range ifaces {
+		addrs, err := i.Addrs()
+		if err != nil {
+			return "", err
+		}
+
+		for _, addr := range addrs {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
+
+			if ip == nil || ip.IsLoopback() {
+				continue
+			}
+			ip = ip.To4()
+			if ip == nil {
+				continue // not an ipv4 address
+			}
+			return ip.String(), nil // process IP address
+		}
+	}
+
+	return "", fmt.Errorf("No interfaces found")
 }

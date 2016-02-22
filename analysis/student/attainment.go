@@ -76,7 +76,7 @@ func (s Student) EBacc() EBaccResult {
 func (s Student) EBaccPasses() int {
 
 	passes := 0
-	for area := range []string{"E", "M", "S", "H", "L"} {
+	for _, area := range []string{"E", "M", "S", "H", "L"} {
 		eb := s.EBaccArea(area)
 		if eb.Achieved {
 			passes++
