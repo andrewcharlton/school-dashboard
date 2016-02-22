@@ -8,7 +8,7 @@ type AttendanceSummary struct {
 	Absences     int
 	Unauthorised int
 	PAs          int
-	Sessions     [10]int
+	Sessions     [10]float64
 }
 
 // PercentAttendance calculates the overall percentage attendance for the group.
@@ -62,9 +62,12 @@ func (g Group) Attendance() AttendanceSummary {
 			att.PAs++
 		}
 		for n, x := range s.Attendance.Sessions {
-			att.Sessions[n] += x
+			att.Sessions[n] += float64(x)
 		}
 	}
 	att.Week /= float64(att.Cohort)
+	for n := range att.Sessions {
+		att.Sessions[n] /= float64(att.Cohort)
+	}
 	return att
 }

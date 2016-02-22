@@ -83,19 +83,19 @@ var allTemplates = map[string]string{
   <tbody>
 	<tr class="active">
 	  <td>Morning</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 0}}</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 2}}</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 4}}</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 6}}</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 8}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 0) }}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 2) }}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 4) }}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 6) }}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 8) }}</td>
 	</tr>
 	<tr class="active">
 	  <td>Afternoon</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 1}}</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 3}}</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 5}}</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 7}}</td>
-	  <td style='text-align:center;vertical-align:middle'>{{index .Sessions 9}}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 1) }}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 3) }}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 5) }}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 7) }}</td>
+	  <td style='text-align:center;vertical-align:middle'>{{ printf "%.1f" ( index .Sessions 9) }}</td>
 	</tr>
   </tbody>
 </table>
@@ -111,7 +111,8 @@ var allTemplates = map[string]string{
 
 	{{ $q := .Query }}
 	{{ with .Group }}
-	<h3>Summary</h3>
+	<h4>Summary</h4>
+    <br>
 	<table class="table table-condensed table-striped table-hover">
 	  <thead>
 		{{ template "AttendanceHeader" }}
@@ -124,7 +125,9 @@ var allTemplates = map[string]string{
 	</table>
 	<br>
 
-	<h3>Absence Patterns</h3>
+	<h4>Absence Patterns</h4>
+    Average number of sessions missed per student.<br>
+
 	{{ template "AttendanceSessionTable" .Attendance }}
 	<br>
 
@@ -913,7 +916,7 @@ $(function () {
   <thead>
 	<th></th>
 	{{ range .Subjects }}<th style="text-align:center;">{{ .Code }}</th>{{ end }}
-	<th>Average</th>
+	<th style="text-align:center;">Average</th>
   </thead>
   <tbody>
 	<tr>
