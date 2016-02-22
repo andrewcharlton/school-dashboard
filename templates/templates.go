@@ -2,7 +2,7 @@ package templates
 
 var allTemplates = map[string]string{
 
-	"attainmentgroups.tmpl": `
+	"attainmentgroups.tmpl" : `
 <h2>Attainment Group Summary</h2>
 <br>
 
@@ -49,7 +49,7 @@ var allTemplates = map[string]string{
 
 `,
 
-	"attendance.tmpl": `
+	"attendance.tmpl" : `
 {{ define "AttendanceHeader" }}
 <th style="text-align:center;">Cohort</th>
 <th style="text-align:center;">This Week</th>
@@ -174,7 +174,7 @@ var allTemplates = map[string]string{
 </div>
 `,
 
-	"attendancegroups.tmpl": `
+	"attendancegroups.tmpl" : `
 <h2>Attendance Group Summary</h2>
 <h4>Week Beginning {{ .Week }}</h4>
 <br>
@@ -234,7 +234,7 @@ var allTemplates = map[string]string{
 
 `,
 
-	"common.tmpl": `
+	"common.tmpl" : `
 {{ define "TickCross" }}
 {{if .}}<span class="glyphicon glyphicon-ok" style="color: #009933;"></span>
 {{else}}<span class="glyphicon glyphicon-remove" style="color: #cc0000;"></span>
@@ -275,7 +275,7 @@ var allTemplates = map[string]string{
 {{ end }}
 `,
 
-	"ebacc.tmpl": `
+	"ebacc.tmpl" : `
 {{ define "EBaccResult" }}
   {{ if .Entered }}
 	{{ if gt (len .Results) 0 }}
@@ -381,6 +381,8 @@ var allTemplates = map[string]string{
 			  <th style="text-align:center;">Science</th>
 			  <th style="text-align:center;">Humanities</th>
 			  <th style="text-align:center;">Language</th>
+              <th style="text-align:center;">Entries</th>
+              <th style="text-align:center;">Passes</th>
 			  <th style="text-align:center;">EBacc</th>
 			  <th style="text-align:center;">Attendance</th>
 			</thead>
@@ -394,7 +396,9 @@ var allTemplates = map[string]string{
 				  {{ range $a := $areas }}
 					{{ template "EBaccResult" ($s.EBaccArea $a) }}
 				  {{ end }}
-				    {{ template "EBaccResult" $s.EBacc}}
+                  <td style="text-align:center;">{{ $s.EBaccEntries }}</td>
+                  <td style="text-align:center;">{{ $s.EBaccPasses }}</td>
+                  {{ template "EBaccResult" $s.EBacc}}
 				  <td style="text-align:center;">{{ template "StudentAttendance" $s.Attendance.Latest }}</td>
 				</tr>
 			  {{ end }}
@@ -414,7 +418,7 @@ $(function () {
 </script>
 `,
 
-	"em.tmpl": `
+	"em.tmpl" : `
 <h2>English and Maths</h2>
 <br>
 
@@ -506,7 +510,7 @@ $(function () {
 
 `,
 
-	"filter.tmpl": `
+	"filter.tmpl" : `
 <div class="row" id="filter_bar" style="display: block;">
   <div class="col-sm-10">
 	{{range .Labels}}
@@ -697,13 +701,13 @@ $(function () {
 <hr>
 `,
 
-	"footer.tmpl": `
+	"footer.tmpl" : `
 </div>
 </body>
 </html>
 `,
 
-	"header.tmpl": `
+	"header.tmpl" : `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -783,7 +787,7 @@ $(function () {
 	<div class="container">
 `,
 
-	"index.tmpl": `
+	"index.tmpl" : `
 <h2>{{ .School }} Data Analysis</h2>
 <br>
 
@@ -811,7 +815,7 @@ $(function () {
 </div>
 `,
 
-	"ks3groups.tmpl": `
+	"ks3groups.tmpl" : `
 <h2>Key Stage 3 Group Comparison</h2>
 <br>
 
@@ -894,7 +898,7 @@ $(function () {
 {{ end }}
 `,
 
-	"ks3summary.tmpl": `
+	"ks3summary.tmpl" : `
 <h2>Key Stage 3 Summary</h2>
 <br>
 
@@ -987,7 +991,7 @@ $(function () {
 
 `,
 
-	"progress8.tmpl": `
+	"progress8.tmpl" : `
 {{ define "P8Block" }}
   <td style="text-align:center;"
 	data-container="body"
@@ -1193,7 +1197,7 @@ Plotly.newPlot('chart', data, layout);
 
 `,
 
-	"progress8groups.tmpl": `
+	"progress8groups.tmpl" : `
 <h2>Progress 8 Group Summary</h2>
 <br>
 
@@ -1290,7 +1294,7 @@ Plotly.newPlot('chart', data, layout);
 
 `,
 
-	"progressgrid.tmpl": `
+	"progressgrid.tmpl" : `
 <div class="row">
   <div class="col-sm-9"><h2>Progress Grid</h2></div>
   <div class="col-sm-3">
@@ -1418,7 +1422,7 @@ $(function () {
   </table>
 `,
 
-	"select-class.tmpl": `
+	"select-class.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -1450,7 +1454,7 @@ $(function () {
 
 `,
 
-	"select-level.tmpl": `
+	"select-level.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -1473,7 +1477,7 @@ $(function () {
 </div>
 `,
 
-	"select-subject.tmpl": `
+	"select-subject.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -1496,7 +1500,7 @@ $(function () {
 
 `,
 
-	"select-year.tmpl": `
+	"select-year.tmpl" : `
 <h2>{{.Heading}}</h2>
 
 <ul class="breadcrumb">
@@ -1522,7 +1526,7 @@ $(function () {
 
 `,
 
-	"student.tmpl": `
+	"student.tmpl" : `
 {{ define "StudentKS2Pane" }}
   <br>
   <table class="table table-hover">
@@ -1979,7 +1983,7 @@ $(function () {
 
 `,
 
-	"studentsearch.tmpl": `
+	"studentsearch.tmpl" : `
 <h2>Student Search Results</h2>
 
 <p>Searching for: <b>{{.Name}}</b></p>
@@ -2004,7 +2008,7 @@ If you're unsure of the spelling, a '*' can be used to replace
 one or more characters.</p>
 `,
 
-	"subject-overview.tmpl": `
+	"subject-overview.tmpl" : `
 <h2>Subject Summaries</h2>
 <br>
 <div class="row">
@@ -2041,7 +2045,7 @@ one or more characters.</p>
 </div>
 `,
 
-	"subjectgroups.tmpl": `
+	"subjectgroups.tmpl" : `
 <h2>{{ .Subj.Subj }} Group Summary</h2>
 
 <ul class="breadcrumb">
@@ -2167,4 +2171,5 @@ one or more characters.</p>
   <div class="col-md-1"></div>
 </div>
 `,
+
 }

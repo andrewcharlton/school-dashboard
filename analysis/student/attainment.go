@@ -71,6 +71,19 @@ func (s Student) EBacc() EBaccResult {
 	return EBaccResult{entered, achieved, []string{}}
 }
 
+// EBaccEntries calculates how many ebacc areas a student has entered.
+func (s Student) EBaccEntries() int {
+
+	entries := 0
+	for _, area := range []string{"E", "M", "S", "H", "L"} {
+		eb := s.EBaccArea(area)
+		if eb.Entered {
+			entries++
+		}
+	}
+	return entries
+}
+
 // EBaccPasses calculates how many areas a student has achieved an
 // EBacc pass.
 func (s Student) EBaccPasses() int {

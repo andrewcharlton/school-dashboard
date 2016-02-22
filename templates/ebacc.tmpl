@@ -103,6 +103,8 @@
 			  <th style="text-align:center;">Science</th>
 			  <th style="text-align:center;">Humanities</th>
 			  <th style="text-align:center;">Language</th>
+              <th style="text-align:center;">Entries</th>
+              <th style="text-align:center;">Passes</th>
 			  <th style="text-align:center;">EBacc</th>
 			  <th style="text-align:center;">Attendance</th>
 			</thead>
@@ -116,7 +118,9 @@
 				  {{ range $a := $areas }}
 					{{ template "EBaccResult" ($s.EBaccArea $a) }}
 				  {{ end }}
-				    {{ template "EBaccResult" $s.EBacc}}
+                  <td style="text-align:center;">{{ $s.EBaccEntries }}</td>
+                  <td style="text-align:center;">{{ $s.EBaccPasses }}</td>
+                  {{ template "EBaccResult" $s.EBacc}}
 				  <td style="text-align:center;">{{ template "StudentAttendance" $s.Attendance.Latest }}</td>
 				</tr>
 			  {{ end }}
