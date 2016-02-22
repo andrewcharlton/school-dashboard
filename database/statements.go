@@ -60,5 +60,5 @@ var sqlStatements = map[string]string{
 					LIMIT 1`,
 
 	"news": `SELECT date, comment FROM news
-			 ORDER BY date`,
+			 ORDER BY date DESC`,
 }

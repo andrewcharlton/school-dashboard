@@ -55,7 +55,6 @@ func (g Group) Attendance() AttendanceSummary {
 	att := AttendanceSummary{Cohort: len(g.Students)}
 	for _, s := range g.Students {
 		att.Week += s.Attendance.Week
-		att.Possible += s.Attendance.Possible
 		att.Absences += s.Attendance.Absences
 		att.Unauthorised += s.Attendance.Unauthorised
 		att.Possible += s.Attendance.Possible

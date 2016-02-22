@@ -120,7 +120,7 @@ func (s Student) ebaccEng() EBaccResult {
 			}
 		}
 	}
-	return EBaccResult{entLang && entLit, achLang && achLit, results}
+	return EBaccResult{entLang && entLit, achLang || achLit, results}
 }
 
 // EBaccSci calculates whether or not a student was entered for/
