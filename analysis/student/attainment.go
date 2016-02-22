@@ -71,6 +71,20 @@ func (s Student) EBacc() EBaccResult {
 	return EBaccResult{entered, achieved, []string{}}
 }
 
+// EBaccPasses calculates how many areas a student has achieved an
+// EBacc pass.
+func (s Student) EBaccPasses() int {
+
+	passes := 0
+	for area := range []string{"E", "M", "S", "H", "L"} {
+		eb := s.EBaccArea(area)
+		if eb.Achieved {
+			passes++
+		}
+	}
+	return passes
+}
+
 // EBaccArea calculates whether a student was entered and/or achieved
 // a pass in the relevant section of the EBacc. Valid values for area are:
 // * E: English
