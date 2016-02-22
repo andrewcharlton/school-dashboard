@@ -793,7 +793,7 @@ $(function () {
 	<div style="height:70%;min-height:70%">
 	  <h4>Updates</h4>
 	  <br>
-	  <table>
+	  <table class="table">
 		<tbody>
 		  {{ range .News }}
 			<tr>

@@ -47,7 +47,7 @@ func (g Group) ProgressGrid(subject *subject.Subject, natYear string) ProgressGr
 		year = g.Students[0].Year
 	}
 
-	ks2Levels := []string{"None", "1", "2", "3C", "3B", "3A", "4C", "4B", "4A", "5C", "5B", "5A", "6"}
+	ks2Levels := []string{"None", "1", "2", "3c", "3b", "3a", "4c", "4b", "4a", "5c", "5b", "5a", "6"}
 	ks2Map := map[string]int{}
 	for n, ks2 := range ks2Levels {
 		ks2Map[ks2] = n
@@ -117,27 +117,27 @@ var ks3Levels = map[string]int{
 	"4":  10,
 	"5":  13,
 	"6":  16,
-	"2C": 3,
-	"2B": 4,
-	"2A": 5,
-	"3C": 6,
-	"3B": 7,
-	"3A": 8,
-	"4C": 9,
-	"4B": 10,
-	"4A": 11,
-	"5C": 12,
-	"5B": 13,
-	"5A": 14,
-	"6C": 15,
-	"6B": 16,
-	"6A": 17,
-	"7C": 18,
-	"7B": 19,
-	"7A": 20,
-	"8C": 21,
-	"8B": 22,
-	"8A": 23,
+	"2c": 3,
+	"2b": 4,
+	"2a": 5,
+	"3c": 6,
+	"3b": 7,
+	"3a": 8,
+	"4c": 9,
+	"4b": 10,
+	"4a": 11,
+	"5c": 12,
+	"5b": 13,
+	"5a": 14,
+	"6c": 15,
+	"6b": 16,
+	"6a": 17,
+	"7c": 18,
+	"7b": 19,
+	"7a": 20,
+	"8c": 21,
+	"8b": 22,
+	"8a": 23,
 }
 
 // Hacky hard-coded level scale

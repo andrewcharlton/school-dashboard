@@ -31,7 +31,7 @@ func (db Database) News() ([]NewsItem, error) {
 			return []NewsItem{}, err
 		}
 
-		split := strings.Split(date, "/")
+		split := strings.Split(date, "-")
 		if len(split) == 3 {
 			formattedDate := fmt.Sprintf("%v-%v-%v", split[2], split[1], split[0])
 			news = append(news, NewsItem{formattedDate, comm})
