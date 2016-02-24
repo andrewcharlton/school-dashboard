@@ -141,7 +141,5 @@ func (db Database) Search(name string, f Filter) (group.Group, error) {
 		upns = append(upns, upn)
 	}
 
-	fmt.Println(upns)
-
 	return db.basicGroup(upns, f)
 }

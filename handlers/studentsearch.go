@@ -13,8 +13,9 @@ import (
 func Search(e env.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Println(r.URL.RawPath, r.URL.RawQuery)
-
+		if redir := checkRedirect(e, w, r, 0); redir {
+			return
+		}
 		header(e, w, r, 0)
 		defer footer(e, w, r)
 

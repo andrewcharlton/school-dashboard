@@ -52,7 +52,7 @@ func main() {
 	clientMux.HandleFunc("/progress8/", handlers.Progress8(env))
 	clientMux.HandleFunc("/progress8groups/", handlers.Progress8Groups(env))
 	//clientMux.HandleFunc("/export/headlines/", handlers.ExportHeadlines(env))
-	//clientMux.HandleFunc("/export/subject/", handlers.ExportSubject(env))
+	clientMux.HandleFunc("/export/subject/", handlers.ExportSubject(env))
 	clientMux.HandleFunc("/subjects/", handlers.SubjectOverview(env))
 	clientMux.HandleFunc("/progressgrid/", handlers.ProgressGrid(env))
 	clientMux.HandleFunc("/subjectgroups/", handlers.SubjectGroups(env))

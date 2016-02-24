@@ -11,6 +11,9 @@ var sqlStatements = map[string]string{
 				FROM students
 				WHERE upn=? AND date_id=?`,
 
+	"historical": `SELECT resultset, grade FROM results
+					WHERE upn=? AND subject_id=? AND list=1`,
+
 	"results": `SELECT subject_id, subject, grade, effort FROM results
 				WHERE upn=? AND resultset=?`,
 

@@ -40,6 +40,29 @@ func (db Database) Student(upn string, f Filter) (student.Student, error) {
 	return s, nil
 }
 
+// HistoricalResults returns a map of student results for
+// a particular subject, keyed by resultset name
+func (db Database) HistoricalResults(upn string, subjID int) (map[string]string, error) {
+
+	rows, err := db.stmts["historical"].Query(upn, subjID)
+	if err != nil {
+		return map[string]string{}, err
+	}
+	defer rows.Close()
+
+	results := map[string]string{}
+	for rows.Next() {
+		var rs, grd string
+		err := rows.Scan(&rs, &grd)
+		if err != nil {
+			return map[string]string{}, err
+		}
+		results[rs] = grd
+	}
+
+	return results, nil
+}
+
 // loadStudent loads up the basic student details and creates a Student object from them
 func (db Database) loadStudent(upn string, f Filter) (student.Student, error) {
 
