@@ -13,6 +13,17 @@ func (s Student) SubjectGrade(subj string) string {
 	return r.Grd
 }
 
+// SubjectSubGrade provides a lookup for the grade in a particular subject.
+// Returns "" if no grade is found.
+func (s Student) SubjectSubGrade(subj string) string {
+
+	r, exists := s.Results[subj]
+	if !exists {
+		return ""
+	}
+	return r.SubGrade
+}
+
 // APS returns the average point score achieved by a student in his/her courses.
 func (s Student) APS() float64 {
 

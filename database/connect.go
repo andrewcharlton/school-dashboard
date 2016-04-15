@@ -154,7 +154,7 @@ func (db *Database) loadEthnicities() error {
 // grades pulls in the list of grades at a particular level
 func (db Database) loadGrades(lvl int) (map[string]subject.Grade, error) {
 
-	rows, err := db.conn.Query(`SELECT grade, points, att8, l1_pass, l2_pass
+	rows, err := db.conn.Query(`SELECT grade, subgrade, points, att8, l1_pass, l2_pass
 								FROM grades
 								WHERE level_id=?`, lvl)
 	if err != nil {
@@ -165,11 +165,11 @@ func (db Database) loadGrades(lvl int) (map[string]subject.Grade, error) {
 	grades := map[string]subject.Grade{}
 	for rows.Next() {
 		var g subject.Grade
-		err := rows.Scan(&g.Grd, &g.Pts, &g.Att8, &g.L1Pass, &g.L2Pass)
+		err := rows.Scan(&g.Grd, &g.SubGrade, &g.Pts, &g.Att8, &g.L1Pass, &g.L2Pass)
 		if err != nil {
 			return map[string]subject.Grade{}, err
 		}
-		grades[g.Grd] = g
+		grades[g.SubGrade] = g
 	}
 	return grades, nil
 }

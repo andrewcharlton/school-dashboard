@@ -492,9 +492,9 @@ $(function () {
 				<td style="text-align:center;">{{ .KS2.Av }}</td>
 				<td style="text-align:center;">{{ .Gender }}</td>
 				<td style="text-align:center;">{{ template "PP" .PP }}</td>
-				<td style="text-align:center;">{{ .SubjectGrade "English" }}</td>
-				<td style="text-align:center;">{{ .SubjectGrade "English Literature" }}</td>
-				<td style="text-align:center;">{{ .SubjectGrade "Mathematics" }}</td>
+				<td style="text-align:center;">{{ .SubjectSubGrade "English" }}</td>
+				<td style="text-align:center;">{{ .SubjectSubGrade "English Literature" }}</td>
+				<td style="text-align:center;">{{ .SubjectSubGrade "Mathematics" }}</td>
 				<td style="text-align:center;">{{ template "StudentProgress8" .Basket.Overall.Progress8 }}</td>
 				<td style="text-align:center;">{{ template "StudentAttendance" .Attendance.Latest }}</td>
 			  </tr>

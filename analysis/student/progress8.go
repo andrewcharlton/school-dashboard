@@ -27,9 +27,10 @@ type Basket struct {
 
 // A Slot in the basket
 type Slot struct {
-	Subject string
-	Grade   string
-	Points  float64
+	Subject  string
+	Grade    string
+	SubGrade string
+	Points   float64
 }
 
 // slots is used for sorting a selection of subjects
@@ -65,7 +66,7 @@ func (s Student) Basket() Basket {
 	other := slots{Slot{}, Slot{}, Slot{}}
 	for _, r := range s.Results {
 		if used[r.Subj] == false {
-			other = append(other, Slot{r.Subj, r.Grd, r.Att8})
+			other = append(other, Slot{r.Subj, r.Grd, r.SubGrade, r.Att8})
 		}
 	}
 	sort.Sort(sort.Reverse(other))
@@ -84,13 +85,13 @@ func (s Student) engBasket() [2]Slot {
 		switch r.EBacc {
 		case "E":
 			lang, lit = true, true
-			eng = append(eng, Slot{r.Subj, r.Grd, r.Att8})
+			eng = append(eng, Slot{r.Subj, r.Grd, r.SubGrade, r.Att8})
 		case "En":
 			lang = true
-			eng = append(eng, Slot{r.Subj, r.Grd, r.Att8})
+			eng = append(eng, Slot{r.Subj, r.Grd, r.SubGrade, r.Att8})
 		case "El":
 			lit = true
-			eng = append(eng, Slot{r.Subj, r.Grd, r.Att8})
+			eng = append(eng, Slot{r.Subj, r.Grd, r.SubGrade, r.Att8})
 		}
 	}
 
@@ -106,7 +107,7 @@ func (s Student) mathsBasket() [2]Slot {
 	maths := slots{Slot{}}
 	for _, r := range s.Results {
 		if r.EBacc == "M" {
-			maths = append(maths, Slot{r.Subj, r.Grd, r.Att8})
+			maths = append(maths, Slot{r.Subj, r.Grd, r.SubGrade, r.Att8})
 		}
 	}
 	sort.Sort(sort.Reverse(maths))
@@ -118,7 +119,7 @@ func (s Student) ebaccBasket() [3]Slot {
 	ebacc := slots{Slot{}, Slot{}, Slot{}}
 	for _, r := range s.Results {
 		if r.EBacc == "H" || r.EBacc == "S" || r.EBacc == "L" {
-			ebacc = append(ebacc, Slot{r.Subj, r.Grd, r.Att8})
+			ebacc = append(ebacc, Slot{r.Subj, r.Grd, r.SubGrade, r.Att8})
 		}
 	}
 	sort.Sort(sort.Reverse(ebacc))
@@ -149,7 +150,7 @@ func (b Basket) section(start, end int, exp float64) Progress8Score {
 		case "":
 			subjects = append(subjects, "-")
 		default:
-			subjects = append(subjects, fmt.Sprintf("%v - %v", s.Subject, s.Grade))
+			subjects = append(subjects, fmt.Sprintf("%v - %v", s.Subject, s.SubGrade))
 		}
 		if s.Points > 0.1 { // 0.1 rather than 0.0 to prevent floating point errors
 			ent++

@@ -7,6 +7,9 @@ type Grade struct {
 	// Name of the grade
 	Grd string
 
+	// Grade with +/-
+	SubGrade string
+
 	// QCA points
 	Pts int
 
