@@ -42,7 +42,9 @@ func (l Level) SortedGrades() []string {
 
 	grades := grdPts{}
 	for _, grade := range l.Gradeset {
-		grades = append(grades, grdPt{grade.Grd, grade.Pts, grade.Att8})
+		if grade.Grd == grade.SubGrade {
+			grades = append(grades, grdPt{grade.Grd, grade.Pts, grade.Att8})
+		}
 	}
 
 	sort.Sort(grades)
