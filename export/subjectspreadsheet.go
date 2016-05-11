@@ -33,6 +33,12 @@ func SubjectSpreadsheet(e env.Env, f database.Filter, subj *subject.Subject, w i
 	}
 	subjectBroadsheet(e, subj, sheet, g)
 
+	sheet, err = file.AddSheet("Export Details")
+	if err != nil {
+		return err
+	}
+	exportInfoSheet(sheet, e, f)
+
 	file.Write(w)
 	return nil
 }
