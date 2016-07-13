@@ -31,6 +31,7 @@ func AttendanceGroups(e env.Env) http.HandlerFunc {
 			Name   string
 			Query  template.URL
 			Groups []subGroup
+			Matrix subGroupMatrix
 		}
 
 		// Ignore error - will appear as blank string anyway
@@ -43,7 +44,7 @@ func AttendanceGroups(e env.Env) http.HandlerFunc {
 		}{
 			week,
 			template.URL(r.URL.RawQuery),
-			[]YearGroup{{"All Years", template.URL(""), subGroups(g)}},
+			[]YearGroup{{"All Years", template.URL(""), subGroups(g), groupMatrix(g)}},
 		}
 
 		for year := 7; year < 15; year++ {
@@ -53,8 +54,10 @@ func AttendanceGroups(e env.Env) http.HandlerFunc {
 			}
 			yeargroup := YearGroup{fmt.Sprintf("Year %v", year),
 				template.URL(fmt.Sprintf("&year=%v", year)),
-				subGroups(y)}
+				subGroups(y),
+				groupMatrix(y)}
 			data.YearGroups = append(data.YearGroups, yeargroup)
+
 		}
 
 		err = e.Templates.ExecuteTemplate(w, "attendancegroups.tmpl", data)

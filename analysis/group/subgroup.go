@@ -29,6 +29,12 @@ var (
 
 	// NonPA = Students with greater than 90% attendance
 	NonPA = func(s student.Student) bool { return s.Attendance.Latest() >= 0.9 }
+
+	NonSEN = func(s student.Student) bool { return s.SEN.Status == "N" }
+
+	SEN = func(s student.Student) bool { return s.SEN.Status == "K" || s.SEN.Status == "S" }
+
+	Statement = func(s student.Student) bool { return s.SEN.Status == "S" }
 )
 
 // Year returns a subgroup filter for a certain yeargroup

@@ -217,8 +217,8 @@ var allTemplates = map[string]string{
 		{{ $yq := .Query }}
 		{{ range .Groups }} 
 		{{ with .Group.Attendance }}
-		{{ if ge .PercentAttendance 0.975 }}<tr class="success">
-		{{ else if ge .PercentAttendance 0.95 }}<tr class="warning">
+		{{ if ge .PercentAttendance 0.95 }}<tr class="success">
+		{{ else if ge .PercentAttendance 0.90 }}<tr class="warning">
 		{{ else if eq .Possible 0 }}<tr>
 		{{ else }}<tr class="danger">
 		{{ end }}
@@ -229,6 +229,44 @@ var allTemplates = map[string]string{
 		{{ end }}
 	  </tbody>
 	</table>
+
+    <br>
+    
+	{{ with .Matrix }}
+	  <table class="table table-condensed table-hover">
+		<thead>
+		  <th>&nbsp;</th>
+		  {{ range .Headers }}
+			<th style="text-align:center;">{{ . }}</th>
+		  {{ end }}
+		</thead>
+		<tbody>
+		  {{ $headers := .Headers }}
+		  {{ range $i, $g := .Groups }}
+			<tr>
+			  <th>{{ index $headers $i }}</th>
+			  {{ range $g }}
+              {{ $att := .Group.Attendance.PercentAttendance }}
+				<td style="text-align:center;">
+				  {{ if eq (len .Group.Students) 0 }}
+					-
+				  {{ else if gt $att 0.95 }}
+                  <a class="text-success" href="/attendance/?{{ $q }}{{ $yq }}{{ .Query }}">{{ printf "%+.2f" $att }}</a>
+				  {{ else if lt $att 0.90 }}
+                  <a class="text-danger" href="/attendance/?{{ $q }}{{ $yq }}{{ .Query }}">{{ printf "%+.2f" $att }}</a>
+				  {{ else }}
+                  <a class="text-warning" href="/attendance/?{{ $q }}{{ $yq }}{{ .Query }}">{{ printf "%+.2f" $att }}</a>
+				  {{ end }}
+				</td>
+			  {{ end }}
+			</tr>
+		  {{ end }}
+		</tbody>
+	  </table>
+	{{ end }}
+
+    <br>
+
 	{{ end }}
   </div>
   <div class="col-sm-1"></div>
@@ -647,10 +685,9 @@ $(function () {
 		<div class="form-group form-group-sm">
 		  <label class="control-label col-sm-2">SEN</label>
 		  <div class="col-sm-10">
-			<label class="checkbox-inline"><input type="checkbox" name="sen" value=""{{if index .S ""}} checked="yes"{{end}}>No SEN</input></label>
-			<label class="checkbox-inline"><input type="checkbox" name="sen" value="A"{{if index .S "A"}} checked="yes"{{end}}>School Action</input></label>
-			<label class="checkbox-inline"><input type="checkbox" name="sen" value="P"{{if index .S "P"}} checked="yes"{{end}}>School Action Plus</input></label>
-			<label class="checkbox-inline"><input type="checkbox" name="sen" value="S"{{if index .S "S"}} checked="yes"{{end}}>SEN with a Statement</input></label>
+			<label class="checkbox-inline"><input type="checkbox" name="sen" value="N"{{if index .S ""}} checked="yes"{{end}}>No SEN</input></label>
+			<label class="checkbox-inline"><input type="checkbox" name="sen" value="K"{{if index .S "A"}} checked="yes"{{end}}>SEN Support</input></label>
+			<label class="checkbox-inline"><input type="checkbox" name="sen" value="S"{{if index .S "S"}} checked="yes"{{end}}>SEN with a Statement/EHCP</input></label>
 		  </div>
 		</div>
 	  </div>

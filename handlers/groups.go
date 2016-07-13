@@ -22,6 +22,9 @@ var groupDefs = []groupDef{
 	{"High", "&ks2band=High", group.High},
 	{"Middle", "&ks2band=Middle", group.Middle},
 	{"Low", "&ks2band=Low", group.Low},
+	{"Non-SEN", "&ks2band=N", group.NonSEN},
+	{"SEN", "&sen=S&sen=K", group.SEN},
+	{"Statement/EHCP", "&sen=S", group.Statement},
 }
 
 type subGroup struct {
