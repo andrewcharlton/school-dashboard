@@ -58,14 +58,17 @@ func main() {
 	clientMux.HandleFunc("/subjectgroups/", handlers.SubjectGroups(env))
 	clientMux.HandleFunc("/student/", handlers.Student(env))
 	clientMux.HandleFunc("/search/", handlers.Search(env))
-	go func() {
-		http.ListenAndServe(":8080", clientMux)
-	}()
+	for {
+		err := http.ListenAndServe(":8080", clientMux)
+		log.Println(err)
+	}
 
-	adminMux := http.NewServeMux()
-	adminMux.Handle("/static/", http.StripPrefix("/static/", static))
-	adminMux.HandleFunc("/admin/", func(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, "Hello") })
-	http.ListenAndServe(":8081", adminMux)
+	/*
+		adminMux := http.NewServeMux()
+		adminMux.Handle("/static/", http.StripPrefix("/static/", static))
+		adminMux.HandleFunc("/admin/", func(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, "Hello") })
+		http.ListenAndServe(":8081", adminMux)
+	*/
 
 }
 
